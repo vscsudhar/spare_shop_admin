@@ -16,6 +16,7 @@ import '../core/services/address_service.dart';
 import '../core/services/admin_dashboard_service.dart';
 import '../core/services/admin_purchase_service.dart';
 import '../core/services/admin_supplier_service.dart';
+import '../core/services/admin_support_ticket_service.dart';
 import '../core/services/api_client.dart';
 import '../core/services/auth_service.dart';
 import '../core/services/cart_service.dart';
@@ -24,6 +25,7 @@ import '../core/services/order_service.dart';
 import '../core/services/product_service.dart';
 import '../core/services/rare_request_mock_service.dart';
 import '../core/services/rare_request_service.dart';
+import '../core/services/return_exchange_service.dart';
 import '../core/services/socket_service.dart';
 import '../core/services/token_service.dart';
 import '../core/services/upload_service.dart';
@@ -59,4 +61,6 @@ Future<void> setupLocator(
   locator.registerLazySingleton(() => AdminDashboardService());
   locator.registerLazySingleton(() => AdminSupplierService());
   locator.registerLazySingleton(() => AdminPurchaseService());
+  locator.registerLazySingleton(() => AdminSupportTicketService());
+  locator.registerLazySingleton(() => ReturnExchangeService());
 }

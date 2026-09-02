@@ -11,6 +11,12 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
   const AdminRareRequestsView({Key? key}) : super(key: key);
 
   @override
+  void onViewModelReady(AdminRareRequestsViewModel viewModel) {
+    viewModel.initialise();
+    super.onViewModelReady(viewModel);
+  }
+
+  @override
   Widget builder(
     BuildContext context,
     AdminRareRequestsViewModel viewModel,
@@ -19,51 +25,134 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
     return AdminShell(
       title: 'Rare Product Requests',
       selectedItem: AdminNavigationItem.rareRequests,
+      onSearch: viewModel.onSearch,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Inbound Custom Spares Sourcing Tickets',
-                  style: AdminTextStyles.sectionHeader),
-              Text(
-                'Showing ${viewModel.filteredRequests.length} requests',
-                style: AdminTextStyles.bodySecondary,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Inbound Custom Spares Sourcing Tickets',
+                      style: AdminTextStyles.sectionHeader),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Review custom customer part sourcing inquiries, prepare quotations, and convert to orders.',
+                    style: AdminTextStyles.bodySecondary.copyWith(fontSize: 12),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    'Showing ${viewModel.filteredRequests.length} of ${viewModel.allCount} requests',
+                    style: AdminTextStyles.bodySecondary,
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    icon: viewModel.isBusy
+                        ? SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AdminColors.primaryGreen,
+                            ),
+                          )
+                        : Icon(Icons.refresh_rounded,
+                            color: AdminColors.primaryGreen),
+                    tooltip: 'Refresh Requests',
+                    onPressed: viewModel.isBusy
+                        ? null
+                        : () => viewModel.loadRequests(),
+                  ),
+                ],
               ),
             ],
           ),
           const SizedBox(height: 16),
 
-          // Filters Row
-          Row(
-            children: [
-              'All',
-              'Submitted',
-              'Searching',
-              'Quotation Sent',
-              'Approved',
-              'Cancelled'
-            ].map((status) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: AdminFilterChip(
-                  label: status == 'All' ? 'All Requests' : status,
-                  isSelected: viewModel.selectedStatus == status,
-                  onTap: () => viewModel.setSelectedStatus(status),
-                ),
-              );
-            }).toList(),
+          // Filters Row with Counts
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _filterChip(
+                    'All', 'All Requests (${viewModel.allCount})', viewModel),
+                _filterChip('Submitted',
+                    'Submitted (${viewModel.submittedCount})', viewModel),
+                _filterChip('Searching',
+                    'Searching (${viewModel.searchingCount})', viewModel),
+                _filterChip(
+                    'Quotation Sent',
+                    'Quotation Sent (${viewModel.quotationSentCount})',
+                    viewModel),
+                _filterChip('Approved', 'Approved (${viewModel.approvedCount})',
+                    viewModel),
+                _filterChip('Cancelled',
+                    'Cancelled (${viewModel.cancelledCount})', viewModel),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
 
-          // Tickets List
-          if (viewModel.filteredRequests.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40.0),
+          // Content Area
+          if (viewModel.isBusy)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 60.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: AdminColors.primaryGreen),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading rare product requests...',
+                      style: TextStyle(color: AdminColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (viewModel.errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.error_outline_rounded,
+                        color: AdminColors.cancelled, size: 42),
+                    const SizedBox(height: 12),
+                    Text(
+                      viewModel.errorMessage!,
+                      style: TextStyle(color: AdminColors.cancelled),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () => viewModel.loadRequests(),
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AdminColors.primaryGreen,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (viewModel.filteredRequests.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40.0),
               child: AdminEmptyState(
-                  message:
-                      'No rare product requests match this status filter.'),
+                message: viewModel.searchQuery.isNotEmpty
+                    ? 'No rare product requests match "${viewModel.searchQuery}".'
+                    : 'No rare product requests found for "${viewModel.selectedStatus}".',
+              ),
             )
           else
             ListView.builder(
@@ -79,6 +168,21 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
               },
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _filterChip(
+    String status,
+    String label,
+    AdminRareRequestsViewModel viewModel,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: AdminFilterChip(
+        label: label,
+        isSelected: viewModel.selectedStatus == status,
+        onTap: () => viewModel.setSelectedStatus(status),
       ),
     );
   }

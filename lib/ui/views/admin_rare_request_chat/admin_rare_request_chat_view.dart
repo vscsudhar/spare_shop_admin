@@ -14,8 +14,16 @@ class AdminRareRequestChatView
 
   const AdminRareRequestChatView({
     Key? key,
-    required this.requestId,
+    this.requestId = '',
   }) : super(key: key);
+
+  @override
+  void onViewModelReady(AdminRareRequestChatViewModel viewModel) {
+    if (requestId.isNotEmpty) {
+      viewModel.initialize(requestId);
+    }
+    super.onViewModelReady(viewModel);
+  }
 
   @override
   Widget builder(
@@ -23,8 +31,20 @@ class AdminRareRequestChatView
     AdminRareRequestChatViewModel viewModel,
     Widget? child,
   ) {
-    viewModel.initialize(requestId);
     final req = viewModel.request;
+
+    if (viewModel.isBusy && req == null) {
+      return AdminShell(
+        title: 'Support Ticket',
+        selectedItem: AdminNavigationItem.rareRequests,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 80.0),
+            child: CircularProgressIndicator(color: AdminColors.primaryGreen),
+          ),
+        ),
+      );
+    }
 
     if (req == null) {
       return AdminShell(
@@ -74,26 +94,37 @@ class AdminRareRequestChatView
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: AdminColors.background,
-                              border: Border(bottom: BorderSide(color: AdminColors.border)),
+                              border: Border(
+                                  bottom:
+                                      BorderSide(color: AdminColors.border)),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.directions_bike, color: AdminColors.primaryGreen, size: 20),
+                                    Icon(Icons.directions_bike,
+                                        color: AdminColors.primaryGreen,
+                                        size: 20),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            req.partName ?? 'Rare Spare Part Request',
-                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                            req.partName ??
+                                                'Rare Spare Part Request',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13),
                                           ),
                                           Text(
                                             'Vehicle: ${req.vehicle.displayName}',
-                                            style: TextStyle(color: AdminColors.textSecondary, fontSize: 11),
+                                            style: TextStyle(
+                                                color:
+                                                    AdminColors.textSecondary,
+                                                fontSize: 11),
                                           ),
                                         ],
                                       ),
@@ -101,13 +132,19 @@ class AdminRareRequestChatView
                                     TextButton.icon(
                                       onPressed: viewModel.toggleSummaryDetails,
                                       icon: Icon(
-                                        viewModel.showSummaryDetails ? Icons.expand_less : Icons.expand_more,
+                                        viewModel.showSummaryDetails
+                                            ? Icons.expand_less
+                                            : Icons.expand_more,
                                         size: 16,
                                         color: AdminColors.primaryGreen,
                                       ),
                                       label: Text(
-                                        viewModel.showSummaryDetails ? 'Hide' : 'Details',
-                                        style: TextStyle(color: AdminColors.primaryGreen, fontSize: 12),
+                                        viewModel.showSummaryDetails
+                                            ? 'Hide'
+                                            : 'Details',
+                                        style: TextStyle(
+                                            color: AdminColors.primaryGreen,
+                                            fontSize: 12),
                                       ),
                                     ),
                                   ],
@@ -116,22 +153,35 @@ class AdminRareRequestChatView
                                   const SizedBox(height: 12),
                                   const Divider(),
                                   const SizedBox(height: 8),
-                                  Text('Description:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AdminColors.textLight)),
+                                  Text('Description:',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 11,
+                                          color: AdminColors.textLight)),
                                   const SizedBox(height: 2),
-                                  Text(req.description, style: const TextStyle(fontSize: 12)),
+                                  Text(req.description,
+                                      style: const TextStyle(fontSize: 12)),
                                   const SizedBox(height: 8),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      _summaryField('Qty Requested', '${req.quantity} Units'),
-                                      _summaryField('Urgency Priority', req.urgency),
+                                      _summaryField('Qty Requested',
+                                          '${req.quantity} Units'),
+                                      _summaryField(
+                                          'Urgency Priority', req.urgency),
                                       if (req.budget != null)
-                                        _summaryField('Target Budget', '₹${req.budget!.toStringAsFixed(2)}'),
+                                        _summaryField('Target Budget',
+                                            '₹${req.budget!.toStringAsFixed(2)}'),
                                     ],
                                   ),
                                   if (req.images.isNotEmpty) ...[
                                     const SizedBox(height: 12),
-                                    Text('Uploaded Images:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AdminColors.textLight)),
+                                    Text('Uploaded Images:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 11,
+                                            color: AdminColors.textLight)),
                                     const SizedBox(height: 6),
                                     SizedBox(
                                       height: 60,
@@ -141,17 +191,24 @@ class AdminRareRequestChatView
                                         itemBuilder: (context, idx) {
                                           return Container(
                                             width: 60,
-                                            margin: const EdgeInsets.only(right: 6),
+                                            margin:
+                                                const EdgeInsets.only(right: 6),
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(4),
-                                              border: Border.all(color: AdminColors.border),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              border: Border.all(
+                                                  color: AdminColors.border),
                                             ),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(4),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                               child: Image.network(
                                                 req.images[idx],
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (c, e, s) => const Icon(Icons.broken_image, size: 16),
+                                                errorBuilder: (c, e, s) =>
+                                                    const Icon(
+                                                        Icons.broken_image,
+                                                        size: 16),
                                               ),
                                             ),
                                           );
@@ -170,9 +227,14 @@ class AdminRareRequestChatView
                               itemCount: viewModel.chatMessages.length,
                               itemBuilder: (context, index) {
                                 final msg = viewModel.chatMessages[index];
+                                final quotation = msg.quotation ??
+                                    (msg.messageType ==
+                                            RareChatMessageType.quotation
+                                        ? viewModel.request?.quotation
+                                        : null);
                                 if (msg.messageType ==
                                         RareChatMessageType.quotation &&
-                                    msg.quotation != null) {
+                                    quotation != null) {
                                   return Align(
                                     alignment: Alignment.centerRight,
                                     child: Container(
@@ -180,7 +242,7 @@ class AdminRareRequestChatView
                                           vertical: 8),
                                       width: 300,
                                       child: QuotationSummaryCard(
-                                        quotation: msg.quotation!,
+                                        quotation: quotation,
                                         showActions: false,
                                       ),
                                     ),
@@ -296,19 +358,24 @@ class AdminRareRequestChatView
                                             child: Image.network(
                                               req.images[index],
                                               fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
                                                 return const Icon(
                                                     Icons.broken_image_outlined,
                                                     size: 28,
                                                     color: Colors.grey);
                                               },
-                                              loadingBuilder: (context, child, loadingProgress) {
-                                                if (loadingProgress == null) return child;
+                                              loadingBuilder: (context, child,
+                                                  loadingProgress) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
                                                 return const Center(
                                                   child: SizedBox(
                                                     width: 20,
                                                     height: 20,
-                                                    child: CircularProgressIndicator(
+                                                    child:
+                                                        CircularProgressIndicator(
                                                       strokeWidth: 2,
                                                     ),
                                                   ),
@@ -400,7 +467,8 @@ class AdminRareRequestChatView
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.green.withValues(alpha: 0.08),
+                                      color:
+                                          Colors.green.withValues(alpha: 0.08),
                                       border: Border.all(color: Colors.green),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -475,8 +543,16 @@ class AdminRareRequestChatView
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 9, color: AdminColors.textLight, fontWeight: FontWeight.bold)),
-        Text(value, style: TextStyle(fontSize: 11, color: AdminColors.textPrimary, fontWeight: FontWeight.w600)),
+        Text(label,
+            style: TextStyle(
+                fontSize: 9,
+                color: AdminColors.textLight,
+                fontWeight: FontWeight.bold)),
+        Text(value,
+            style: TextStyle(
+                fontSize: 11,
+                color: AdminColors.textPrimary,
+                fontWeight: FontWeight.w600)),
       ],
     );
   }

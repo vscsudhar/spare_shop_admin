@@ -1,4 +1,3 @@
-﻿
 class ApiEndpoints {
   static const String hostIp = '192.168.0.174';
 

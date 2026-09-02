@@ -51,7 +51,8 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: sections.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final sec = sections[index];
                       final isSelected = viewModel.selectedSection == sec;

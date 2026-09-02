@@ -29,9 +29,19 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
             children: [
               Text('All Customer Transactions',
                   style: AdminTextStyles.sectionHeader),
-              Text(
-                'Showing ${viewModel.filteredOrders.length} orders',
-                style: AdminTextStyles.bodySecondary,
+              Row(
+                children: [
+                  Text(
+                    'Showing ${viewModel.filteredOrders.length} orders',
+                    style: AdminTextStyles.bodySecondary,
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: viewModel.isBusy ? null : () => viewModel.loadOrders(),
+                    icon: const Icon(Icons.refresh, size: 18, color: Colors.white70),
+                    tooltip: 'Refresh Orders',
+                  ),
+                ],
               ),
             ],
           ),

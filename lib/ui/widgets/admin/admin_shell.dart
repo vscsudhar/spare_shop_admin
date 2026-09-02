@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
-import 'package:spare_shop_admin/app/app.router.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/theme/theme_service.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
@@ -8,7 +7,10 @@ import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 enum AdminNavigationItem {
   dashboard,
   orders,
+  returnsExchanges,
+  damagedProducts,
   rareRequests,
+  supportTickets,
   products,
   inventory,
   purchases,
@@ -234,85 +236,98 @@ class AdminShell extends StatelessWidget with NavigationMixin {
   }
 
   Widget _buildSidebarContent(BuildContext context) {
-    return Container(
-      width: 250,
+    return Material(
       color: AdminColors.sidebarBackground,
-      child: Column(
-        children: [
-          Container(
-            height: 70,
-            padding: const EdgeInsets.all(AdminSpacing.m),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                Icon(Icons.electric_bolt_rounded,
-                    color: AdminColors.accentLime, size: 28),
-                const SizedBox(width: 8),
-                Text(
-                  'VoltSpare Console',
-                  style: AdminTextStyles.header
-                      .copyWith(color: Colors.white, fontSize: 16),
-                ),
-              ],
+      child: SizedBox(
+        width: 250,
+        child: Column(
+          children: [
+            Container(
+              height: 70,
+              padding: const EdgeInsets.all(AdminSpacing.m),
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  Icon(Icons.electric_bolt_rounded,
+                      color: AdminColors.accentLime, size: 28),
+                  const SizedBox(width: 8),
+                  Text(
+                    'VoltSpare Console',
+                    style: AdminTextStyles.header
+                        .copyWith(color: Colors.white, fontSize: 16),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Divider(color: Colors.white12, height: 1),
-          // Role selector inside mobile drawer (prevents header overflow)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              children: [
-                const Icon(Icons.shield_outlined, color: Colors.white70, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildRoleSelector(context, isCompact: true),
-                ),
-              ],
+            const Divider(color: Colors.white12, height: 1),
+            // Role selector inside mobile drawer (prevents header overflow)
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.shield_outlined,
+                      color: Colors.white70, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildRoleSelector(context, isCompact: true),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Divider(color: Colors.white12, height: 1),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              children: [
-                _sidebarItem(context, Icons.dashboard_rounded, 'Dashboard',
-                    AdminNavigationItem.dashboard),
-                _sidebarItem(context, Icons.shopping_bag_rounded, 'Orders',
-                    AdminNavigationItem.orders),
-                _sidebarItem(context, Icons.support_agent_rounded,
-                    'Rare Requests', AdminNavigationItem.rareRequests),
-                _sidebarItem(context, Icons.build_rounded, 'Products',
-                    AdminNavigationItem.products),
-                _sidebarItem(context, Icons.inventory_2_rounded, 'Inventory',
-                    AdminNavigationItem.inventory),
-                _sidebarItem(context, Icons.receipt_long_rounded, 'Purchases',
-                    AdminNavigationItem.purchases),
-                _sidebarItem(context, Icons.warehouse_rounded, 'Suppliers',
-                    AdminNavigationItem.suppliers),
-                _sidebarItem(context, Icons.people_alt_rounded, 'Customers',
-                    AdminNavigationItem.customers),
-                _sidebarItem(context, Icons.payment_rounded, 'Billing / POS',
-                    AdminNavigationItem.billing),
-                _sidebarItem(context, Icons.analytics_rounded, 'Reports',
-                    AdminNavigationItem.reports),
-                _sidebarItem(context, Icons.badge_rounded, 'Staff & Roles',
-                    AdminNavigationItem.staffRoles),
-                _sidebarItem(context, Icons.settings_rounded, 'Settings',
-                    AdminNavigationItem.settings),
-              ],
+            const Divider(color: Colors.white12, height: 1),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                children: [
+                  _sidebarItem(context, Icons.dashboard_rounded, 'Dashboard',
+                      AdminNavigationItem.dashboard),
+                  _sidebarItem(context, Icons.shopping_bag_rounded, 'Orders',
+                      AdminNavigationItem.orders),
+                  _sidebarItem(context, Icons.published_with_changes_rounded,
+                      'Returns & Exchanges', AdminNavigationItem.returnsExchanges),
+                  _sidebarItem(context, Icons.broken_image_rounded,
+                      'Damaged Products', AdminNavigationItem.damagedProducts),
+                  _sidebarItem(context, Icons.support_agent_rounded,
+                      'Rare Requests', AdminNavigationItem.rareRequests),
+                  _sidebarItem(context, Icons.headset_mic_rounded,
+                      'Support Tickets', AdminNavigationItem.supportTickets),
+                  _sidebarItem(context, Icons.build_rounded, 'Products',
+                      AdminNavigationItem.products),
+                  _sidebarItem(context, Icons.inventory_2_rounded, 'Inventory',
+                      AdminNavigationItem.inventory),
+                  _sidebarItem(context, Icons.receipt_long_rounded, 'Purchases',
+                      AdminNavigationItem.purchases),
+                  _sidebarItem(context, Icons.warehouse_rounded, 'Suppliers',
+                      AdminNavigationItem.suppliers),
+                  _sidebarItem(context, Icons.people_alt_rounded, 'Customers',
+                      AdminNavigationItem.customers),
+                  _sidebarItem(context, Icons.payment_rounded, 'Billing / POS',
+                      AdminNavigationItem.billing),
+                  _sidebarItem(context, Icons.analytics_rounded, 'Reports',
+                      AdminNavigationItem.reports),
+                  _sidebarItem(context, Icons.badge_rounded, 'Staff & Roles',
+                      AdminNavigationItem.staffRoles),
+                  _sidebarItem(context, Icons.settings_rounded, 'Settings',
+                      AdminNavigationItem.settings),
+                ],
+              ),
             ),
-          ),
-          const Divider(color: Colors.white12),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.white70),
-            title: const Text('Exit Console',
-                style: TextStyle(color: Colors.white70, fontSize: 13)),
-            onTap: () {
-              goToAdminLogin();
-            },
-          ),
-          const SizedBox(height: 16),
-        ],
+            const Divider(color: Colors.white12),
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: const Icon(Icons.logout, color: Colors.white70),
+                title: const Text('Exit Console',
+                    style: TextStyle(color: Colors.white70, fontSize: 13)),
+                onTap: () {
+                  goToAdminLogin();
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -326,29 +341,32 @@ class AdminShell extends StatelessWidget with NavigationMixin {
     final isSelected = selectedItem == item;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AdminRadius.chip)),
-        selectedTileColor: AdminColors.primaryGreen.withValues(alpha: 0.15),
-        selected: isSelected,
-        leading: Icon(
-          icon,
-          color: isSelected ? AdminColors.sidebarActiveText : Colors.white70,
-          size: 20,
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: isSelected ? AdminColors.sidebarActiveText : Colors.white,
-            fontSize: 13,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      child: Material(
+        color: Colors.transparent,
+        child: ListTile(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AdminRadius.chip)),
+          selectedTileColor: AdminColors.primaryGreen.withValues(alpha: 0.15),
+          selected: isSelected,
+          leading: Icon(
+            icon,
+            color: isSelected ? AdminColors.sidebarActiveText : Colors.white70,
+            size: 20,
           ),
+          title: Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? AdminColors.sidebarActiveText : Colors.white,
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          onTap: () {
+            if (!isSelected) {
+              _navigate(context, item);
+            }
+          },
         ),
-        onTap: () {
-          if (!isSelected) {
-            _navigate(context, item);
-          }
-        },
       ),
     );
   }
@@ -367,8 +385,17 @@ class AdminShell extends StatelessWidget with NavigationMixin {
       case AdminNavigationItem.orders:
         goToAdminOrders();
         break;
+      case AdminNavigationItem.returnsExchanges:
+        goToReturnsExchanges();
+        break;
+      case AdminNavigationItem.damagedProducts:
+        goToAdminDamagedProducts();
+        break;
       case AdminNavigationItem.rareRequests:
         goToAdminRareRequests();
+        break;
+      case AdminNavigationItem.supportTickets:
+        goToAdminSupportTickets();
         break;
       case AdminNavigationItem.products:
         goToAdminProducts();

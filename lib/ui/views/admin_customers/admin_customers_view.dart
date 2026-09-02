@@ -140,7 +140,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
     );
   }
 
-  void _showCustomerForm(BuildContext context, AdminCustomersViewModel viewModel,
+  void _showCustomerForm(
+      BuildContext context, AdminCustomersViewModel viewModel,
       [AdminCustomerModel? customer]) {
     final nameController = TextEditingController(text: customer?.name ?? '');
     final emailController = TextEditingController(text: customer?.email ?? '');

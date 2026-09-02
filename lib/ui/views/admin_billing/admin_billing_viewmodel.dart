@@ -78,7 +78,11 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
   double _taxPercentage = 18.0;
   double get taxPercentage => _taxPercentage;
 
+  bool _isInitialized = false;
+
   void initialize() async {
+    if (_isInitialized) return;
+    _isInitialized = true;
     amountController.text = remainingAmount.toStringAsFixed(2);
     try {
       _allProducts = await _productService.getProducts();
@@ -451,9 +455,12 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
           };
         }).toList();
 
-        final dateStr = item['createdAt'] != null
-            ? item['createdAt'].toString().substring(0, 16).replaceAll('T', ' ')
-            : DateTime.now().toString().substring(0, 16);
+        final rawDate = item['createdAt']?.toString() ?? '';
+        final dateStr = rawDate.length >= 16
+            ? rawDate.substring(0, 16).replaceAll('T', ' ')
+            : (rawDate.isNotEmpty
+                ? rawDate
+                : DateTime.now().toString().substring(0, 16));
 
         return {
           'invoiceNumber': item['invoiceNumber'] ?? 'INV-UNKNOWN',

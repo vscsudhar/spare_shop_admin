@@ -94,8 +94,8 @@ class AdminSupplierDetailView
                             children: [
                               CircleAvatar(
                                 radius: 30,
-                                backgroundColor:
-                                    AdminColors.primaryGreen.withValues(alpha: 0.12),
+                                backgroundColor: AdminColors.primaryGreen
+                                    .withValues(alpha: 0.12),
                                 child: Icon(Icons.warehouse_rounded,
                                     color: AdminColors.primaryGreen, size: 30),
                               ),
@@ -120,13 +120,13 @@ class AdminSupplierDetailView
                                         ),
                                         const SizedBox(width: 8),
                                         if (s.suppliesEvParts)
-                                          AdminStatusChip(
+                                          const AdminStatusChip(
                                               label: 'EV SPARES',
                                               color: Colors.blue),
                                         if (s.suppliesPetrolParts)
                                           const SizedBox(width: 6),
                                         if (s.suppliesPetrolParts)
-                                          AdminStatusChip(
+                                          const AdminStatusChip(
                                               label: 'PETROL',
                                               color: Colors.amber),
                                       ],
@@ -242,7 +242,8 @@ class AdminSupplierDetailView
                             runSpacing: 8,
                             children: s.categories.map((c) {
                               return Chip(
-                                label: Text(c, style: const TextStyle(fontSize: 11)),
+                                label: Text(c,
+                                    style: const TextStyle(fontSize: 11)),
                                 backgroundColor: AdminColors.isDarkTheme
                                     ? Colors.white10
                                     : Colors.black12.withValues(alpha: 0.04),
@@ -287,9 +288,9 @@ class AdminSupplierDetailView
                             .toString()
                             .substring(0, 10))),
                         const DataCell(Text('₹35,000.00')),
-                        DataCell(AdminStatusChip(
+                        const DataCell(AdminStatusChip(
                             label: 'PAID', color: Colors.green)),
-                        DataCell(AdminStatusChip(
+                        const DataCell(AdminStatusChip(
                             label: 'DELIVERED', color: Colors.green)),
                       ]),
                       DataRow(cells: [
@@ -305,7 +306,7 @@ class AdminSupplierDetailView
                             color: outstandingVal > 0
                                 ? Colors.orange
                                 : Colors.green)),
-                        DataCell(AdminStatusChip(
+                        const DataCell(AdminStatusChip(
                             label: 'DELIVERED', color: Colors.green)),
                       ]),
                     ],

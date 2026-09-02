@@ -9,12 +9,20 @@ import 'package:stacked/stacked.dart';
 import 'admin_order_detail_viewmodel.dart';
 
 class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
-  final OrderModel order;
+  final OrderModel? order;
 
   const AdminOrderDetailView({
     Key? key,
-    required this.order,
+    this.order,
   }) : super(key: key);
+
+  @override
+  void onViewModelReady(AdminOrderDetailViewModel viewModel) {
+    if (order != null) {
+      viewModel.initialize(order!);
+    }
+    super.onViewModelReady(viewModel);
+  }
 
   @override
   Widget builder(
@@ -22,8 +30,38 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
     AdminOrderDetailViewModel viewModel,
     Widget? child,
   ) {
-    viewModel.initialize(order);
-
+    if (order == null) {
+      return AdminShell(
+        title: 'Order Detail',
+        selectedItem: AdminNavigationItem.orders,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 80.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.shopping_bag_outlined,
+                    size: 48, color: Colors.white54),
+                const SizedBox(height: 16),
+                const Text(
+                  'No order selected. Please select an order from the list.',
+                  style: TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => viewModel.goBack(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AdminColors.primaryGreen,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Back to Orders'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return AdminShell(
       title: 'Order Detail: ${viewModel.order.orderNumber}',
       selectedItem: AdminNavigationItem.orders,
@@ -146,11 +184,136 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                             borderRadius:
                                                 BorderRadius.circular(8)),
                                       ),
-                                      child: const Text('Mark Out for Delivery'),
+                                      child:
+                                          const Text('Mark Out for Delivery'),
                                     ),
                                   ],
                                 ],
                               ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // After-Sales / Returns & Exchanges Section
+                        AdminPanelCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                          Icons.published_with_changes_rounded,
+                                          size: 20,
+                                          color: AdminColors.primaryGreen),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'After-Sales / Returns & Exchanges',
+                                        style: AdminTextStyles.body.copyWith(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  ElevatedButton.icon(
+                                    onPressed: () => viewModel.initiateReturn(),
+                                    icon: const Icon(Icons.add, size: 16),
+                                    label: const Text('Initiate Return / RMA'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          AdminColors.primaryGreen,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 10),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              if (viewModel.linkedCases.isEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    'No return, damage, or exchange cases initiated for this order.',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                  ),
+                                )
+                              else
+                                ...viewModel.linkedCases.map((c) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 8),
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.04),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: Colors.white12),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(c.caseNumber,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: AdminColors
+                                                            .primaryGreen)),
+                                                const SizedBox(width: 8),
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue
+                                                        .withValues(
+                                                            alpha: 0.15),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
+                                                  ),
+                                                  child: Text(
+                                                    c.type.toUpperCase(),
+                                                    style: const TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors
+                                                            .lightBlueAccent,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${c.items.length} item(s) processed | Status: ${c.status.toUpperCase()}',
+                                              style: const TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.white70),
+                                            ),
+                                          ],
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              viewModel.openCaseDetail(c),
+                                          child: const Text('View Case'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
                             ],
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/order_service.dart';
@@ -27,17 +28,24 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
     }).toList();
   }
 
+  bool _initialized = false;
+
   @override
   Future<void> futureToRun() async {
+    if (_initialized) return;
+    _initialized = true;
     await loadOrders();
   }
 
   Future<void> loadOrders() async {
+    setBusy(true);
     try {
       _allOrders = await _orderService.adminGetAllOrders();
       rebuildUi();
     } catch (e) {
-      print('Error loading admin orders: $e');
+      debugPrint('Error loading admin orders: $e');
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -51,7 +59,8 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
     notifyListeners();
   }
 
-  void openOrderDetail(OrderModel order) {
-    goToAdminOrderDetail(order: order);
+  Future<void> openOrderDetail(OrderModel order) async {
+    await goToAdminOrderDetail(order: order);
+    await loadOrders();
   }
 }

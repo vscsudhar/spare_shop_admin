@@ -62,7 +62,8 @@ class SalesBarChart extends StatelessWidget {
                         height: 120 * pct,
                         margin: const EdgeInsets.symmetric(horizontal: 6),
                         decoration: BoxDecoration(
-                          color: AdminColors.primaryGreen.withValues(alpha: 0.85),
+                          color:
+                              AdminColors.primaryGreen.withValues(alpha: 0.85),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             topRight: Radius.circular(4),

@@ -14,8 +14,12 @@ class AdminCancelledRequestViewModel extends BaseViewModel
   RareProductRequestModel? _request;
   RareProductRequestModel? get request => _request;
 
+  bool _isInitialized = false;
+
   void initialize(String id) async {
+    if (_isInitialized && _requestId == id) return;
     _requestId = id;
+    _isInitialized = true;
     setBusy(true);
     try {
       _request = await _rareRequestService.adminGetRequestById(id);

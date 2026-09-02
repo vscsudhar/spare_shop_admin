@@ -17,6 +17,7 @@ class VehicleBrandModel {
 class VehicleModel {
   final String id;
   final String brand;
+  final String brandId;
   final String name;
   final String year;
   final VehicleType type;
@@ -24,12 +25,32 @@ class VehicleModel {
   const VehicleModel({
     required this.id,
     required this.brand,
+    this.brandId = '',
     required this.name,
     required this.year,
     required this.type,
   });
 
-  String get displayName => '$brand $name ($year)';
+  String get displayName => name.isNotEmpty ? name : '$brand ($year)';
+}
+
+class CompatibleVehicleEntry {
+  final String brandId;
+  final String brandName;
+  final String modelId;
+  final String modelName;
+
+  const CompatibleVehicleEntry({
+    required this.brandId,
+    required this.brandName,
+    required this.modelId,
+    required this.modelName,
+  });
+
+  Map<String, String> toJson() => {
+        'brand': brandId,
+        'model': modelId,
+      };
 }
 
 class CategoryModel {
@@ -61,6 +82,9 @@ class ProductModel {
   final double taxPercentage;
   final String vehicleType; // 'EV', 'Petrol', 'Universal'
   final String? locationBin;
+  final String fitType; // 'vehicle_specific' or 'universal'
+  final bool stockManaged;
+  final List<CompatibleVehicleEntry> compatibleVehicles;
 
   const ProductModel({
     required this.id,
@@ -79,7 +103,27 @@ class ProductModel {
     this.taxPercentage = 18.0,
     this.vehicleType = 'Universal',
     this.locationBin,
+    this.fitType = 'vehicle_specific',
+    this.stockManaged = true,
+    this.compatibleVehicles = const [],
   });
+
+  String get deliveryText {
+    if (stockManaged) {
+      if (stockCount > 0) {
+        final now = DateTime.now();
+        if (now.hour < 15) {
+          return 'Same Day Delivery';
+        } else {
+          return 'Next Day Delivery';
+        }
+      } else {
+        return 'Out of Stock';
+      }
+    } else {
+      return 'Available on Order (Delivery in 2 Days)';
+    }
+  }
 
   ProductModel copyWith({
     String? id,
@@ -98,6 +142,9 @@ class ProductModel {
     double? taxPercentage,
     String? vehicleType,
     String? locationBin,
+    String? fitType,
+    bool? stockManaged,
+    List<CompatibleVehicleEntry>? compatibleVehicles,
   }) {
     return ProductModel(
       id: id ?? this.id,
@@ -116,6 +163,9 @@ class ProductModel {
       taxPercentage: taxPercentage ?? this.taxPercentage,
       vehicleType: vehicleType ?? this.vehicleType,
       locationBin: locationBin ?? this.locationBin,
+      fitType: fitType ?? this.fitType,
+      stockManaged: stockManaged ?? this.stockManaged,
+      compatibleVehicles: compatibleVehicles ?? this.compatibleVehicles,
     );
   }
 }

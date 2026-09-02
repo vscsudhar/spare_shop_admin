@@ -1,5 +1,6 @@
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'api_client.dart';
 import 'api_endpoints.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
@@ -11,12 +12,27 @@ class ProductService {
   ProductService({ApiClient? apiClient})
       : _apiClient = apiClient ?? locator<ApiClient>();
 
-  Future<String> uploadImage(String filePath) async {
-    final fileName = filePath.split('/').last;
+  Future<String> uploadImage(dynamic fileOrPath, {String? fileName}) async {
+    List<int> bytes;
+    String name = fileName ?? 'image.jpg';
+
+    if (fileOrPath is XFile) {
+      bytes = await fileOrPath.readAsBytes();
+      name = fileOrPath.name;
+    } else if (fileOrPath is List<int>) {
+      bytes = fileOrPath;
+    } else if (fileOrPath is String) {
+      final xfile = XFile(fileOrPath);
+      bytes = await xfile.readAsBytes();
+      name = fileOrPath.split(RegExp(r'[/\\]')).last;
+    } else {
+      bytes = [];
+    }
+
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(
-        filePath,
-        filename: fileName,
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: name.isNotEmpty ? name : 'image.jpg',
       ),
     });
     final response = await _apiClient.post(
@@ -67,8 +83,15 @@ class ProductService {
         .toList();
   }
 
-  Future<List<VehicleModel>> getVehicleModels() async {
-    final response = await _apiClient.get(ApiEndpoints.vehicleModels);
+  Future<List<VehicleModel>> getVehicleModels({String? brandId}) async {
+    final Map<String, dynamic> query = {};
+    if (brandId != null && brandId.isNotEmpty) {
+      query['brandId'] = brandId;
+    }
+    final response = await _apiClient.get(
+      ApiEndpoints.vehicleModels,
+      queryParameters: query.isNotEmpty ? query : null,
+    );
     final List<dynamic> list = response.data['data'] ?? [];
     return list.map((item) => VehicleModelExtension.fromJson(item)).toList();
   }

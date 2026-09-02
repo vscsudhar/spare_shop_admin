@@ -23,16 +23,20 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
   List<RareChatMessageModel> _chatMessages = [];
   List<RareChatMessageModel> get chatMessages => _chatMessages;
 
+  bool _isInitialized = false;
+
   void initialize(String id) async {
+    if (_isInitialized && _requestId == id) return;
     _requestId = id;
+    _isInitialized = true;
     setBusy(true);
 
     try {
       _request = await _rareRequestService.adminGetRequestById(id);
       _chatMessages = await _rareRequestService.getChatMessages(id);
       rebuildUi();
-    } catch (e) {
-      print('Error loading admin chat init: $e');
+    } catch (e, st) {
+      debugPrint('Error loading admin chat init: $e\n$st');
     } finally {
       setBusy(false);
     }
@@ -41,20 +45,25 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     _socketService.connect();
     _socketService.joinRequestRoom(id);
 
+    _socketService.off('rare_chat:message');
+    _socketService.off('rare_chat:read');
+    _socketService.off('rare_request:updated');
+
     // Emit read receipt for existing messages
     _socketService.emit('rare_chat:read', {'requestId': id});
 
     _socketService.on('rare_chat:message', (data) {
+      if (disposed) return;
       if (data != null) {
         try {
           final newMsg = RareChatMessageModelExtension.fromJson(
               Map<String, dynamic>.from(data));
           if (!_chatMessages.any((m) => m.id == newMsg.id)) {
             _chatMessages.add(newMsg);
-            
+
             // Immediately mark it as read since the chat view is active
             _socketService.emit('rare_chat:read', {'requestId': _requestId});
-            
+
             rebuildUi();
           }
         } catch (_) {}
@@ -62,6 +71,7 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     });
 
     _socketService.on('rare_chat:read', (data) {
+      if (disposed) return;
       if (data != null) {
         try {
           final map = Map<String, dynamic>.from(data);
@@ -81,6 +91,7 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     });
 
     _socketService.on('rare_chat:received', (data) {
+      if (disposed) return;
       if (data != null) {
         try {
           final map = Map<String, dynamic>.from(data);
@@ -101,6 +112,7 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     });
 
     _socketService.on('rare_request:updated', (data) {
+      if (disposed) return;
       if (data != null) {
         try {
           _request = RareProductRequestModelExtension.fromJson(
@@ -132,7 +144,7 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     try {
       final newMsg = await _rareRequestService.adminSendChatMessage(
           _requestId, text.trim());
-      
+
       final index = _chatMessages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
         _chatMessages[index] = newMsg;
@@ -175,18 +187,25 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     try {
       await _rareRequestService.adminConvertToOrder(_requestId);
       _request = await _rareRequestService.adminGetRequestById(_requestId);
+      _chatMessages = await _rareRequestService.getChatMessages(_requestId);
       rebuildUi();
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('Error converting request to order: $e\n$st');
     } finally {
       setBusy(false);
     }
   }
 
-  void openQuotationBuilder() {
-    navigationService.navigateTo(
+  Future<void> openQuotationBuilder() async {
+    await navigationService.navigateTo(
       Routes.adminCreateQuotationView,
       arguments: AdminCreateQuotationViewArguments(requestId: _requestId),
     );
+    try {
+      _request = await _rareRequestService.adminGetRequestById(_requestId);
+      _chatMessages = await _rareRequestService.getChatMessages(_requestId);
+      rebuildUi();
+    } catch (_) {}
   }
 
   Future<void> markProductNotFound() async {

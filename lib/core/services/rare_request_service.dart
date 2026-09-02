@@ -94,10 +94,41 @@ class RareRequestService {
 
   // --- Admin Sourcing ---
 
-  Future<List<RareProductRequestModel>> adminGetAllRequests() async {
-    final response = await _apiClient.get(ApiEndpoints.adminRareRequests);
-    final List<dynamic> list = response.data['data'] ?? [];
+  Future<List<RareProductRequestModel>> adminGetAllRequests({
+    String? status,
+    String? search,
+  }) async {
+    final Map<String, dynamic> query = {};
+    if (status != null && status.isNotEmpty && status.toLowerCase() != 'all') {
+      query['status'] = status.toLowerCase();
+    }
+    if (search != null && search.isNotEmpty) {
+      query['search'] = search;
+    }
+
+    final response = await _apiClient.get(
+      ApiEndpoints.adminRareRequests,
+      queryParameters: query.isNotEmpty ? query : null,
+    );
+
+    final raw = response.data;
+    final List<dynamic> list;
+    if (raw is Map<String, dynamic>) {
+      if (raw['data'] is List) {
+        list = raw['data'] as List<dynamic>;
+      } else if (raw['data'] is Map && raw['data']['items'] is List) {
+        list = raw['data']['items'] as List<dynamic>;
+      } else {
+        list = [];
+      }
+    } else if (raw is List) {
+      list = raw;
+    } else {
+      list = [];
+    }
+
     return list
+        .whereType<Map<String, dynamic>>()
         .map((item) => RareProductRequestModelExtension.fromJson(item))
         .toList();
   }
@@ -123,16 +154,21 @@ class RareRequestService {
     final response = await _apiClient.post(
       '${ApiEndpoints.adminRareRequests}/$id/quotations',
       data: {
+        'expiresAt': expiryDate.toUtc().toIso8601String(),
+        'deliveryFee': (shippingCharge * 100).toInt(),
+        'shippingCharge': (shippingCharge * 100).toInt(),
+        'discount': (discount * 100).toInt(),
+        'deliveryTimeline': deliveryTimeline,
+        'adminNotes': adminNotes ?? '',
         'items': [
           {
+            'name': partName,
             'partName': partName,
+            'partNumber': '',
+            'quantity': 1,
+            'unitPrice': (price * 100).toInt(),
             'price': (price * 100).toInt(),
-            'shippingCharge': (shippingCharge * 100).toInt(),
-            'gst': (gst * 100).toInt(),
-            'discount': (discount * 100).toInt(),
-            'deliveryTimeline': deliveryTimeline,
-            'expiryDate': expiryDate.toIso8601String(),
-            'adminNotes': adminNotes ?? '',
+            'taxPercentage': 18,
           }
         ]
       },
@@ -156,16 +192,21 @@ class RareRequestService {
     final response = await _apiClient.patch(
       '${ApiEndpoints.adminRareRequests}/$id/quotations/$quotationId',
       data: {
+        'expiresAt': expiryDate.toUtc().toIso8601String(),
+        'deliveryFee': (shippingCharge * 100).toInt(),
+        'shippingCharge': (shippingCharge * 100).toInt(),
+        'discount': (discount * 100).toInt(),
+        'deliveryTimeline': deliveryTimeline,
+        'adminNotes': adminNotes ?? '',
         'items': [
           {
+            'name': partName,
             'partName': partName,
+            'partNumber': '',
+            'quantity': 1,
+            'unitPrice': (price * 100).toInt(),
             'price': (price * 100).toInt(),
-            'shippingCharge': (shippingCharge * 100).toInt(),
-            'gst': (gst * 100).toInt(),
-            'discount': (discount * 100).toInt(),
-            'deliveryTimeline': deliveryTimeline,
-            'expiryDate': expiryDate.toIso8601String(),
-            'adminNotes': adminNotes ?? '',
+            'taxPercentage': 18,
           }
         ]
       },

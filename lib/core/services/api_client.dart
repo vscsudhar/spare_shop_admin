@@ -18,13 +18,23 @@ class ApiClient {
       baseUrl: ApiEndpoints.baseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
+      headers: {
+        'Accept': 'application/json',
+      },
     ));
 
     dio.interceptors.add(QueuedInterceptorsWrapper(
       onRequest: (options, handler) async {
+        final isAuthEndpoint =
+            options.path.startsWith(ApiEndpoints.adminLogin) ||
+                options.path.startsWith(ApiEndpoints.customerLogin) ||
+                options.path.startsWith(ApiEndpoints.customerRegister);
+
         final token = await _tokenService.getAccessToken();
-        if (token != null && token.isNotEmpty) {
+        if (token != null && token.isNotEmpty && !isAuthEndpoint) {
           options.headers['Authorization'] = 'Bearer $token';
+        } else {
+          options.headers.remove('Authorization');
         }
         return handler.next(options);
       },
@@ -164,11 +174,16 @@ class ApiClient {
     if (e.response != null) {
       final data = e.response!.data;
       if (data is Map<String, dynamic>) {
+        String? errorCode;
+        final errors = data['errors'];
+        if (errors is List && errors.isNotEmpty && errors[0] is Map) {
+          errorCode = errors[0]['code']?.toString();
+        }
         return ApiException(
           message: data['message'] ?? 'An error occurred.',
           statusCode: e.response!.statusCode,
-          code: data['errors']?[0]?['code'],
-          errors: data['errors'],
+          code: errorCode,
+          errors: errors is List ? errors : null,
         );
       }
       return ApiException(

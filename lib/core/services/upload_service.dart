@@ -14,8 +14,9 @@ class UploadService {
 
     final formData = FormData();
     for (final file in files) {
-      final multipartFile = await MultipartFile.fromFile(
-        file.path,
+      final bytes = await file.readAsBytes();
+      final multipartFile = MultipartFile.fromBytes(
+        bytes,
         filename: file.name,
       );
       formData.files.add(MapEntry('images', multipartFile));
@@ -29,10 +30,13 @@ class UploadService {
 
   Future<String> uploadLogo(dynamic file) async {
     final formData = FormData();
-    final multipartFile = await MultipartFile.fromFile(
-      file.path,
-      filename: file.name,
-    );
+    MultipartFile multipartFile;
+    if (file is XFile) {
+      final bytes = await file.readAsBytes();
+      multipartFile = MultipartFile.fromBytes(bytes, filename: file.name);
+    } else {
+      multipartFile = MultipartFile.fromBytes([], filename: 'logo.png');
+    }
     formData.files.add(MapEntry('logo', multipartFile));
 
     final response = await _apiClient.post('/settings/logo', data: formData);

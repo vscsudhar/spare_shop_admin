@@ -95,7 +95,8 @@ class AdminRadius {
 
 class AdminShadows {
   static BoxShadow get card => BoxShadow(
-        color: Colors.black.withValues(alpha: AdminColors.isDarkTheme ? 0.2 : 0.04),
+        color: Colors.black
+            .withValues(alpha: AdminColors.isDarkTheme ? 0.2 : 0.04),
         blurRadius: 10,
         offset: const Offset(0, 4),
       );

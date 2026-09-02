@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/admin_dashboard_service.dart';
@@ -76,7 +77,7 @@ class AdminDashboardViewModel extends FutureViewModel<void>
 
       rebuildUi();
     } catch (e) {
-      print('Error loading dashboard data: $e');
+      debugPrint('Error loading dashboard data: $e');
     }
   }
 

@@ -16,13 +16,17 @@ class AdminCreateQuotationView
   }) : super(key: key);
 
   @override
+  void onViewModelReady(AdminCreateQuotationViewModel viewModel) {
+    viewModel.initialize(requestId);
+    super.onViewModelReady(viewModel);
+  }
+
+  @override
   Widget builder(
     BuildContext context,
     AdminCreateQuotationViewModel viewModel,
     Widget? child,
   ) {
-    viewModel.initialize(requestId);
-
     return AdminShell(
       title: 'Quotation Builder: #${viewModel.requestId}',
       selectedItem: AdminNavigationItem.rareRequests,

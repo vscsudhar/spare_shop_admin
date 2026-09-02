@@ -81,8 +81,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
               return AdminTableRow(
                 cells: [
                   Text(po.poNumber,
-                      style:
-                          const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 13)),
                   Text(po.supplier,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   Text('${po.itemCount} spares'),

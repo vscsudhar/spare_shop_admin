@@ -42,6 +42,14 @@ import 'package:spare_shop_admin/core/services/rare_request_service.dart';
 import 'package:spare_shop_admin/core/services/admin_dashboard_service.dart';
 import 'package:spare_shop_admin/core/services/admin_supplier_service.dart';
 import 'package:spare_shop_admin/core/services/admin_purchase_service.dart';
+import 'package:spare_shop_admin/core/services/admin_support_ticket_service.dart';
+import 'package:spare_shop_admin/ui/views/admin_support_tickets/admin_support_tickets_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_ticket_chat/admin_ticket_chat_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_returns/admin_returns_list_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_returns/admin_new_return_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_returns/admin_return_detail_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_damaged_products/admin_damaged_products_view.dart';
+import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -68,6 +76,12 @@ import 'package:spare_shop_admin/core/services/admin_purchase_service.dart';
     MaterialRoute(page: AdminSupplierDetailView),
     MaterialRoute(page: AdminSupplierFormView),
     MaterialRoute(page: AdminSettingsView),
+    MaterialRoute(page: AdminSupportTicketsView),
+    MaterialRoute(page: AdminTicketChatView),
+    MaterialRoute(page: AdminReturnsListView),
+    MaterialRoute(page: AdminNewReturnView),
+    MaterialRoute(page: AdminReturnDetailView),
+    MaterialRoute(page: AdminDamagedProductsView),
 // @stacked-route
   ],
   dependencies: [
@@ -91,6 +105,8 @@ import 'package:spare_shop_admin/core/services/admin_purchase_service.dart';
     LazySingleton(classType: AdminDashboardService),
     LazySingleton(classType: AdminSupplierService),
     LazySingleton(classType: AdminPurchaseService),
+    LazySingleton(classType: AdminSupportTicketService),
+    LazySingleton(classType: ReturnExchangeService),
     // @stacked-service
   ],
   bottomsheets: [

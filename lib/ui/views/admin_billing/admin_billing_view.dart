@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
-import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_common_widgets.dart';
 import 'package:stacked/stacked.dart';
@@ -12,12 +11,17 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
   const AdminBillingView({Key? key}) : super(key: key);
 
   @override
+  void onViewModelReady(AdminBillingViewModel viewModel) {
+    viewModel.initialize();
+    super.onViewModelReady(viewModel);
+  }
+
+  @override
   Widget builder(
     BuildContext context,
     AdminBillingViewModel viewModel,
     Widget? child,
   ) {
-    viewModel.initialize();
     final size = MediaQuery.of(context).size;
     final isWide = size.width >= 1000;
 
@@ -67,7 +71,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                             onChanged: viewModel.setSearchQuery,
                             decoration: InputDecoration(
                               hintText: 'Enter part name or SKU barcode...',
-                              prefixIcon: const Icon(Icons.qr_code_scanner_rounded),
+                              prefixIcon:
+                                  const Icon(Icons.qr_code_scanner_rounded),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8)),
                             ),
@@ -138,7 +143,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: viewModel.invoiceItems.length,
-                              separatorBuilder: (context, index) => const Divider(),
+                              separatorBuilder: (context, index) =>
+                                  const Divider(),
                               itemBuilder: (context, index) {
                                 final item = viewModel.invoiceItems[index];
                                 return ListTile(
@@ -152,7 +158,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        icon: const Icon(Icons.remove_circle_outline,
+                                        icon: const Icon(
+                                            Icons.remove_circle_outline,
                                             color: Colors.grey),
                                         onPressed: () =>
                                             viewModel.updateQuantity(
@@ -306,7 +313,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: viewModel.payments.length,
-                              separatorBuilder: (context, index) => const Divider(),
+                              separatorBuilder: (context, index) =>
+                                  const Divider(),
                               itemBuilder: (context, index) {
                                 final p = viewModel.payments[index];
                                 final isUpi = p.method == PaymentMethod.upi;
@@ -348,7 +356,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                               fontWeight: FontWeight.bold))
                                       : (p.note != null
                                           ? Text(p.note!,
-                                              style: const TextStyle(fontSize: 11))
+                                              style:
+                                                  const TextStyle(fontSize: 11))
                                           : null),
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -813,8 +822,9 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
     showDialog(
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
+        return ListenableBuilder(
+          listenable: viewModel,
+          builder: (context, _) {
             return Dialog(
               child: Container(
                 constraints:
@@ -852,8 +862,7 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                       DataColumn(label: Text('Actions')),
                                     ],
                                     rows: viewModel.pastInvoices.map((inv) {
-                                      final double total =
-                                          inv['grandTotal'] as double;
+                                      final double total = (inv['grandTotal'] as num?)?.toDouble() ?? 0.0;
                                       return DataRow(
                                         cells: [
                                           DataCell(Text(inv['invoiceNumber'])),

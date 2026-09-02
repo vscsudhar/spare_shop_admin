@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
@@ -19,8 +20,13 @@ class AdminProductsViewModel extends FutureViewModel<void>
   String get searchQuery => _searchQuery;
   String get categoryFilter => _categoryFilter;
 
-  String? _pickedImagePath;
-  String? get pickedImagePath => _pickedImagePath;
+  XFile? _pickedImageFile;
+  XFile? get pickedImageFile => _pickedImageFile;
+
+  Uint8List? _pickedImageBytes;
+  Uint8List? get pickedImageBytes => _pickedImageBytes;
+
+  String? get pickedImagePath => _pickedImageFile?.path;
 
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -31,7 +37,8 @@ class AdminProductsViewModel extends FutureViewModel<void>
         imageQuality: 80,
       );
       if (image != null) {
-        _pickedImagePath = image.path;
+        _pickedImageFile = image;
+        _pickedImageBytes = await image.readAsBytes();
         notifyListeners();
       }
     } catch (e) {
@@ -48,20 +55,38 @@ class AdminProductsViewModel extends FutureViewModel<void>
   }
 
   void clearPickedImage() {
-    _pickedImagePath = null;
+    _pickedImageFile = null;
+    _pickedImageBytes = null;
     notifyListeners();
   }
 
   void resetImageState() {
-    _pickedImagePath = null;
+    _pickedImageFile = null;
+    _pickedImageBytes = null;
     _existingImageCleared = false;
     notifyListeners();
   }
 
   List<ProductModel> _allProducts = [];
   List<CategoryModel> _categories = [];
+  List<VehicleBrandModel> _brands = [];
+  final Map<String, List<VehicleModel>> _modelsByBrand = {};
 
   List<CategoryModel> get categories => _categories;
+  List<VehicleBrandModel> get brands => _brands;
+  Map<String, List<VehicleModel>> get modelsByBrand => _modelsByBrand;
+
+  bool _loadingBrands = false;
+  bool get loadingBrands => _loadingBrands;
+  String? _brandLoadError;
+  String? get brandLoadError => _brandLoadError;
+
+  final Map<String, bool> _loadingModelsByBrand = {};
+  bool isLoadingModelsForBrand(String brandId) =>
+      _loadingModelsByBrand[brandId] ?? false;
+
+  final Map<String, String?> _modelLoadErrors = {};
+  String? getModelLoadError(String brandId) => _modelLoadErrors[brandId];
 
   List<ProductModel> get filteredProducts {
     return _allProducts.where((product) {
@@ -84,6 +109,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
   Future<void> futureToRun() async {
     await loadProducts();
     await loadCategories();
+    await loadBrands();
   }
 
   Future<void> loadProducts() async {
@@ -91,7 +117,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
       _allProducts = await _productService.getProducts();
       rebuildUi();
     } catch (e) {
-      print('Error loading admin products: $e');
+      debugPrint('Error loading admin products: $e');
     }
   }
 
@@ -100,7 +126,50 @@ class AdminProductsViewModel extends FutureViewModel<void>
       _categories = await _productService.getCategories();
       rebuildUi();
     } catch (e) {
-      print('Error loading admin categories: $e');
+      debugPrint('Error loading admin categories: $e');
+    }
+  }
+
+  Future<void> loadBrands() async {
+    if (_brands.isNotEmpty) return;
+    _loadingBrands = true;
+    _brandLoadError = null;
+    notifyListeners();
+    try {
+      _brands = await _productService.getVehicleBrands();
+      _brandLoadError = null;
+    } catch (e) {
+      _brandLoadError = 'Failed to load brands. Tap to retry.';
+      debugPrint('Error loading vehicle brands: $e');
+    } finally {
+      _loadingBrands = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<VehicleModel>> loadModelsForBrand(String brandId) async {
+    if (brandId.isEmpty) return [];
+    if (_modelsByBrand.containsKey(brandId) &&
+        _modelsByBrand[brandId]!.isNotEmpty) {
+      return _modelsByBrand[brandId]!;
+    }
+
+    _loadingModelsByBrand[brandId] = true;
+    _modelLoadErrors[brandId] = null;
+    notifyListeners();
+
+    try {
+      final list = await _productService.getVehicleModels(brandId: brandId);
+      _modelsByBrand[brandId] = list;
+      _modelLoadErrors[brandId] = null;
+      return list;
+    } catch (e) {
+      _modelLoadErrors[brandId] = 'Failed to load models. Tap to retry.';
+      debugPrint('Error loading models for brand $brandId: $e');
+      return [];
+    } finally {
+      _loadingModelsByBrand[brandId] = false;
+      notifyListeners();
     }
   }
 
@@ -118,25 +187,32 @@ class AdminProductsViewModel extends FutureViewModel<void>
     required String productId,
     required String name,
     required double sellingPrice,
+    required double mrp,
     required double purchasePrice,
     required double taxPercentage,
     required int stockCount,
+    required String fitType,
+    required bool stockManaged,
+    required List<Map<String, String>> compatibleVehicles,
     String? existingImageUrl,
   }) async {
     setBusy(true);
     try {
       String? imageUrl = _existingImageCleared ? null : existingImageUrl;
-      if (_pickedImagePath != null) {
-        imageUrl = await _productService.uploadImage(_pickedImagePath!);
+      if (_pickedImageFile != null) {
+        imageUrl = await _productService.uploadImage(_pickedImageFile!);
       }
 
       final payload = {
         'name': name,
         'sellingPrice': (sellingPrice * 100).toInt(),
-        'mrp': (sellingPrice * 1.2 * 100).toInt(),
+        'mrp': (mrp * 100).toInt(),
         'purchasePrice': (purchasePrice * 100).toInt(),
         'taxPercentage': taxPercentage,
         'currentStock': stockCount,
+        'stockManaged': stockManaged,
+        'fitType': fitType,
+        'compatibleVehicles': fitType == 'universal' ? [] : compatibleVehicles,
       };
 
       if (imageUrl != null && imageUrl.isNotEmpty) {
@@ -149,7 +225,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
       clearPickedImage();
       await loadProducts();
     } catch (e) {
-      print('Error updating product details: $e');
+      debugPrint('Error updating product details: $e');
       String errMsg = 'Failed to update product details.';
       try {
         if (e is DioException && e.response?.data != null) {
@@ -168,59 +244,50 @@ class AdminProductsViewModel extends FutureViewModel<void>
     }
   }
 
-  Future<void> addMockProduct({
+  Future<void> addProduct({
     required String name,
     required double price,
+    required double mrp,
     required String categoryId,
     required String partNumber,
-    required String fitmentBadge,
     required double purchasePrice,
     required double taxPercentage,
     required int stockCount,
+    required String fitType,
+    required bool stockManaged,
+    required List<Map<String, String>> compatibleVehicles,
   }) async {
     setBusy(true);
     try {
       String? imageUrl;
-      if (_pickedImagePath != null) {
-        imageUrl = await _productService.uploadImage(_pickedImagePath!);
+      if (_pickedImageFile != null) {
+        imageUrl = await _productService.uploadImage(_pickedImageFile!);
       }
 
       String realCategoryId = categoryId;
       if (!RegExp(r'^[0-9a-fA-F]{24}$').hasMatch(categoryId)) {
-        // Map mock category IDs to real seeded category ObjectIds
-        String targetSlug = 'electrical-spares';
-        if (categoryId == 'cat_01') targetSlug = 'electrical-spares';
-        if (categoryId == 'cat_02') targetSlug = 'electrical-spares';
-        if (categoryId == 'cat_03') targetSlug = 'engine-spares';
-        if (categoryId == 'cat_04') targetSlug = 'brakes';
-
-        final matchingCat = _categories.firstWhere(
-          (c) => c.name.toLowerCase().replaceAll(' ', '-') == targetSlug,
-          orElse: () => _categories.isNotEmpty
-              ? _categories.first
-              : const CategoryModel(
-                  id: '662888f8d8f8d8f8d8f8d8f8',
-                  name: 'Default',
-                  icon: Icons.category,
-                ),
-        );
+        final matchingCat = _categories.isNotEmpty
+            ? _categories.first
+            : const CategoryModel(
+                id: '662888f8d8f8d8f8d8f8d8f8',
+                name: 'Default',
+                icon: Icons.category,
+              );
         realCategoryId = matchingCat.id;
       }
 
       final payload = {
         'sku': partNumber,
         'name': name,
-        'brand': fitmentBadge.toUpperCase().contains('OLA')
-            ? 'Ola'
-            : (fitmentBadge.toUpperCase().contains('ATHER')
-                ? 'Ather'
-                : 'Honda'),
         'category': realCategoryId,
         'sellingPrice': (price * 100).toInt(),
-        'mrp': (price * 1.2 * 100).toInt(),
+        'mrp': (mrp * 100).toInt(),
         'purchasePrice': (purchasePrice * 100).toInt(),
         'taxPercentage': taxPercentage,
         'currentStock': stockCount,
+        'stockManaged': stockManaged,
+        'fitType': fitType,
+        'compatibleVehicles': fitType == 'universal' ? [] : compatibleVehicles,
         'description': 'Genuine replacement spare part - $name.',
       };
 
@@ -234,7 +301,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
       clearPickedImage();
       await loadProducts();
     } catch (e) {
-      print('Error creating product: $e');
+      debugPrint('Error creating product: $e');
       String errMsg = 'Failed to create product.';
       try {
         if (e is DioException && e.response?.data != null) {

@@ -23,8 +23,12 @@ class AdminCreateQuotationViewModel extends BaseViewModel with NavigationMixin {
   double _gst = 0.0;
   double get gst => _gst;
 
+  bool _isInitialized = false;
+
   void initialize(String id) async {
+    if (_isInitialized && _requestId == id) return;
     _requestId = id;
+    _isInitialized = true;
     setBusy(true);
     try {
       final req = await _rareRequestService.adminGetRequestById(_requestId);

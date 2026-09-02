@@ -34,6 +34,28 @@ mixin NavigationMixin {
     );
   }
 
+  Future<dynamic>? goToReturnsExchanges() {
+    return navigationService.navigateTo(Routes.adminReturnsListView);
+  }
+
+  Future<dynamic>? goToNewReturn({String? prefillBill}) {
+    return navigationService.navigateTo(
+      Routes.adminNewReturnView,
+      arguments: AdminNewReturnViewArguments(prefillBill: prefillBill),
+    );
+  }
+
+  Future<dynamic>? goToReturnDetail({required String caseId}) {
+    return navigationService.navigateTo(
+      Routes.adminReturnDetailView,
+      arguments: AdminReturnDetailViewArguments(caseId: caseId),
+    );
+  }
+
+  Future<dynamic>? goToAdminDamagedProducts() {
+    return navigationService.navigateTo(Routes.adminDamagedProductsView);
+  }
+
   Future<dynamic>? goToAdminProducts() {
     return navigationService.navigateTo(Routes.adminProductsView);
   }
@@ -60,6 +82,17 @@ mixin NavigationMixin {
 
   Future<dynamic>? goToAdminStaffRoles() {
     return navigationService.navigateTo(Routes.adminStaffRolesView);
+  }
+
+  Future<dynamic>? goToAdminSupportTickets() {
+    return navigationService.navigateTo(Routes.adminSupportTicketsView);
+  }
+
+  Future<dynamic>? goToAdminTicketChat({required String ticketId}) {
+    return navigationService.navigateTo(
+      Routes.adminTicketChatView,
+      arguments: AdminTicketChatViewArguments(ticketId: ticketId),
+    );
   }
 
   Future<dynamic>? goToAdminRareRequests() {

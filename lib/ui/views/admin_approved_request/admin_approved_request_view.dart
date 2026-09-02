@@ -18,12 +18,17 @@ class AdminApprovedRequestView
   }) : super(key: key);
 
   @override
+  void onViewModelReady(AdminApprovedRequestViewModel viewModel) {
+    viewModel.initialize(requestId);
+    super.onViewModelReady(viewModel);
+  }
+
+  @override
   Widget builder(
     BuildContext context,
     AdminApprovedRequestViewModel viewModel,
     Widget? child,
   ) {
-    viewModel.initialize(requestId);
     final req = viewModel.request;
 
     if (req == null) {
@@ -64,12 +69,13 @@ class AdminApprovedRequestView
                         Container(
                           padding: const EdgeInsets.all(AdminSpacing.m),
                           decoration: BoxDecoration(
-                            color: AdminColors.primaryGreen.withValues(alpha: 0.12),
+                            color: AdminColors.primaryGreen
+                                .withValues(alpha: 0.12),
                             borderRadius:
                                 BorderRadius.circular(AdminRadius.card),
                             border: Border.all(
-                                color:
-                                    AdminColors.primaryGreen.withValues(alpha: 0.5)),
+                                color: AdminColors.primaryGreen
+                                    .withValues(alpha: 0.5)),
                           ),
                           child: Row(
                             children: [

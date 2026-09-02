@@ -7,6 +7,7 @@ class AdminMetricCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String? subtitle;
+  final VoidCallback? onTap;
 
   const AdminMetricCard({
     super.key,
@@ -15,52 +16,62 @@ class AdminMetricCard extends StatelessWidget {
     required this.icon,
     required this.iconColor,
     this.subtitle,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AdminSpacing.m),
       decoration: BoxDecoration(
         color: AdminColors.panelBackground,
         borderRadius: BorderRadius.circular(AdminRadius.card),
         border: Border.all(color: AdminColors.border),
         boxShadow: [AdminShadows.card],
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AdminSpacing.s + 4),
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(width: AdminSpacing.m),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AdminRadius.card),
+          child: Padding(
+            padding: const EdgeInsets.all(AdminSpacing.m),
+            child: Row(
               children: [
-                Text(title, style: AdminTextStyles.cardTitle),
-                const SizedBox(height: 4),
-                Text(value, style: AdminTextStyles.cardValue),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle!,
-                    style: AdminTextStyles.bodySecondary.copyWith(
-                      color: subtitle!.contains('+')
-                          ? AdminColors.success
-                          : AdminColors.textLight,
-                    ),
+                Container(
+                  padding: const EdgeInsets.all(AdminSpacing.s + 4),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
                   ),
-                ]
+                  child: Icon(icon, color: iconColor, size: 24),
+                ),
+                const SizedBox(width: AdminSpacing.m),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(title, style: AdminTextStyles.cardTitle),
+                      const SizedBox(height: 4),
+                      Text(value, style: AdminTextStyles.cardValue),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle!,
+                          style: AdminTextStyles.bodySecondary.copyWith(
+                            color: subtitle!.contains('+')
+                                ? AdminColors.success
+                                : AdminColors.textLight,
+                          ),
+                        ),
+                      ]
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }

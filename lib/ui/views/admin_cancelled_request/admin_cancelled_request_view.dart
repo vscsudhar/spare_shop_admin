@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
-import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_common_widgets.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_rare_request_widgets.dart';
@@ -18,12 +17,17 @@ class AdminCancelledRequestView
   }) : super(key: key);
 
   @override
+  void onViewModelReady(AdminCancelledRequestViewModel viewModel) {
+    viewModel.initialize(requestId);
+    super.onViewModelReady(viewModel);
+  }
+
+  @override
   Widget builder(
     BuildContext context,
     AdminCancelledRequestViewModel viewModel,
     Widget? child,
   ) {
-    viewModel.initialize(requestId);
     final req = viewModel.request;
 
     if (req == null) {
@@ -64,11 +68,13 @@ class AdminCancelledRequestView
                         Container(
                           padding: const EdgeInsets.all(AdminSpacing.m),
                           decoration: BoxDecoration(
-                            color: AdminColors.cancelled.withValues(alpha: 0.12),
+                            color:
+                                AdminColors.cancelled.withValues(alpha: 0.12),
                             borderRadius:
                                 BorderRadius.circular(AdminRadius.card),
                             border: Border.all(
-                                color: AdminColors.cancelled.withValues(alpha: 0.5)),
+                                color: AdminColors.cancelled
+                                    .withValues(alpha: 0.5)),
                           ),
                           child: Row(
                             children: [

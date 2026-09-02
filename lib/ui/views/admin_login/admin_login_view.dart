@@ -27,7 +27,10 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AdminColors.sidebarBackground, const Color(0xFF0F1626)],
+                    colors: [
+                      AdminColors.sidebarBackground,
+                      const Color(0xFF0F1626)
+                    ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -43,7 +46,8 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AdminColors.primaryGreen.withValues(alpha: 0.15),
+                              color: AdminColors.primaryGreen
+                                  .withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -190,11 +194,12 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
-                              color: AdminColors.cancelled.withValues(alpha: 0.12),
+                              color:
+                                  AdminColors.cancelled.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                  color:
-                                      AdminColors.cancelled.withValues(alpha: 0.5)),
+                                  color: AdminColors.cancelled
+                                      .withValues(alpha: 0.5)),
                             ),
                             child: Row(
                               children: [

@@ -103,6 +103,7 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                     icon: Icons.payments_outlined,
                     iconColor: Colors.green,
                     subtitle: "+14.2% from yesterday",
+                    onTap: viewModel.goToAdminBilling,
                   ),
                   AdminMetricCard(
                     title: "Total Orders",
@@ -110,6 +111,7 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                     icon: Icons.shopping_bag_outlined,
                     iconColor: Colors.blue,
                     subtitle: "+2 new orders",
+                    onTap: viewModel.goToAdminOrders,
                   ),
                   AdminMetricCard(
                     title: "Low Stock Spares",
@@ -117,6 +119,7 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                     icon: Icons.warning_amber_rounded,
                     iconColor: Colors.orange,
                     subtitle: "Needs replenishment",
+                    onTap: viewModel.goToAdminInventory,
                   ),
                   AdminMetricCard(
                     title: "Pending Requests",
@@ -124,6 +127,7 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                     icon: Icons.support_agent_rounded,
                     iconColor: Colors.red,
                     subtitle: "Chats awaiting reply",
+                    onTap: viewModel.goToAdminRareRequests,
                   ),
                 ],
               );

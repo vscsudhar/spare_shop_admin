@@ -101,8 +101,8 @@ class AdminInventoryView extends StackedView<AdminInventoryViewModel> {
               return AdminTableRow(
                 cells: [
                   Text(product.id,
-                      style:
-                          const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 13)),
                   Text(product.name,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   Row(
