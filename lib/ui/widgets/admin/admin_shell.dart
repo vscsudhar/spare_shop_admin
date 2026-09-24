@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
+import 'package:spare_shop_admin/core/services/token_service.dart';
+import 'package:spare_shop_admin/core/services/location_service.dart';
+import 'package:spare_shop_admin/core/services/staff_service.dart';
+import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/core/theme/theme_service.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 
@@ -15,6 +19,8 @@ enum AdminNavigationItem {
   inventory,
   purchases,
   suppliers,
+  locations,
+  deliveryCharges,
   customers,
   billing,
   reports,
@@ -24,6 +30,25 @@ enum AdminNavigationItem {
 
 // Global role state for local visual demo
 String activeAdminRole = 'Owner / Admin';
+
+String normalizeAdminRole(String role) {
+  final lower = role.toLowerCase().replaceAll('_', ' ').trim();
+  if (lower.contains('owner') ||
+      lower.contains('admin') ||
+      lower.contains('manager')) {
+    return 'Owner / Admin';
+  }
+  if (lower.contains('inventory')) {
+    return 'Inventory Staff';
+  }
+  if (lower.contains('sales')) {
+    return 'Sales Staff';
+  }
+  if (lower.contains('delivery')) {
+    return 'Delivery Staff';
+  }
+  return 'Owner / Admin';
+}
 
 class AdminShell extends StatelessWidget with NavigationMixin {
   final String title;
@@ -145,8 +170,10 @@ class AdminShell extends StatelessWidget with NavigationMixin {
             ),
           Row(
             children: [
+              _buildLocationBadge(),
+              const SizedBox(width: 12),
               _buildRoleSelector(context),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               IconButton(
                 icon: Icon(AdminColors.isDarkTheme
                     ? Icons.light_mode_outlined
@@ -186,6 +213,156 @@ class AdminShell extends StatelessWidget with NavigationMixin {
     );
   }
 
+    Widget _buildLocationBadge() {
+    return ListenableBuilder(
+      listenable: TokenService.locationNotifier,
+      builder: (context, _) {
+        final currentLocId = TokenService.locationNotifier.locationId;
+        final currentLocationName = TokenService.locationNotifier.locationName;
+        final hasSpecificLocation = currentLocId != null &&
+            currentLocId.isNotEmpty &&
+            currentLocId != 'all';
+
+        return FutureBuilder<List<LocationModel>>(
+          future: locator<LocationService>().getLocations(),
+          builder: (context, snapshot) {
+            final locations = snapshot.data ?? [];
+
+            String displayTitle = 'Global (HQ)';
+            if (hasSpecificLocation) {
+              if (currentLocationName != null && currentLocationName.isNotEmpty && currentLocationName != 'All Locations (HQ)') {
+                displayTitle = '${currentLocationName.replaceAll(RegExp(r'\\s*hub', caseSensitive: false), '')} Hub';
+              } else {
+                final match = locations.where((l) => l.id == currentLocId);
+                if (match.isNotEmpty) {
+                  displayTitle = '${match.first.name.replaceAll(RegExp(r'\\s*hub', caseSensitive: false), '')} Hub';
+                } else {
+                  displayTitle = 'Location Hub';
+                }
+              }
+            }
+
+            return PopupMenuButton<String>(
+              tooltip: 'Switch Working Location (Global / Hub)',
+              onSelected: (String selectedLocId) async {
+                final tokenService = locator<TokenService>();
+                if (selectedLocId == 'all') {
+                  await tokenService.saveUserLocation(
+                    locationId: null,
+                    locationName: 'All Locations (HQ)',
+                  );
+                } else {
+                  final loc = locations.firstWhere(
+                    (l) => l.id == selectedLocId,
+                    orElse: () => LocationModel(
+                      id: selectedLocId,
+                      name: 'Location Hub',
+                      latitude: 0,
+                      longitude: 0,
+                      radiusKm: 10.0,
+                      isActive: true,
+                    ),
+                  );
+                  await tokenService.saveUserLocation(
+                    locationId: loc.id,
+                    locationName: loc.name,
+                  );
+                }
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        selectedLocId == 'all'
+                            ? 'Switched to Global (HQ) mode.'
+                            : 'Working location changed to ${TokenService.locationNotifier.locationName}.',
+                      ),
+                      backgroundColor: AdminColors.primaryGreen,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem<String>(
+                  value: 'all',
+                  child: Row(
+                    children: [
+                      Icon(Icons.public, size: 16, color: Colors.blue),
+                      SizedBox(width: 8),
+                      Text('Global (All HQ Branches)'),
+                    ],
+                  ),
+                ),
+                ...locations.map((loc) {
+                  final isSelected = loc.id == currentLocId;
+                  return PopupMenuItem<String>(
+                    value: loc.id,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${loc.name} (${loc.radiusDisplay})',
+                          style: TextStyle(
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? AdminColors.primaryGreen : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: hasSpecificLocation
+                      ? AdminColors.primaryGreen.withValues(alpha: 0.12)
+                      : Colors.blue.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: hasSpecificLocation
+                        ? AdminColors.primaryGreen.withValues(alpha: 0.3)
+                        : Colors.blue.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      hasSpecificLocation ? Icons.location_on : Icons.public,
+                      size: 14,
+                      color: hasSpecificLocation
+                          ? AdminColors.primaryGreen
+                          : Colors.blue,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      displayTitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: hasSpecificLocation
+                            ? AdminColors.primaryGreen
+                            : Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_drop_down, size: 16),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildRoleSelector(BuildContext context, {bool isCompact = false}) {
     final List<String> roles = [
       'Owner / Admin',
@@ -196,6 +373,10 @@ class AdminShell extends StatelessWidget with NavigationMixin {
 
     return StatefulBuilder(
       builder: (context, setState) {
+        final currentNormalized = normalizeAdminRole(activeAdminRole);
+        final selectedValue =
+            roles.contains(currentNormalized) ? currentNormalized : roles.first;
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
@@ -205,7 +386,7 @@ class AdminShell extends StatelessWidget with NavigationMixin {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              value: activeAdminRole,
+              value: selectedValue,
               dropdownColor: AdminColors.panelBackground,
               onChanged: (String? newValue) {
                 if (newValue != null) {
@@ -300,6 +481,10 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                       AdminNavigationItem.purchases),
                   _sidebarItem(context, Icons.warehouse_rounded, 'Suppliers',
                       AdminNavigationItem.suppliers),
+                  _sidebarItem(context, Icons.location_on_rounded, 'Locations',
+                      AdminNavigationItem.locations),
+                  _sidebarItem(context, Icons.local_shipping_rounded, 'Delivery Charges',
+                      AdminNavigationItem.deliveryCharges),
                   _sidebarItem(context, Icons.people_alt_rounded, 'Customers',
                       AdminNavigationItem.customers),
                   _sidebarItem(context, Icons.payment_rounded, 'Billing / POS',
@@ -313,19 +498,120 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                 ],
               ),
             ),
-            const Divider(color: Colors.white12),
+            const Divider(color: Colors.white12, height: 1),
+            FutureBuilder<Map<String, String?>>(
+              future: () async {
+                final tokenService = locator<TokenService>();
+                final email = await tokenService.getUserEmail();
+                final locId = await tokenService.getUserLocationId();
+                var loc = await tokenService.getUserLocationName();
+
+                if ((loc == null || loc.isEmpty || loc == 'Global HQ') &&
+                    locId != null &&
+                    locId.isNotEmpty) {
+                  try {
+                    final locations = await locator<LocationService>().getLocations();
+                    final match = locations.where((l) => l.id == locId);
+                    if (match.isNotEmpty) {
+                      loc = match.first.name;
+                      await tokenService.saveUserLocation(
+                        locationId: locId,
+                        locationName: loc,
+                      );
+                    }
+                  } catch (_) {}
+                }
+
+                if ((loc == null || loc.isEmpty || loc == 'Global HQ') &&
+                    email != null &&
+                    email.isNotEmpty) {
+                  try {
+                    final staffList = await locator<StaffService>().getStaffMembers();
+                    final member = staffList.where((s) => s.email.toLowerCase() == email.toLowerCase().trim());
+                    if (member.isNotEmpty &&
+                        member.first.locationName.isNotEmpty &&
+                        member.first.locationName != 'All Locations (HQ)') {
+                      loc = member.first.locationName;
+                      await tokenService.saveUserLocation(
+                        locationId: member.first.locationId,
+                        locationName: loc,
+                      );
+                    }
+                  } catch (_) {}
+                }
+
+                final canChange = await tokenService.canChangeLocation();
+                if (loc == null || loc.isEmpty) {
+                  loc = canChange ? 'All Locations (HQ)' : 'Assigned Hub';
+                }
+
+                return {'email': email, 'location': loc};
+              }(),
+              builder: (context, snapshot) {
+                final email = snapshot.data?['email'] ?? 'Console User';
+                final loc = snapshot.data?['location'] ?? 'Assigned Hub';
+                final displayLoc = loc.toLowerCase().contains('hq') ||
+                        loc.toLowerCase().contains('hub') ||
+                        loc.toLowerCase().contains('all')
+                    ? loc
+                    : '$loc Hub';
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundColor: AdminColors.primaryGreen.withValues(alpha: 0.2),
+                        child: Icon(Icons.person, size: 16, color: AdminColors.accentLime),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              email,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '📍 $displayLoc',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AdminColors.accentLime.withValues(alpha: 0.8),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const Divider(color: Colors.white12, height: 1),
             Material(
               color: Colors.transparent,
               child: ListTile(
-                leading: const Icon(Icons.logout, color: Colors.white70),
+                dense: true,
+                leading: const Icon(Icons.logout, color: Colors.white70, size: 18),
                 title: const Text('Exit Console',
                     style: TextStyle(color: Colors.white70, fontSize: 13)),
-                onTap: () {
+                onTap: () async {
+                  await locator<TokenService>().clearTokens();
                   goToAdminLogin();
                 },
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -408,6 +694,12 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         break;
       case AdminNavigationItem.suppliers:
         goToAdminSuppliers();
+        break;
+      case AdminNavigationItem.locations:
+        goToAdminLocations();
+        break;
+      case AdminNavigationItem.deliveryCharges:
+        goToAdminDeliveryCharges();
         break;
       case AdminNavigationItem.customers:
         goToAdminCustomers();

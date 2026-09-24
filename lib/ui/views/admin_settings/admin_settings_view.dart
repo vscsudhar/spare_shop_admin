@@ -199,6 +199,59 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
           children: [
             _textInput(viewModel.taxPercentageController,
                 'POS Tax / GST Percentage (%)'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AdminColors.primaryGreen.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: AdminColors.primaryGreen.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.local_shipping_rounded,
+                      color: AdminColors.primaryGreen, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Order Delivery Charges & Tiers',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Manage order amount ranges (e.g. Under ₹399 -> ₹60, ₹400-999 -> ₹100, Free delivery)',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () => viewModel.goToAdminDeliveryCharges(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AdminColors.primaryGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: const Text('Manage Rates',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 12),
             SwitchListTile(
               title: const Text('Support Split POS Payment Method',

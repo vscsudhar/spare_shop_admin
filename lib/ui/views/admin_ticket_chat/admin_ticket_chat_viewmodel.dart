@@ -76,11 +76,14 @@ class AdminTicketChatViewModel extends BaseViewModel with NavigationMixin {
       _socketService.on('support_ticket:message', (data) {
         if (data is Map<String, dynamic>) {
           final newMsg = AdminTicketMessage.fromJson(data);
-          if (!_messages.any((m) => m.id == newMsg.id)) {
+          final index = _messages.indexWhere((m) => m.id == newMsg.id);
+          if (index == -1) {
             _messages.add(newMsg);
-            rebuildUi();
-            _scrollToBottom();
+          } else {
+            _messages[index] = newMsg;
           }
+          rebuildUi();
+          _scrollToBottom();
         }
       });
 
@@ -144,8 +147,11 @@ class AdminTicketChatViewModel extends BaseViewModel with NavigationMixin {
         photos: photosToSend,
       );
 
-      if (!_messages.any((m) => m.id == msg.id)) {
+      final index = _messages.indexWhere((m) => m.id == msg.id);
+      if (index == -1) {
         _messages.add(msg);
+      } else {
+        _messages[index] = msg;
       }
       _scrollToBottom();
     } catch (e) {

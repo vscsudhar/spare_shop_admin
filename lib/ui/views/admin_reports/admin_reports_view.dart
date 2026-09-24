@@ -24,8 +24,18 @@ class AdminReportsView extends StackedView<AdminReportsViewModel> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Financial & Tax Performance',
-                  style: AdminTextStyles.sectionHeader),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Financial & Tax Performance',
+                      style: AdminTextStyles.sectionHeader),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Track location-based sales breakdown, profits, and GST taxes',
+                    style: AdminTextStyles.bodySecondary.copyWith(fontSize: 12),
+                  ),
+                ],
+              ),
               DropdownButton<String>(
                 value: viewModel.selectedPeriod,
                 onChanged: (val) {
@@ -39,6 +49,90 @@ class AdminReportsView extends StackedView<AdminReportsViewModel> {
                 ],
               )
             ],
+          ),
+          const SizedBox(height: 16),
+
+          // Location Filter Section
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AdminColors.panelBackground,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AdminColors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.location_on,
+                        size: 16, color: AdminColors.primaryGreen),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Report Location / Hub Filter:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AdminColors.textPrimary,
+                      ),
+                    ),
+                    if (!viewModel.canChangeLocation &&
+                        viewModel.userAssignedLocationName != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: Colors.amber.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Scoped to ${viewModel.userAssignedLocationName}',
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      AdminFilterChip(
+                        label: 'All Locations (Consolidated)',
+                        isSelected: viewModel.selectedLocationFilter == 'all',
+                        onTap: () => viewModel.setSelectedLocationFilter('all'),
+                      ),
+                      ...viewModel.locations.map((loc) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: AdminFilterChip(
+                            label: '${loc.name} Hub',
+                            isSelected:
+                                viewModel.selectedLocationFilter == loc.id,
+                            onTap: () =>
+                                viewModel.setSelectedLocationFilter(loc.id),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
 

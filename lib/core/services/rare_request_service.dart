@@ -17,7 +17,6 @@ class RareRequestService {
     required String description,
     required int quantity,
     required String urgency,
-    double? budget,
     required String brand,
     required String modelName,
     required String year,
@@ -30,8 +29,6 @@ class RareRequestService {
         'description': description,
         'quantity': quantity,
         'urgency': urgency.toLowerCase(),
-        'budget':
-            budget != null ? (budget * 100).toInt() : null, // Convert to paise
         'vehicle': {
           'brand': brand,
           'name': modelName,
@@ -97,6 +94,8 @@ class RareRequestService {
   Future<List<RareProductRequestModel>> adminGetAllRequests({
     String? status,
     String? search,
+    String? locationId,
+    String? channel,
   }) async {
     final Map<String, dynamic> query = {};
     if (status != null && status.isNotEmpty && status.toLowerCase() != 'all') {
@@ -105,6 +104,12 @@ class RareRequestService {
     if (search != null && search.isNotEmpty) {
       query['search'] = search;
     }
+    if (locationId != null && locationId.isNotEmpty && locationId.toLowerCase() != 'all') {
+      query['locationId'] = locationId;
+    }
+    if (channel != null && channel.isNotEmpty && channel.toLowerCase() != 'all') {
+      query['channel'] = channel;
+    }
 
     final response = await _apiClient.get(
       ApiEndpoints.adminRareRequests,
@@ -112,31 +117,30 @@ class RareRequestService {
     );
 
     final raw = response.data;
-    final List<dynamic> list;
-    if (raw is Map<String, dynamic>) {
-      if (raw['data'] is List) {
-        list = raw['data'] as List<dynamic>;
-      } else if (raw['data'] is Map && raw['data']['items'] is List) {
-        list = raw['data']['items'] as List<dynamic>;
-      } else {
-        list = [];
+    List<dynamic> list = [];
+    if (raw is Map) {
+      final d = raw['data'];
+      if (d is List) {
+        list = d;
+      } else if (d is Map && d['items'] is List) {
+        list = d['items'] as List;
+      } else if (d is Map && d['requests'] is List) {
+        list = d['requests'] as List;
       }
     } else if (raw is List) {
       list = raw;
-    } else {
-      list = [];
     }
 
     return list
-        .whereType<Map<String, dynamic>>()
-        .map((item) => RareProductRequestModelExtension.fromJson(item))
+        .whereType<Map>()
+        .map((item) => RareProductRequestModelExtension.fromJson(Map<String, dynamic>.from(item)))
         .toList();
   }
 
   Future<RareProductRequestModel> adminGetRequestById(String id) async {
     final response =
         await _apiClient.get('${ApiEndpoints.adminRareRequests}/$id');
-    final data = response.data['data'] ?? {};
+    final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
     return RareProductRequestModelExtension.fromJson(data);
   }
 
@@ -251,6 +255,30 @@ class RareRequestService {
     );
     final data = response.data['data'] ?? {};
     return RareChatMessageModelExtension.fromJson(data);
+  }
+
+  Future<RareProductRequestModel> adminUpdateRequestLocation(
+    String id, {
+    String? locationId,
+    String? locationName,
+  }) async {
+    try {
+      final response = await _apiClient.patch(
+        '${ApiEndpoints.adminRareRequests}/$id/location',
+        data: {
+          'locationId': locationId,
+          if (locationName != null) 'locationName': locationName,
+        },
+      );
+      final data = response.data['data'] ?? {};
+      return RareProductRequestModelExtension.fromJson(data);
+    } catch (_) {
+      final req = await adminGetRequestById(id);
+      return req.copyWith(
+        locationId: locationId,
+        locationName: locationName,
+      );
+    }
   }
 
   Future<void> reopenRequest(String id) async {

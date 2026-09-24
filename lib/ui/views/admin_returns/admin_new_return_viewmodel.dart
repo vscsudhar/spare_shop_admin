@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
+import 'package:spare_shop_admin/core/services/location_service.dart';
 import 'package:spare_shop_admin/core/services/product_service.dart';
 import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
+import 'package:spare_shop_admin/core/services/token_service.dart';
+import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/common/return_exchange_models.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'package:stacked/stacked.dart';
@@ -49,6 +52,8 @@ class ItemFormState {
 class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
   final _returnsService = locator<ReturnExchangeService>();
   final _productService = locator<ProductService>();
+  final _locationService = locator<LocationService>();
+  final _tokenService = locator<TokenService>();
 
   final searchController = TextEditingController();
   final adminNotesController = TextEditingController();
@@ -61,6 +66,15 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
 
   List<ProductModel> _allProducts = [];
   List<ProductModel> get allProducts => _allProducts;
+
+  List<LocationModel> _locations = [];
+  List<LocationModel> get locations => _locations;
+
+  String? _selectedLocationId;
+  String? get selectedLocationId => _selectedLocationId;
+
+  String _selectedChannel = 'in_store'; // 'in_store' or 'online'
+  String get selectedChannel => _selectedChannel;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -75,9 +89,29 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
     }
   }
 
+  void setSelectedLocationId(String? locId) {
+    _selectedLocationId = locId;
+    notifyListeners();
+  }
+
+  void setSelectedChannel(String channel) {
+    _selectedChannel = channel;
+    notifyListeners();
+  }
+
   void initialize(String? prefillBill) async {
     if (_initialized) return;
     _initialized = true;
+
+    try {
+      _locations = await _locationService.getLocations();
+      final userLocId = await _tokenService.getUserLocationId();
+      if (userLocId != null && userLocId.isNotEmpty) {
+        _selectedLocationId = userLocId;
+      } else if (_locations.isNotEmpty) {
+        _selectedLocationId = _locations.first.id;
+      }
+    } catch (_) {}
 
     try {
       _allProducts = await _productService.getProducts();
@@ -257,8 +291,14 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
         return itemMap;
       }).toList();
 
+      final locMatch = _locations.where((l) => l.id == _selectedLocationId);
+      final locName = locMatch.isNotEmpty ? locMatch.first.name : null;
+
       final payload = {
         'orderId': _bill!.orderId,
+        'locationId': _selectedLocationId,
+        'locationName': locName,
+        'channel': _selectedChannel,
         'items': itemsPayload,
         'adminNotes': adminNotesController.text.trim(),
       };

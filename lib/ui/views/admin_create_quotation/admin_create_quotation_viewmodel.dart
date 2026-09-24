@@ -34,7 +34,7 @@ class AdminCreateQuotationViewModel extends BaseViewModel with NavigationMixin {
       final req = await _rareRequestService.adminGetRequestById(_requestId);
       nameController.text = req.partName ?? 'Genuine EV Spare Component';
       priceController.text =
-          req.budget != null ? req.budget!.toStringAsFixed(0) : '1200';
+          '1200';
       shippingController.text = '100';
       discountController.text = '16';
       timelineController.text = req.urgency == 'Urgent'

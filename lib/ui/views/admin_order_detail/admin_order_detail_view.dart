@@ -327,6 +327,194 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                     Expanded(
                       child: Column(
                         children: [
+                          // Fulfillment Hub / Store Location Card
+                          AdminPanelCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.hub_outlined,
+                                            size: 18,
+                                            color: AdminColors.primaryGreen),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Fulfillment Hub',
+                                          style: AdminTextStyles.body
+                                              .copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    ElevatedButton.icon(
+                                      onPressed: () =>
+                                          _showLocationPicker(context, viewModel),
+                                      icon: Icon(
+                                        viewModel.order.locationName != null
+                                            ? Icons.swap_horiz_rounded
+                                            : Icons.add_location_alt_outlined,
+                                        size: 14,
+                                      ),
+                                      label: Text(
+                                        viewModel.order.locationName != null
+                                            ? 'Reassign Hub'
+                                            : '+ Assign Hub',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AdminColors.primaryGreen,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                if (viewModel.order.locationName != null &&
+                                    viewModel.order.locationName!.isNotEmpty) ...[
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: AdminColors.primaryGreen
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: AdminColors.primaryGreen
+                                              .withValues(alpha: 0.3)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: AdminColors.primaryGreen
+                                                .withValues(alpha: 0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                          ),
+                                          child: Icon(Icons.storefront,
+                                              color: AdminColors.primaryGreen,
+                                              size: 20),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${viewModel.order.locationName!} Hub',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                  color:
+                                                      AdminColors.textPrimary,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                'Assigned inventory & dispatch hub',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: AdminColors
+                                                      .textSecondary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(Icons.check_circle,
+                                            color: AdminColors.primaryGreen,
+                                            size: 18),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.03),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: Colors.white10),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.inventory_2_outlined,
+                                            size: 14,
+                                            color: AdminColors.textSecondary),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            'Out of stock at this hub? Click "Reassign Hub" to route fulfillment to another hub.',
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color:
+                                                    AdminColors.textSecondary),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ] else ...[
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.amber.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: Colors.amber
+                                              .withValues(alpha: 0.3)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.warning_amber_rounded,
+                                            color: Colors.amber, size: 22),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                'No Hub Assigned',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13,
+                                                    color: Colors.amber),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                'Assign a store location to dispatch and manage inventory',
+                                                style: TextStyle(
+                                                    fontSize: 11,
+                                                    color: AdminColors
+                                                        .textSecondary),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
                           AdminPanelCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,6 +683,255 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
               style: TextStyle(fontSize: 10, color: AdminColors.textLight)),
         ],
       ),
+    );
+  }
+
+  void _showLocationPicker(
+    BuildContext context,
+    AdminOrderDetailViewModel viewModel,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AdminColors.panelBackground,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Row(
+            children: [
+              Icon(Icons.hub_outlined, color: AdminColors.primaryGreen, size: 22),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Reassign Fulfillment Hub',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 440,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Info Banner
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border:
+                        Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline,
+                          color: Colors.lightBlueAccent, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'If the current hub does not have product stock for this order, reassign to another hub below:',
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.lightBlueAccent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Order items preview
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.02),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.white10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Items in this order:',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: AdminColors.textSecondary),
+                      ),
+                      const SizedBox(height: 4),
+                      ...viewModel.order.items.take(2).map((item) => Padding(
+                            padding: const EdgeInsets.only(bottom: 2.0),
+                            child: Text(
+                              '• ${item.product.name} (Qty: ${item.quantity})',
+                              style: const TextStyle(fontSize: 11),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                      if (viewModel.order.items.length > 2)
+                        Text(
+                          '+ ${viewModel.order.items.length - 2} more items',
+                          style: TextStyle(
+                              fontSize: 10, color: AdminColors.textSecondary),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                const Text(
+                  'Choose Fulfillment Hub:',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                if (viewModel.locations.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: Text(
+                        'No locations found. Please configure locations.',
+                        style: TextStyle(color: Colors.white60, fontSize: 12),
+                      ),
+                    ),
+                  )
+                else
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 220),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: viewModel.locations.length,
+                      separatorBuilder: (_, __) => const Divider(height: 8),
+                      itemBuilder: (context, index) {
+                        final loc = viewModel.locations[index];
+                        final isCurrent = viewModel.order.locationId == loc.id ||
+                            viewModel.order.locationName?.toLowerCase() ==
+                                loc.name.toLowerCase();
+                        return ListTile(
+                          dense: true,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          tileColor: isCurrent
+                              ? AdminColors.primaryGreen.withValues(alpha: 0.15)
+                              : Colors.white.withValues(alpha: 0.03),
+                          leading: Icon(
+                            Icons.storefront_outlined,
+                            size: 18,
+                            color: isCurrent
+                                ? AdminColors.primaryGreen
+                                : Colors.white70,
+                          ),
+                          title: Text(
+                            '${loc.name} Hub',
+                            style: TextStyle(
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.w600,
+                              color: isCurrent
+                                  ? AdminColors.primaryGreen
+                                  : Colors.white,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Coverage Radius: ${loc.radiusDisplay}',
+                            style: const TextStyle(
+                                fontSize: 11, color: Colors.white54),
+                          ),
+                          trailing: isCurrent
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AdminColors.primaryGreen
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.check_circle,
+                                          color: AdminColors.primaryGreen,
+                                          size: 14),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Active',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: AdminColors.primaryGreen,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                    viewModel.updateOrderLocation(loc);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Order fulfillment transferred to ${loc.name} Hub'),
+                                        backgroundColor:
+                                            AdminColors.primaryGreen,
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AdminColors.primaryGreen,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 6),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                  child: const Text('Reassign',
+                                      style: TextStyle(fontSize: 11)),
+                                ),
+                          onTap: () {
+                            Navigator.of(ctx).pop();
+                            viewModel.updateOrderLocation(loc);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Order updated with ${loc.name} Hub'),
+                                backgroundColor: AdminColors.primaryGreen,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            if (viewModel.order.locationId != null ||
+                viewModel.order.locationName != null)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  viewModel.updateOrderLocation(null);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Order location removed'),
+                      backgroundColor: Colors.grey[800],
+                    ),
+                  );
+                },
+                child: const Text('Clear Hub',
+                    style: TextStyle(color: Colors.redAccent)),
+              ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 

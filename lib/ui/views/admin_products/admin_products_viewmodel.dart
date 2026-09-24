@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/product_service.dart';
+import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'package:stacked/stacked.dart';
@@ -107,9 +108,22 @@ class AdminProductsViewModel extends FutureViewModel<void>
 
   @override
   Future<void> futureToRun() async {
+    TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
+    TokenService.locationNotifier.addListener(_onLocationNotifierChanged);
+
     await loadProducts();
     await loadCategories();
     await loadBrands();
+  }
+
+  void _onLocationNotifierChanged() {
+    loadProducts();
+  }
+
+  @override
+  void dispose() {
+    TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
+    super.dispose();
   }
 
   Future<void> loadProducts() async {

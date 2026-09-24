@@ -134,6 +134,8 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
             if (viewModel.bill != null) ...[
               _buildBillSummaryCard(viewModel.bill!),
               const SizedBox(height: 20),
+              _buildLocationAndChannelCard(context, viewModel),
+              const SizedBox(height: 20),
               _buildItemProcessingSection(context, viewModel),
               const SizedBox(height: 20),
               _buildSubmissionCard(context, viewModel),
@@ -184,6 +186,96 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                   '${bill.paymentMethod.toUpperCase()} (${bill.paymentStatus})'),
               _infoTile('Bill Total', '₹${bill.grandTotal.toStringAsFixed(2)}',
                   isHighlight: true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationAndChannelCard(
+      BuildContext context, AdminNewReturnViewModel viewModel) {
+    return AdminPanelCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 18),
+              const SizedBox(width: 8),
+              const Text(
+                'Intake Channel & Processing Location',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          Wrap(
+            spacing: 24,
+            runSpacing: 16,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              // Channel selection
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Intake Channel *', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ChoiceChip(
+                        avatar: const Text('🏬', style: TextStyle(fontSize: 14)),
+                        label: const Text('In-Store Visit / Counter'),
+                        selected: viewModel.selectedChannel == 'in_store',
+                        selectedColor: AdminColors.primaryGreen.withValues(alpha: 0.2),
+                        onSelected: (val) {
+                          if (val) viewModel.setSelectedChannel('in_store');
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        avatar: const Text('📱', style: TextStyle(fontSize: 14)),
+                        label: const Text('Online Mobile App'),
+                        selected: viewModel.selectedChannel == 'online',
+                        selectedColor: Colors.blue.withValues(alpha: 0.2),
+                        onSelected: (val) {
+                          if (val) viewModel.setSelectedChannel('online');
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              // Store / Hub selection
+              if (viewModel.locations.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Receiving Hub / Store Location *',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      width: 280,
+                      child: DropdownButtonFormField<String>(
+                        initialValue: viewModel.selectedLocationId,
+                        dropdownColor: AdminColors.panelBackground,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: viewModel.locations.map((loc) {
+                          return DropdownMenuItem(
+                            value: loc.id,
+                            child: Text(loc.name, overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        onChanged: (val) => viewModel.setSelectedLocationId(val),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ],

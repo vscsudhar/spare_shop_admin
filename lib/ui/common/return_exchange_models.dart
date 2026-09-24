@@ -145,8 +145,13 @@ class BillLookupResult {
   });
 
   factory BillLookupResult.fromJson(Map<String, dynamic> json) {
-    final customer = json['customer'] as Map<String, dynamic>? ?? {};
-    final rawItems = json['items'] as List<dynamic>? ?? [];
+    Map<String, dynamic> customer = {};
+    if (json['customer'] is Map) {
+      customer = Map<String, dynamic>.from(json['customer'] as Map);
+    } else if (json['customerSnapshot'] is Map) {
+      customer = Map<String, dynamic>.from(json['customerSnapshot'] as Map);
+    }
+    final rawItems = json['items'] is List ? (json['items'] as List) : [];
 
     DateTime dt = DateTime.now();
     if (json['orderDate'] != null) {
@@ -156,20 +161,23 @@ class BillLookupResult {
     }
 
     return BillLookupResult(
-      orderId: json['orderId']?.toString() ?? '',
-      orderNumber: json['orderNumber'] ?? '',
-      billNumber: json['billNumber'] ?? '',
-      invoiceNumber: json['invoiceNumber'] ?? '',
-      customerName: customer['name'] ?? 'Walk-in Customer',
-      customerPhone: customer['phone'] ?? '',
-      customerEmail: customer['email'] ?? '',
+      orderId: json['orderId']?.toString() ?? json['_id']?.toString() ?? '',
+      orderNumber: (json['orderNumber'] ?? '').toString(),
+      billNumber: (json['billNumber'] ?? '').toString(),
+      invoiceNumber: (json['invoiceNumber'] ?? '').toString(),
+      customerName: (customer['name'] ?? json['customerName'] ?? 'Walk-in Customer').toString(),
+      customerPhone: (customer['phone'] ?? json['customerPhone'] ?? '').toString(),
+      customerEmail: (customer['email'] ?? json['customerEmail'] ?? '').toString(),
       orderDate: dt,
-      orderStatus: json['orderStatus'] ?? 'delivered',
-      paymentStatus: json['paymentStatus'] ?? 'paid',
-      paymentMethod: json['paymentMethod'] ?? 'cash',
-      grandTotal: ((json['grandTotal'] ?? 0) as num).toDouble() / 100.0,
-      items: rawItems.map((i) => BillItemProcessedSummary.fromJson(i)).toList(),
-      existingCases: json['existingCases'] as List<dynamic>? ?? [],
+      orderStatus: (json['orderStatus'] ?? 'delivered').toString(),
+      paymentStatus: (json['paymentStatus'] ?? 'paid').toString(),
+      paymentMethod: (json['paymentMethod'] ?? 'cash').toString(),
+      grandTotal: ((json['grandTotal'] ?? json['total'] ?? 0) as num).toDouble() / 100.0,
+      items: rawItems
+          .whereType<Map>()
+          .map((i) => BillItemProcessedSummary.fromJson(Map<String, dynamic>.from(i)))
+          .toList(),
+      existingCases: json['existingCases'] is List ? (json['existingCases'] as List) : [],
     );
   }
 }
@@ -264,33 +272,54 @@ class ReturnExchangeItem {
   });
 
   factory ReturnExchangeItem.fromJson(Map<String, dynamic> json) {
+    String pId = '';
+    String pName = (json['productNameSnapshot'] ?? json['productName'] ?? '').toString();
+    String sku = (json['skuSnapshot'] ?? json['sku'] ?? '').toString();
+
+    if (json['product'] is Map) {
+      final pMap = json['product'] as Map;
+      pId = (pMap['_id'] ?? pMap['id'] ?? '').toString();
+      if (pName.isEmpty) pName = (pMap['name'] ?? '').toString();
+      if (sku.isEmpty) sku = (pMap['sku'] ?? '').toString();
+    } else {
+      pId = json['product']?.toString() ?? '';
+    }
+
+    String repId = '';
+    String repName = (json['replacementProductNameSnapshot'] ?? json['replacementProductName'] ?? '').toString();
+    if (json['replacementProduct'] is Map) {
+      final rMap = json['replacementProduct'] as Map;
+      repId = (rMap['_id'] ?? rMap['id'] ?? '').toString();
+      if (repName.isEmpty) repName = (rMap['name'] ?? '').toString();
+    } else if (json['replacementProduct'] != null) {
+      repId = json['replacementProduct'].toString();
+    }
+
     return ReturnExchangeItem(
-      orderItemId: json['orderItemId']?.toString() ?? '',
-      productId: json['product'] is Map ? (json['product']['_id']?.toString() ?? '') : (json['product']?.toString() ?? ''),
-      productName: json['productNameSnapshot'] ?? '',
-      sku: json['skuSnapshot'] ?? '',
+      orderItemId: (json['orderItemId'] ?? '').toString(),
+      productId: pId,
+      productName: pName.isNotEmpty ? pName : 'Spare Part',
+      sku: sku,
       unitPrice: ((json['unitPrice'] ?? 0) as num).toDouble() / 100.0,
-      originalQty: json['originalQty'] ?? 1,
-      processedQty: json['processedQty'] ?? 1,
-      action: json['action'] ?? 'return',
-      reasonText: json['reasonText'] ?? '',
-      condition: json['condition'] ?? 'unused',
-      inventoryDisposition: json['inventoryDisposition'] ?? 'sellable',
+      originalQty: json['originalQty'] is num ? (json['originalQty'] as num).toInt() : 1,
+      processedQty: json['processedQty'] is num ? (json['processedQty'] as num).toInt() : 1,
+      action: (json['action'] ?? 'return').toString(),
+      reasonText: (json['reasonText'] ?? '').toString(),
+      condition: (json['condition'] ?? 'unused').toString(),
+      inventoryDisposition: (json['inventoryDisposition'] ?? 'sellable').toString(),
       refundRequired: json['refundRequired'] ?? false,
       refundAmount: ((json['refundAmount'] ?? 0) as num).toDouble() / 100.0,
-      refundMethod: json['refundMethod'] ?? 'none',
-      refundStatus: json['refundStatus'] ?? 'na',
-      replacementProductId: json['replacementProduct'] is Map
-          ? (json['replacementProduct']['_id']?.toString())
-          : (json['replacementProduct']?.toString()),
-      replacementProductName: json['replacementProductNameSnapshot'] ?? '',
-      replacementQty: json['replacementQty'] ?? 0,
-      differenceType: json['differenceType'] ?? 'none',
+      refundMethod: (json['refundMethod'] ?? 'none').toString(),
+      refundStatus: (json['refundStatus'] ?? 'na').toString(),
+      replacementProductId: repId.isNotEmpty ? repId : null,
+      replacementProductName: repName,
+      replacementQty: json['replacementQty'] is num ? (json['replacementQty'] as num).toInt() : 0,
+      differenceType: (json['differenceType'] ?? 'none').toString(),
       differenceAmount: ((json['differenceAmount'] ?? 0) as num).toDouble() / 100.0,
-      damageType: json['damageType'] ?? 'na',
-      damageDiscoveredAt: json['damageDiscoveredAt'] ?? 'na',
-      damageResolution: json['damageResolution'] ?? 'na',
-      notes: json['notes'] ?? '',
+      damageType: (json['damageType'] ?? 'na').toString(),
+      damageDiscoveredAt: (json['damageDiscoveredAt'] ?? 'na').toString(),
+      damageResolution: (json['damageResolution'] ?? 'na').toString(),
+      notes: (json['notes'] ?? '').toString(),
     );
   }
 }
@@ -305,6 +334,9 @@ class ReturnExchangeCase {
   final String customerPhone;
   final String type; // return | damage | exchange | mixed
   final String status; // pending | approved | rejected | received | processing | completed | cancelled
+  final String channel; // 'online' (Mobile App) or 'in_store' (Store Visit)
+  final String? locationId;
+  final String? locationName;
   final List<ReturnExchangeItem> items;
   final double totalRefundAmount;
   final double totalPayableAmount;
@@ -324,6 +356,9 @@ class ReturnExchangeCase {
     required this.customerPhone,
     required this.type,
     required this.status,
+    this.channel = 'in_store',
+    this.locationId,
+    this.locationName,
     required this.items,
     required this.totalRefundAmount,
     required this.totalPayableAmount,
@@ -335,10 +370,22 @@ class ReturnExchangeCase {
   });
 
   factory ReturnExchangeCase.fromJson(Map<String, dynamic> json) {
-    final customer = json['customerSnapshot'] as Map<String, dynamic>? ?? {};
-    final rawItems = json['items'] as List<dynamic>? ?? [];
-    final rawHistory = json['history'] as List<dynamic>? ?? [];
-    final createdBy = json['createdBy'] as Map<String, dynamic>? ?? {};
+    Map<String, dynamic> customer = {};
+    if (json['customerSnapshot'] is Map) {
+      customer = Map<String, dynamic>.from(json['customerSnapshot'] as Map);
+    } else if (json['customer'] is Map) {
+      customer = Map<String, dynamic>.from(json['customer'] as Map);
+    } else if (json['user'] is Map) {
+      customer = Map<String, dynamic>.from(json['user'] as Map);
+    }
+
+    Map<String, dynamic> createdBy = {};
+    if (json['createdBy'] is Map) {
+      createdBy = Map<String, dynamic>.from(json['createdBy'] as Map);
+    }
+
+    final rawItems = json['items'] is List ? (json['items'] as List) : [];
+    final rawHistory = json['history'] is List ? (json['history'] as List) : [];
 
     DateTime dtCreated = DateTime.now();
     DateTime dtUpdated = DateTime.now();
@@ -353,24 +400,102 @@ class ReturnExchangeCase {
       } catch (_) {}
     }
 
+    String? locId;
+    String? locName;
+    if (json['locationId'] is Map) {
+      locId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locName = json['locationId']['name']?.toString();
+    } else if (json['locationId'] != null) {
+      locId = json['locationId'].toString();
+    } else if (json['location'] is Map) {
+      locId = (json['location']['_id'] ?? json['location']['id'])?.toString();
+      locName = json['location']['name']?.toString();
+    } else if (json['location'] != null) {
+      locId = json['location'].toString();
+    }
+
+    if (json['locationName'] != null && json['locationName'].toString().isNotEmpty) {
+      locName = json['locationName'].toString();
+    }
+
+    final rawChannel = (json['channel'] ?? json['source'] ?? 'in_store').toString().toLowerCase();
+    final channel = rawChannel.contains('app') || rawChannel.contains('online')
+        ? 'online'
+        : 'in_store';
+
     return ReturnExchangeCase(
-      id: json['_id']?.toString() ?? '',
-      caseNumber: json['caseNumber'] ?? '',
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      caseNumber: (json['caseNumber'] ?? '').toString(),
       orderId: json['order'] is Map ? (json['order']['_id']?.toString() ?? '') : (json['order']?.toString() ?? ''),
-      billNumber: json['billNumber'] ?? '',
-      invoiceNumber: json['invoiceNumber'] ?? '',
-      customerName: customer['name'] ?? 'Walk-in Customer',
-      customerPhone: customer['phone'] ?? '',
-      type: json['type'] ?? 'return',
-      status: json['status'] ?? 'pending',
-      items: rawItems.map((i) => ReturnExchangeItem.fromJson(i)).toList(),
+      billNumber: (json['billNumber'] ?? '').toString(),
+      invoiceNumber: (json['invoiceNumber'] ?? '').toString(),
+      customerName: (customer['name'] ?? json['customerName'] ?? 'Walk-in Customer').toString(),
+      customerPhone: (customer['phone'] ?? json['customerPhone'] ?? '').toString(),
+      type: (json['type'] ?? 'return').toString(),
+      status: (json['status'] ?? 'pending').toString(),
+      channel: channel,
+      locationId: locId,
+      locationName: locName,
+      items: rawItems
+          .whereType<Map>()
+          .map((i) => ReturnExchangeItem.fromJson(Map<String, dynamic>.from(i)))
+          .toList(),
       totalRefundAmount: ((json['totalRefundAmount'] ?? 0) as num).toDouble() / 100.0,
       totalPayableAmount: ((json['totalPayableAmount'] ?? 0) as num).toDouble() / 100.0,
-      history: rawHistory.map((h) => ReturnExchangeHistory.fromJson(h)).toList(),
-      adminNotes: json['adminNotes'] ?? '',
-      createdByName: createdBy['name'] ?? 'Admin',
+      history: rawHistory
+          .whereType<Map>()
+          .map((h) => ReturnExchangeHistory.fromJson(Map<String, dynamic>.from(h)))
+          .toList(),
+      adminNotes: (json['adminNotes'] ?? '').toString(),
+      createdByName: (createdBy['name'] ?? json['createdByName'] ?? 'Admin').toString(),
       createdAt: dtCreated,
       updatedAt: dtUpdated,
+    );
+  }
+
+  ReturnExchangeCase copyWith({
+    String? id,
+    String? caseNumber,
+    String? orderId,
+    String? billNumber,
+    String? invoiceNumber,
+    String? customerName,
+    String? customerPhone,
+    String? type,
+    String? status,
+    String? channel,
+    String? locationId,
+    String? locationName,
+    List<ReturnExchangeItem>? items,
+    double? totalRefundAmount,
+    double? totalPayableAmount,
+    List<ReturnExchangeHistory>? history,
+    String? adminNotes,
+    String? createdByName,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return ReturnExchangeCase(
+      id: id ?? this.id,
+      caseNumber: caseNumber ?? this.caseNumber,
+      orderId: orderId ?? this.orderId,
+      billNumber: billNumber ?? this.billNumber,
+      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      channel: channel ?? this.channel,
+      locationId: locationId ?? this.locationId,
+      locationName: locationName ?? this.locationName,
+      items: items ?? this.items,
+      totalRefundAmount: totalRefundAmount ?? this.totalRefundAmount,
+      totalPayableAmount: totalPayableAmount ?? this.totalPayableAmount,
+      history: history ?? this.history,
+      adminNotes: adminNotes ?? this.adminNotes,
+      createdByName: createdByName ?? this.createdByName,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }
@@ -392,11 +517,11 @@ class DamagedItemsMetrics {
 
   factory DamagedItemsMetrics.fromJson(Map<String, dynamic> json) {
     return DamagedItemsMetrics(
-      totalDamagedQty: json['totalDamagedQty'] ?? 0,
+      totalDamagedQty: json['totalDamagedQty'] is num ? (json['totalDamagedQty'] as num).toInt() : 0,
       totalLossValue: ((json['totalLossValue'] ?? 0) as num).toDouble() / 100.0,
-      scrappedCount: json['scrappedCount'] ?? 0,
-      vendorClaimCount: json['vendorClaimCount'] ?? 0,
-      totalRecords: json['totalRecords'] ?? 0,
+      scrappedCount: json['scrappedCount'] is num ? (json['scrappedCount'] as num).toInt() : 0,
+      vendorClaimCount: json['vendorClaimCount'] is num ? (json['vendorClaimCount'] as num).toInt() : 0,
+      totalRecords: json['totalRecords'] is num ? (json['totalRecords'] as num).toInt() : 0,
     );
   }
 }
@@ -409,6 +534,9 @@ class DamagedItemRecord {
   final String customerName;
   final String customerPhone;
   final String caseStatus;
+  final String channel; // 'online' or 'in_store'
+  final String? locationId;
+  final String? locationName;
   final DateTime createdAt;
   final String itemId;
   final String productId;
@@ -432,6 +560,9 @@ class DamagedItemRecord {
     required this.customerName,
     required this.customerPhone,
     required this.caseStatus,
+    this.channel = 'in_store',
+    this.locationId,
+    this.locationName,
     required this.createdAt,
     required this.itemId,
     required this.productId,
@@ -456,28 +587,116 @@ class DamagedItemRecord {
       } catch (_) {}
     }
 
+    String? locId;
+    String? locName;
+    if (json['locationId'] is Map) {
+      locId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locName = json['locationId']['name']?.toString();
+    } else if (json['locationId'] != null) {
+      locId = json['locationId'].toString();
+    } else if (json['location'] is Map) {
+      locId = (json['location']['_id'] ?? json['location']['id'])?.toString();
+      locName = json['location']['name']?.toString();
+    } else if (json['location'] != null) {
+      locId = json['location'].toString();
+    }
+
+    if (json['locationName'] != null && json['locationName'].toString().isNotEmpty) {
+      locName = json['locationName'].toString();
+    }
+
+    final rawChannel = (json['channel'] ?? json['source'] ?? 'in_store').toString().toLowerCase();
+    final channel = rawChannel.contains('app') || rawChannel.contains('online')
+        ? 'online'
+        : 'in_store';
+
+    String cName = (json['customerName'] ?? '').toString();
+    String cPhone = (json['customerPhone'] ?? '').toString();
+    if (json['customerSnapshot'] is Map) {
+      final snap = json['customerSnapshot'] as Map;
+      if (cName.isEmpty) cName = (snap['name'] ?? '').toString();
+      if (cPhone.isEmpty) cPhone = (snap['phone'] ?? '').toString();
+    }
+
     return DamagedItemRecord(
-      caseId: json['caseId']?.toString() ?? '',
-      caseNumber: json['caseNumber'] ?? '',
-      billNumber: json['billNumber'] ?? '',
-      invoiceNumber: json['invoiceNumber'] ?? '',
-      customerName: json['customerName'] ?? 'Walk-in Customer',
-      customerPhone: json['customerPhone'] ?? '',
-      caseStatus: json['caseStatus'] ?? 'pending',
+      caseId: (json['caseId'] ?? json['_id'] ?? '').toString(),
+      caseNumber: (json['caseNumber'] ?? '').toString(),
+      billNumber: (json['billNumber'] ?? '').toString(),
+      invoiceNumber: (json['invoiceNumber'] ?? '').toString(),
+      customerName: cName.isNotEmpty ? cName : 'Walk-in Customer',
+      customerPhone: cPhone,
+      caseStatus: (json['caseStatus'] ?? json['status'] ?? 'pending').toString(),
+      channel: channel,
+      locationId: locId,
+      locationName: locName,
       createdAt: dtCreated,
-      itemId: json['itemId']?.toString() ?? '',
-      productId: json['productId']?.toString() ?? '',
-      productName: json['productName'] ?? '',
-      sku: json['sku'] ?? '',
-      image: json['image'] ?? '',
-      quantity: json['quantity'] ?? 1,
+      itemId: (json['itemId'] ?? json['_id'] ?? '').toString(),
+      productId: json['product'] is Map ? (json['product']['_id']?.toString() ?? '') : (json['productId']?.toString() ?? json['product']?.toString() ?? ''),
+      productName: (json['productName'] ?? json['productNameSnapshot'] ?? (json['product'] is Map ? json['product']['name'] : null) ?? 'Damaged Product').toString(),
+      sku: (json['sku'] ?? json['skuSnapshot'] ?? (json['product'] is Map ? json['product']['sku'] : null) ?? '').toString(),
+      image: (json['image'] ?? (json['product'] is Map ? json['product']['image'] : null) ?? '').toString(),
+      quantity: json['quantity'] is num ? (json['quantity'] as num).toInt() : (json['processedQty'] is num ? (json['processedQty'] as num).toInt() : 1),
       unitPrice: ((json['unitPrice'] ?? 0) as num).toDouble() / 100.0,
-      totalLoss: ((json['totalLoss'] ?? 0) as num).toDouble() / 100.0,
-      damageType: json['damageType'] ?? 'physical',
-      damageDiscoveredAt: json['damageDiscoveredAt'] ?? 'customer',
-      damageResolution: json['damageResolution'] ?? 'no_refund',
-      reasonText: json['reasonText'] ?? '',
-      notes: json['notes'] ?? '',
+      totalLoss: ((json['totalLoss'] ?? json['refundAmount'] ?? json['unitPrice'] ?? 0) as num).toDouble() / 100.0,
+      damageType: (json['damageType'] ?? 'physical').toString(),
+      damageDiscoveredAt: (json['damageDiscoveredAt'] ?? 'customer').toString(),
+      damageResolution: (json['damageResolution'] ?? 'no_refund').toString(),
+      reasonText: (json['reasonText'] ?? '').toString(),
+      notes: (json['notes'] ?? '').toString(),
+    );
+  }
+
+  DamagedItemRecord copyWith({
+    String? caseId,
+    String? caseNumber,
+    String? billNumber,
+    String? invoiceNumber,
+    String? customerName,
+    String? customerPhone,
+    String? caseStatus,
+    String? channel,
+    String? locationId,
+    String? locationName,
+    DateTime? createdAt,
+    String? itemId,
+    String? productId,
+    String? productName,
+    String? sku,
+    String? image,
+    int? quantity,
+    double? unitPrice,
+    double? totalLoss,
+    String? damageType,
+    String? damageDiscoveredAt,
+    String? damageResolution,
+    String? reasonText,
+    String? notes,
+  }) {
+    return DamagedItemRecord(
+      caseId: caseId ?? this.caseId,
+      caseNumber: caseNumber ?? this.caseNumber,
+      billNumber: billNumber ?? this.billNumber,
+      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      caseStatus: caseStatus ?? this.caseStatus,
+      channel: channel ?? this.channel,
+      locationId: locationId ?? this.locationId,
+      locationName: locationName ?? this.locationName,
+      createdAt: createdAt ?? this.createdAt,
+      itemId: itemId ?? this.itemId,
+      productId: productId ?? this.productId,
+      productName: productName ?? this.productName,
+      sku: sku ?? this.sku,
+      image: image ?? this.image,
+      quantity: quantity ?? this.quantity,
+      unitPrice: unitPrice ?? this.unitPrice,
+      totalLoss: totalLoss ?? this.totalLoss,
+      damageType: damageType ?? this.damageType,
+      damageDiscoveredAt: damageDiscoveredAt ?? this.damageDiscoveredAt,
+      damageResolution: damageResolution ?? this.damageResolution,
+      reasonText: reasonText ?? this.reasonText,
+      notes: notes ?? this.notes,
     );
   }
 }

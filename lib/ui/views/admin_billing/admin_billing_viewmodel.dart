@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/api_client.dart';
+import 'package:spare_shop_admin/core/services/location_service.dart';
 import 'package:spare_shop_admin/core/services/product_service.dart';
+import 'package:spare_shop_admin/core/services/token_service.dart';
+import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'package:stacked/stacked.dart';
 
@@ -35,6 +38,8 @@ class PaymentAllocation {
 class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
   final _apiClient = locator<ApiClient>();
   final _productService = locator<ProductService>();
+  final _locationService = locator<LocationService>();
+  final _tokenService = locator<TokenService>();
 
   final List<CartItemModel> _invoiceItems = [];
   List<CartItemModel> get invoiceItems => _invoiceItems;
@@ -60,6 +65,24 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
 
   List<ProductModel> _allProducts = [];
 
+  List<LocationModel> _locations = [];
+  List<LocationModel> get locations => _locations;
+
+  String? _selectedLocationId;
+  String? get selectedLocationId => _selectedLocationId;
+
+  String? _selectedLocationName;
+  String? get selectedLocationName => _selectedLocationName;
+
+  bool _canChangeLocation = true;
+  bool get canChangeLocation => _canChangeLocation;
+
+  String? _userAssignedLocationId;
+  String? get userAssignedLocationId => _userAssignedLocationId;
+
+  String? _userAssignedLocationName;
+  String? get userAssignedLocationName => _userAssignedLocationName;
+
   List<ProductModel> get searchResults {
     if (_searchQuery.isEmpty) return [];
     return _allProducts
@@ -81,15 +104,83 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
   bool _isInitialized = false;
 
   void initialize() async {
+    TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
+    TokenService.locationNotifier.addListener(_onLocationNotifierChanged);
+
     if (_isInitialized) return;
     _isInitialized = true;
     amountController.text = remainingAmount.toStringAsFixed(2);
     try {
+      _canChangeLocation = await _tokenService.canChangeLocation();
+      _userAssignedLocationId = await _tokenService.getUserLocationId();
+      _userAssignedLocationName = await _tokenService.getUserLocationName();
+
+      try {
+        _locations = await _locationService.getLocations();
+      } catch (_) {
+        _locations = [];
+      }
+
+      if (!_canChangeLocation &&
+          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+        _selectedLocationId = '__none__';
+        _selectedLocationName = null;
+      } else if (_userAssignedLocationId != null &&
+          _userAssignedLocationId!.isNotEmpty &&
+          _userAssignedLocationId != 'all') {
+        _selectedLocationId = _userAssignedLocationId;
+        final match = _locations.where((l) => l.id == _selectedLocationId);
+        _selectedLocationName = match.isNotEmpty ? match.first.name : _userAssignedLocationName;
+      } else if (_locations.isNotEmpty) {
+        _selectedLocationId = _locations.first.id;
+        _selectedLocationName = _locations.first.name;
+      }
+
       _allProducts = await _productService.getProducts();
       await loadPastInvoices();
       await loadTaxPercentage();
       notifyListeners();
     } catch (_) {}
+  }
+
+  void _onLocationNotifierChanged() {
+    final newLocId = TokenService.locationNotifier.locationId;
+    if (newLocId != null && newLocId.isNotEmpty) {
+      _selectedLocationId = newLocId;
+      final match = _locations.where((l) => l.id == newLocId);
+      _selectedLocationName = match.isNotEmpty ? match.first.name : TokenService.locationNotifier.locationName;
+    } else if (_locations.isNotEmpty) {
+      _selectedLocationId = _locations.first.id;
+      _selectedLocationName = _locations.first.name;
+    }
+    loadPastInvoices();
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
+    amountController.dispose();
+    referenceController.dispose();
+    noteController.dispose();
+    super.dispose();
+  }
+
+  void setSelectedBillingLocation(String? locationId) {
+    if (!_canChangeLocation) return;
+    _selectedLocationId = locationId;
+    if (locationId != null) {
+      final match = _locations.where((l) => l.id == locationId);
+      _selectedLocationName = match.isNotEmpty ? match.first.name : null;
+      locator<TokenService>().saveUserLocation(
+        locationId: locationId,
+        locationName: _selectedLocationName,
+      );
+    } else {
+      _selectedLocationName = null;
+    }
+    loadPastInvoices();
+    notifyListeners();
   }
 
   Future<void> loadTaxPercentage() async {
@@ -365,6 +456,12 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
         data: {
           'customerName': _selectedCustomer,
           'customerPhone': '+91 99000 88000',
+          if (_selectedLocationId != null && _selectedLocationId!.isNotEmpty)
+            'location': _selectedLocationId,
+          if (_selectedLocationId != null && _selectedLocationId!.isNotEmpty)
+            'locationId': _selectedLocationId,
+          if (_selectedLocationName != null && _selectedLocationName!.isNotEmpty)
+            'locationName': _selectedLocationName,
           'items': _invoiceItems
               .map((i) => {
                     'productId': i.product.id,
@@ -388,6 +485,7 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
       final result = {
         'invoiceNumber': invoiceNumber,
         'customerName': _selectedCustomer,
+        'locationName': _selectedLocationName ?? 'Main Branch',
         'dateStr': DateTime.now().toString().substring(0, 16),
         'subtotal': _serverSubtotal,
         'gstAmount': _serverTaxAmount,
@@ -420,10 +518,41 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
   Future<void> loadPastInvoices() async {
     setBusy(true);
     try {
+      if (_selectedLocationId == '__none__') {
+        _pastInvoices = [];
+        notifyListeners();
+        return;
+      }
+
       final response = await _apiClient.get('/pos');
       final rawList = response.data['data'] as List<dynamic>? ?? [];
 
-      _pastInvoices = rawList.map((item) {
+      _pastInvoices = rawList.where((item) {
+        if (_selectedLocationId != null && _selectedLocationId != 'all') {
+          final locMap = item['location'];
+          String? locId;
+          String? locName;
+          if (locMap is Map) {
+            locId = (locMap['_id'] ?? locMap['id'])?.toString();
+            locName = locMap['name']?.toString();
+          } else if (locMap != null) {
+            locId = locMap.toString();
+          }
+          if (item['locationId'] != null) {
+            locId = item['locationId'].toString();
+          }
+          if (item['locationName'] != null) {
+            locName = item['locationName'].toString();
+          }
+
+          final matchesId = locId == _selectedLocationId;
+          final matchesName = locName != null &&
+              _selectedLocationName != null &&
+              locName.toLowerCase() == _selectedLocationName!.toLowerCase();
+          return matchesId || matchesName;
+        }
+        return true;
+      }).map((item) {
         final double subtotal = (item['subTotal'] ?? 0) / 100.0;
         final double gstAmount = (item['taxAmount'] ?? 0) / 100.0;
         final double discount = (item['discountAmount'] ?? 0) / 100.0;
@@ -462,9 +591,18 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
                 ? rawDate
                 : DateTime.now().toString().substring(0, 16));
 
+        final locMap = item['location'];
+        String? locName;
+        if (locMap is Map) {
+          locName = locMap['name'];
+        } else if (item['locationName'] != null) {
+          locName = item['locationName'];
+        }
+
         return {
           'invoiceNumber': item['invoiceNumber'] ?? 'INV-UNKNOWN',
           'customerName': item['customerName'] ?? 'Walk-in Guest',
+          'locationName': locName ?? 'Main Branch',
           'dateStr': dateStr,
           'subtotal': subtotal,
           'gstAmount': gstAmount,

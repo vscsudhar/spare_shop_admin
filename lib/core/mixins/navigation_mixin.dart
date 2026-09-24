@@ -1,5 +1,6 @@
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/app/app.router.dart';
+import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 mixin NavigationMixin {
@@ -163,5 +164,43 @@ mixin NavigationMixin {
 
   Future<dynamic>? goToAdminSettings() {
     return navigationService.navigateTo(Routes.adminSettingsView);
+  }
+
+  Future<dynamic>? goToAdminLocations() {
+    return navigationService.navigateTo(Routes.adminLocationsView);
+  }
+
+  Future<dynamic>? goToAdminLocationForm() {
+    return navigationService.navigateTo(Routes.adminLocationFormView);
+  }
+
+  Future<dynamic>? goToEditAdminLocation({
+    required String locationId,
+  }) {
+    return navigationService.navigateTo(
+      Routes.adminLocationFormView,
+      arguments: AdminLocationFormViewArguments(locationId: locationId),
+    );
+  }
+
+  Future<dynamic>? goToAdminLocationInventory({
+    required String locationId,
+    LocationModel? location,
+  }) {
+    return navigationService.navigateTo(
+      Routes.adminLocationInventoryView,
+      arguments: AdminLocationInventoryViewArguments(
+        locationId: locationId,
+        location: location,
+      ),
+    );
+  }
+
+  Future<dynamic>? goToAdminDeliveryCharges() {
+    return navigationService.navigateTo(Routes.adminDeliveryChargesView);
+  }
+
+  Future<dynamic>? goToAdminForgotPassword() {
+    return navigationService.navigateTo(Routes.adminForgotPasswordView);
   }
 }

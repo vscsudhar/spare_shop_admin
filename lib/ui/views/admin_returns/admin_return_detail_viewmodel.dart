@@ -3,11 +3,16 @@ import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
 import 'package:spare_shop_admin/ui/common/return_exchange_models.dart';
+import 'package:spare_shop_admin/core/services/location_service.dart';
+import 'package:spare_shop_admin/core/services/token_service.dart';
+import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:stacked/stacked.dart';
 
 class AdminReturnDetailViewModel extends FutureViewModel<void> with NavigationMixin {
   final String caseId;
   final _returnsService = locator<ReturnExchangeService>();
+  final _locationService = locator<LocationService>();
+  final _tokenService = locator<TokenService>();
 
   final statusNoteController = TextEditingController();
 
@@ -16,6 +21,12 @@ class AdminReturnDetailViewModel extends FutureViewModel<void> with NavigationMi
 
   String? _selectedNewStatus;
   String? get selectedNewStatus => _selectedNewStatus;
+
+  List<LocationModel> _locations = [];
+  List<LocationModel> get locations => _locations;
+
+  bool _canChangeLocation = true;
+  bool get canChangeLocation => _canChangeLocation;
 
   AdminReturnDetailViewModel({required this.caseId});
 
@@ -36,9 +47,47 @@ class AdminReturnDetailViewModel extends FutureViewModel<void> with NavigationMi
       _kase = await _returnsService.getCaseById(caseId);
       _selectedNewStatus = null;
       statusNoteController.clear();
+
+      try {
+        _locations = await _locationService.getLocations();
+        _canChangeLocation = await _tokenService.canChangeLocation();
+      } catch (_) {}
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading return case detail: $e');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  Future<void> updateLocation(String locationId, String locationName, BuildContext context) async {
+    setBusy(true);
+    try {
+      final updated = await _returnsService.updateCaseLocation(
+        caseId,
+        locationId: locationId,
+        locationName: locationName,
+      );
+      _kase = updated;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Processing Hub updated to $locationName'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      notifyListeners();
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update hub: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setBusy(false);
     }

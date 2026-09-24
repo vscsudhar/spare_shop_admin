@@ -621,7 +621,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
-                                  value: selectedCatId,
+                                  initialValue: selectedCatId,
                                   decoration: const InputDecoration(
                                     labelText: 'Category *',
                                     border: OutlineInputBorder(),

@@ -99,7 +99,7 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'DEMO CREDENTIALS:',
+                              'DEFAULT CONSOLE CREDENTIALS:',
                               style: TextStyle(
                                 color: AdminColors.accentLime,
                                 fontWeight: FontWeight.bold,
@@ -108,10 +108,10 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Email: owner@voltspare.com\nPassword: P@ssword123!',
+                              '👑 Owner (Global HQ):\nEmail: owner@voltspare.com\nPassword: OwnerPassword123!\n\n📍 Staff (Madukkarai Hub):\nEmail: rohan.d@voltspare.com\nPassword: Staff12345!\n\n✨ Any updated or newly created staff credentials from "Staff & Roles" can also be used to log in directly.',
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.9),
-                                fontSize: 13,
+                                fontSize: 12,
                                 height: 1.4,
                               ),
                             ),
@@ -271,13 +271,7 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Please contact your administrator to reset password.')),
-                                );
-                              },
+                              onPressed: viewModel.goToForgotPassword,
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,
@@ -400,7 +394,7 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'DEMO CREDENTIALS:',
+                                  'DEFAULT CONSOLE CREDENTIALS:',
                                   style: TextStyle(
                                     color: AdminColors.primaryGreen,
                                     fontWeight: FontWeight.bold,
@@ -409,7 +403,7 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  'Email: owner@voltspare.com\nPassword: P@ssword123!',
+                                  '👑 Owner: owner@voltspare.com (OwnerPassword123!)\n📍 Staff: rohan.d@voltspare.com (Staff12345!)\n✨ Any staff member created or updated in Staff & Roles can also log in directly.',
                                   style: TextStyle(
                                     color: AdminColors.textSecondary,
                                     fontSize: 12,

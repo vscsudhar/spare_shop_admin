@@ -116,7 +116,7 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                                 flex: 3,
                                 child: Column(
                                   children: [
-                                    _buildCaseSummaryCard(kase),
+                                    _buildCaseSummaryCard(context, viewModel, kase),
                                     const SizedBox(height: 20),
                                     _buildItemsList(kase),
                                   ],
@@ -141,7 +141,7 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                         } else {
                           return Column(
                             children: [
-                              _buildCaseSummaryCard(kase),
+                              _buildCaseSummaryCard(context, viewModel, kase),
                               const SizedBox(height: 20),
                               if (viewModel.availableNextStatuses.isNotEmpty) ...[
                                 _buildStatusActionCard(context, viewModel),
@@ -160,7 +160,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
     );
   }
 
-  Widget _buildCaseSummaryCard(ReturnExchangeCase kase) {
+  Widget _buildCaseSummaryCard(
+      BuildContext context, AdminReturnDetailViewModel viewModel, ReturnExchangeCase kase) {
     return AdminPanelCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,6 +173,9 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
             spacing: 32,
             runSpacing: 12,
             children: [
+              _infoLine('Origin Channel', kase.channel == 'online' ? '📱 Online Mobile App' : '🏬 Store Visit / Counter'),
+              _infoLine('Processing Hub', kase.locationName?.isNotEmpty == true ? kase.locationName! : '⚠️ Unassigned HQ',
+                  color: kase.locationName?.isNotEmpty == true ? AdminColors.primaryGreen : Colors.orangeAccent),
               _infoLine('Case Number', kase.caseNumber),
               _infoLine('Bill Number', kase.billNumber),
               if (kase.invoiceNumber.isNotEmpty)
@@ -190,6 +194,30 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                     color: Colors.greenAccent),
             ],
           ),
+          if (viewModel.canChangeLocation && viewModel.locations.isNotEmpty) ...[
+            const Divider(height: 24),
+            Row(
+              children: [
+                Icon(Icons.storefront_outlined, size: 16, color: AdminColors.primaryGreen),
+                const SizedBox(width: 8),
+                Text(
+                  'Fulfillment & Store Hub: ${kase.locationName ?? "Unassigned"}',
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+                const Spacer(),
+                OutlinedButton.icon(
+                  onPressed: () => _showLocationPicker(context, viewModel, kase),
+                  icon: const Icon(Icons.edit_location_alt, size: 14),
+                  label: const Text('Change Hub', style: TextStyle(fontSize: 12)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AdminColors.primaryGreen,
+                    side: BorderSide(color: AdminColors.primaryGreen.withValues(alpha: 0.5)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (kase.adminNotes.isNotEmpty) ...[
             const Divider(height: 24),
             Text('Admin Notes: ${kase.adminNotes}',
@@ -559,6 +587,68 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
       default:
         return Colors.orange;
     }
+  }
+
+  void _showLocationPicker(
+      BuildContext context, AdminReturnDetailViewModel viewModel, ReturnExchangeCase kase) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AdminColors.panelBackground,
+          title: Row(
+            children: [
+              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 20),
+              const SizedBox(width: 8),
+              const Text('Assign Processing Hub / Store', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+          content: SizedBox(
+            width: 380,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select the physical store location or fulfillment hub for Case ${kase.caseNumber}:',
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                ...viewModel.locations.map((loc) {
+                  final isSelected = loc.id == kase.locationId;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: Icon(
+                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                      color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                      size: 18,
+                    ),
+                    title: Text(loc.name,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? AdminColors.primaryGreen : Colors.white)),
+                    subtitle: Text('Radius: ${loc.radiusDisplay}',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      viewModel.updateLocation(loc.id, loc.name, context);
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

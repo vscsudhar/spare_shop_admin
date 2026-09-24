@@ -170,9 +170,7 @@ class AdminRareRequestChatView
                                           '${req.quantity} Units'),
                                       _summaryField(
                                           'Urgency Priority', req.urgency),
-                                      if (req.budget != null)
-                                        _summaryField('Target Budget',
-                                            '₹${req.budget!.toStringAsFixed(2)}'),
+                                      
                                     ],
                                   ),
                                   if (req.images.isNotEmpty) ...[
@@ -308,6 +306,23 @@ class AdminRareRequestChatView
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
                                 const SizedBox(height: 16),
+                                _infoRow('Channel', req.channel == 'in_store' ? '🏬 In-Store Walk-in' : '📱 Online Mobile App'),
+                                _infoRow('Assigned Store Hub', req.locationName?.isNotEmpty == true ? req.locationName! : '⚠️ Unassigned HQ'),
+                                if (viewModel.canChangeLocation && viewModel.locations.isNotEmpty) ...[
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TextButton.icon(
+                                      onPressed: () => _showLocationPicker(context, viewModel, req),
+                                      icon: const Icon(Icons.edit_location_alt, size: 14),
+                                      label: const Text('Change Hub', style: TextStyle(fontSize: 12)),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: AdminColors.primaryGreen,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                ],
                                 _infoRow('Customer Name', req.customerName),
                                 _infoRow('Phone Number', req.phone),
                                 _infoRow('Inquiry Item',
@@ -317,9 +332,7 @@ class AdminRareRequestChatView
                                 _infoRow('Quantity Requested',
                                     '${req.quantity} Units'),
                                 _infoRow('Urgency Priority', req.urgency),
-                                if (req.budget != null)
-                                  _infoRow('Target Budget',
-                                      '₹${req.budget!.toStringAsFixed(2)}'),
+                                
                                 _infoRow('Ticket Status',
                                     req.status.name.toUpperCase()),
                               ],
@@ -554,6 +567,71 @@ class AdminRareRequestChatView
                 color: AdminColors.textPrimary,
                 fontWeight: FontWeight.w600)),
       ],
+    );
+  }
+
+  void _showLocationPicker(
+    BuildContext context,
+    AdminRareRequestChatViewModel viewModel,
+    RareProductRequestModel req,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AdminColors.panelBackground,
+          title: Row(
+            children: [
+              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 20),
+              const SizedBox(width: 8),
+              const Text('Assign Store Hub', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+          content: SizedBox(
+            width: 380,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select the fulfillment hub location for ticket #${req.id.length > 8 ? req.id.substring(req.id.length - 8).toUpperCase() : req.id}:',
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                ...viewModel.locations.map((loc) {
+                  final isSelected = loc.id == req.locationId;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: Icon(
+                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                      color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                      size: 18,
+                    ),
+                    title: Text(loc.name,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? AdminColors.primaryGreen : Colors.white)),
+                    subtitle: Text('Radius: ${loc.radiusDisplay}',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      viewModel.updateLocation(loc.id, loc.name, context);
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
   }
 

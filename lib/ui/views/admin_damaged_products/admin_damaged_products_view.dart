@@ -120,7 +120,132 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
               );
             }
           }),
-          const SizedBox(height: 24),
+          const SizedBox(height: 24),          // Location Filter Section & Hub Selector
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AdminColors.panelBackground,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AdminColors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.location_on,
+                        size: 16, color: AdminColors.primaryGreen),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Store Hub Location:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AdminColors.textPrimary,
+                      ),
+                    ),
+                    if (!viewModel.canChangeLocation &&
+                        viewModel.userAssignedLocationName != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: Colors.amber.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Scoped to ${viewModel.userAssignedLocationName}',
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      AdminFilterChip(
+                        label: 'All Locations (HQ)',
+                        isSelected: viewModel.selectedLocationFilter == 'all',
+                        onTap: () => viewModel.setSelectedLocationFilter('all'),
+                      ),
+                      ...viewModel.locations.map((loc) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: AdminFilterChip(
+                            label: '${loc.name} Hub',
+                            isSelected:
+                                viewModel.selectedLocationFilter == loc.id,
+                            onTap: () =>
+                                viewModel.setSelectedLocationFilter(loc.id),
+                          ),
+                        );
+                      }),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: AdminFilterChip(
+                          label: 'Unassigned',
+                          isSelected:
+                              viewModel.selectedLocationFilter == 'unassigned',
+                          onTap: () =>
+                              viewModel.setSelectedLocationFilter('unassigned'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Return Channel Filter (Online App vs In-Store Visit)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                const Text('Channel: ',
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white70)),
+                const SizedBox(width: 6),
+                AdminFilterChip(
+                  label: 'All Channels',
+                  isSelected: viewModel.selectedChannel == 'all',
+                  onTap: () => viewModel.setSelectedChannel('all'),
+                ),
+                const SizedBox(width: 8),
+                AdminFilterChip(
+                  label: '📱 Online Mobile App',
+                  isSelected: viewModel.selectedChannel == 'online',
+                  onTap: () => viewModel.setSelectedChannel('online'),
+                ),
+                const SizedBox(width: 8),
+                AdminFilterChip(
+                  label: '🏬 Store Visit / Walk-in',
+                  isSelected: viewModel.selectedChannel == 'in_store',
+                  onTap: () => viewModel.setSelectedChannel('in_store'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
 
           // Filter chips row
           SingleChildScrollView(
@@ -229,20 +354,20 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                 child: CircularProgressIndicator(),
               ),
             )
-          else if (viewModel.damagedItems.isEmpty)
+          else if (viewModel.filteredDamagedItems.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(48.0),
                 child: Column(
                   children: [
                     const Icon(Icons.check_circle_outline,
-                        size: 56, color: Colors.green),
+                        size: 56, color: Colors.greenAccent),
                     const SizedBox(height: 16),
-                    Text('No Damaged Products Found',
+                    Text('No Damaged Items Recorded',
                         style: AdminTextStyles.sectionHeader),
                     const SizedBox(height: 8),
                     const Text(
-                      'No products currently flagged as damaged for the selected filters.',
+                      'No damage classifications found for the selected location hub and filters.',
                       style: TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],
@@ -254,7 +379,8 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
               columns: const [
                 'Product',
                 'Classification',
-                'Discovered At',
+                'Hub Location',
+                'Channel',
                 'Qty',
                 'Unit Price',
                 'Total Loss',
@@ -263,9 +389,11 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                 'Date',
                 'Actions',
               ],
-              rows: viewModel.damagedItems.map((item) {
+              rows: viewModel.filteredDamagedItems.map((item) {
                 final dateStr =
                     '${item.createdAt.day.toString().padLeft(2, '0')}/${item.createdAt.month.toString().padLeft(2, '0')}/${item.createdAt.year}';
+                final isOnline = item.channel.toLowerCase().contains('online') ||
+                    item.channel.toLowerCase().contains('app');
 
                 return AdminTableRow(
                   cells: [
@@ -308,9 +436,64 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                       ],
                     ),
                     _damageTypeBadge(item.damageType),
-                    Text(item.damageDiscoveredAt.toUpperCase(),
-                        style: const TextStyle(
-                            fontSize: 11, color: Colors.white70)),
+                    // Location Hub
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AdminColors.primaryGreen.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: AdminColors.primaryGreen
+                                  .withValues(alpha: 0.25)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.location_on,
+                                size: 10, color: AdminColors.primaryGreen),
+                            const SizedBox(width: 3),
+                            Text(
+                              item.locationName != null &&
+                                      item.locationName!.isNotEmpty
+                                  ? '${item.locationName!} Hub'
+                                  : 'Global HQ',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AdminColors.primaryGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Channel
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isOnline
+                              ? Colors.cyan.withValues(alpha: 0.15)
+                              : Colors.purple.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          isOnline ? '📱 Online App' : '🏬 Store Visit',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: isOnline
+                                ? Colors.cyanAccent
+                                : Colors.purpleAccent,
+                          ),
+                        ),
+                      ),
+                    ),
                     Text(
                       '${item.quantity}',
                       style: const TextStyle(

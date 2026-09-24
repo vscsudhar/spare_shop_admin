@@ -390,6 +390,77 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
               Expanded(
                 child: Column(
                   children: [
+                    // Location Hub Selector Card
+                    AdminPanelCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.storefront,
+                                  size: 16, color: AdminColors.primaryGreen),
+                              const SizedBox(width: 6),
+                              Text(
+                                'POS Register Hub',
+                                style: AdminTextStyles.sectionHeader
+                                    .copyWith(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          if (!viewModel.canChangeLocation &&
+                              viewModel.userAssignedLocationName != null) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: Colors.amber.withValues(alpha: 0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.lock,
+                                      size: 14, color: Colors.amber),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      'Locked to ${viewModel.userAssignedLocationName}',
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.amber,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ] else ...[
+                            DropdownButtonFormField<String>(
+                              initialValue: viewModel.selectedLocationId,
+                              decoration: const InputDecoration(
+                                labelText: 'Active Branch / Hub',
+                                border: OutlineInputBorder(),
+                                contentPadding: EdgeInsets.all(8),
+                              ),
+                              items: viewModel.locations.map((loc) {
+                                return DropdownMenuItem<String>(
+                                  value: loc.id,
+                                  child: Text('${loc.name} Hub'),
+                                );
+                              }).toList(),
+                              onChanged: viewModel.canChangeLocation
+                                  ? (val) =>
+                                      viewModel.setSelectedBillingLocation(val)
+                                  : null,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Client Details
                     AdminPanelCard(
                       child: Column(
@@ -727,6 +798,7 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                         style: TextStyle(fontSize: 10, color: Colors.grey))),
                 const Divider(height: 24),
                 _confirmLine('Invoice Number', invoice['invoiceNumber']),
+                _confirmLine('Branch / Hub', invoice['locationName'] ?? 'Main Branch'),
                 _confirmLine('Customer Name', invoice['customerName']),
                 _confirmLine('Date', invoice['dateStr']),
                 const Divider(),

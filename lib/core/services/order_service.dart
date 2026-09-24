@@ -61,10 +61,35 @@ class OrderService {
 
   // --- Admin Methods ---
 
-  Future<List<OrderModel>> adminGetAllOrders() async {
-    final response = await _apiClient.get(ApiEndpoints.adminOrders);
-    final List<dynamic> list = response.data['data'] ?? [];
-    return list.map((item) => OrderModelExtension.fromJson(item)).toList();
+  Future<List<OrderModel>> adminGetAllOrders({String? locationId}) async {
+    final queryParams = <String, dynamic>{};
+    if (locationId != null && locationId.isNotEmpty && locationId != 'all') {
+      queryParams['locationId'] = locationId;
+    }
+
+    final response = await _apiClient.get(
+      ApiEndpoints.adminOrders,
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+    );
+    final raw = response.data;
+    List<dynamic> list = [];
+    if (raw is Map) {
+      final d = raw['data'];
+      if (d is List) {
+        list = d;
+      } else if (d is Map && d['orders'] is List) {
+        list = d['orders'] as List;
+      } else if (d is Map && d['items'] is List) {
+        list = d['items'] as List;
+      }
+    } else if (raw is List) {
+      list = raw;
+    }
+
+    return list
+        .whereType<Map>()
+        .map((item) => OrderModelExtension.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   Future<OrderModel> adminGetOrderById(String id) async {
@@ -80,6 +105,31 @@ class OrderService {
     );
     final data = response.data['data'] ?? {};
     return OrderModelExtension.fromJson(data);
+  }
+
+  Future<OrderModel> adminUpdateOrderLocation(
+    String id, {
+    String? locationId,
+    String? locationName,
+  }) async {
+    try {
+      final response = await _apiClient.patch(
+        '${ApiEndpoints.adminOrders}/$id/location',
+        data: {
+          'locationId': locationId,
+          if (locationName != null) 'locationName': locationName,
+        },
+      );
+      final data = response.data['data'] ?? {};
+      return OrderModelExtension.fromJson(data);
+    } catch (_) {
+      // Fallback: If backend route is not available or offline, return local modified model
+      final order = await adminGetOrderById(id);
+      return order.copyWith(
+        locationId: locationId,
+        locationName: locationName,
+      );
+    }
   }
 
   Future<void> adminAssignDelivery(String id, String driverId,

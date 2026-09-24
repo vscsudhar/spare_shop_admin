@@ -108,6 +108,44 @@ class AdminSuppliersView extends StackedView<AdminSuppliersViewModel> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 14),
+                // Hub Location Filter Chips Row
+                Row(
+                  children: [
+                    Icon(Icons.location_on,
+                        size: 15, color: AdminColors.primaryGreen),
+                    const SizedBox(width: 6),
+                    const Text('Serving Hub: ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _filterChip(
+                              viewModel.selectedLocationFilter == 'all',
+                              'All Hubs',
+                              () => viewModel.setSelectedLocationFilter('all'),
+                            ),
+                            ...viewModel.locations.map((loc) {
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: _filterChip(
+                                  viewModel.selectedLocationFilter == loc.id,
+                                  '${loc.name} Hub',
+                                  () => viewModel
+                                      .setSelectedLocationFilter(loc.id),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

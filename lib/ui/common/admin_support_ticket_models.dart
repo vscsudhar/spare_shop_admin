@@ -167,6 +167,8 @@ class AdminSupportTicket {
   final AdminTicketStatus status;
   final String priority;
   final List<AdminTicketAttachment> photos;
+  final String? locationId;
+  final String? locationName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -184,6 +186,8 @@ class AdminSupportTicket {
     required this.status,
     this.priority = 'medium',
     this.photos = const [],
+    this.locationId,
+    this.locationName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -219,6 +223,23 @@ class AdminSupportTicket {
       }
     }
 
+    String? locId;
+    String? locName;
+    if (json['locationId'] is Map) {
+      locId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locName = json['locationId']['name']?.toString();
+    } else if (json['locationId'] != null) {
+      locId = json['locationId'].toString();
+    } else if (json['location'] is Map) {
+      locId = (json['location']['_id'] ?? json['location']['id'])?.toString();
+      locName = json['location']['name']?.toString();
+    } else if (json['location'] != null) {
+      locId = json['location'].toString();
+    }
+    if (json['locationName'] != null && json['locationName'].toString().isNotEmpty) {
+      locName = json['locationName'].toString();
+    }
+
     return AdminSupportTicket(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       ticketNumber: json['ticketNumber']?.toString() ?? 'TKT-0000',
@@ -233,6 +254,8 @@ class AdminSupportTicket {
       status: AdminTicketStatus.fromString(json['status']?.toString()),
       priority: json['priority']?.toString() ?? 'medium',
       photos: photoList,
+      locationId: locId,
+      locationName: locName,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
@@ -256,6 +279,8 @@ class AdminSupportTicket {
     AdminTicketStatus? status,
     String? priority,
     List<AdminTicketAttachment>? photos,
+    String? locationId,
+    String? locationName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -273,6 +298,8 @@ class AdminSupportTicket {
       status: status ?? this.status,
       priority: priority ?? this.priority,
       photos: photos ?? this.photos,
+      locationId: locationId ?? this.locationId,
+      locationName: locationName ?? this.locationName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

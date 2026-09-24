@@ -5,11 +5,13 @@ import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 class RareRequestCard extends StatelessWidget {
   final RareProductRequestModel request;
   final VoidCallback onTap;
+  final VoidCallback? onAssignLocation;
 
   const RareRequestCard({
     super.key,
     required this.request,
     required this.onTap,
+    this.onAssignLocation,
   });
 
   String _formatDate(DateTime dt) {
@@ -207,6 +209,90 @@ class RareRequestCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      // Channel and Location Badges
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          // Channel badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: request.channel == 'in_store'
+                                  ? Colors.teal.withValues(alpha: 0.15)
+                                  : Colors.blue.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: request.channel == 'in_store'
+                                    ? Colors.teal.withValues(alpha: 0.3)
+                                    : Colors.blue.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  request.channel == 'in_store' ? '🏬 In-Store' : '📱 App',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: request.channel == 'in_store' ? Colors.tealAccent : Colors.lightBlueAccent,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Location badge
+                          InkWell(
+                            onTap: onAssignLocation,
+                            borderRadius: BorderRadius.circular(4),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: (request.locationName != null && request.locationName!.isNotEmpty)
+                                    ? AdminColors.primaryGreen.withValues(alpha: 0.15)
+                                    : Colors.orange.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: (request.locationName != null && request.locationName!.isNotEmpty)
+                                      ? AdminColors.primaryGreen.withValues(alpha: 0.3)
+                                      : Colors.orange.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.storefront_outlined,
+                                    size: 11,
+                                    color: (request.locationName != null && request.locationName!.isNotEmpty)
+                                        ? AdminColors.primaryGreen
+                                        : Colors.orangeAccent,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    request.locationName ?? 'Unassigned HQ',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: (request.locationName != null && request.locationName!.isNotEmpty)
+                                          ? AdminColors.primaryGreen
+                                          : Colors.orangeAccent,
+                                    ),
+                                  ),
+                                  if (onAssignLocation != null) ...[
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.edit, size: 10, color: Colors.white60),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -241,14 +327,6 @@ class RareRequestCard extends StatelessWidget {
                         style: AdminTextStyles.body.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AdminColors.primaryGreen),
-                      )
-                    else if (request.budget != null)
-                      Text(
-                        'Budget: ₹${request.budget!.toStringAsFixed(0)}',
-                        style: AdminTextStyles.bodySecondary.copyWith(
-                          color: AdminColors.accentLime,
-                          fontSize: 11,
-                        ),
                       ),
                   ],
                 ),

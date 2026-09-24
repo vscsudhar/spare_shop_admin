@@ -49,7 +49,15 @@ import 'package:spare_shop_admin/ui/views/admin_returns/admin_returns_list_view.
 import 'package:spare_shop_admin/ui/views/admin_returns/admin_new_return_view.dart';
 import 'package:spare_shop_admin/ui/views/admin_returns/admin_return_detail_view.dart';
 import 'package:spare_shop_admin/ui/views/admin_damaged_products/admin_damaged_products_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_locations/admin_locations_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_locations/admin_location_form_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_locations/admin_location_inventory_view.dart';
 import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
+import 'package:spare_shop_admin/core/services/location_service.dart';
+import 'package:spare_shop_admin/core/services/staff_service.dart';
+import 'package:spare_shop_admin/ui/views/admin_delivery_charges/admin_delivery_charges_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_forgot_password/admin_forgot_password_view.dart';
+import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -72,9 +80,13 @@ import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
     MaterialRoute(page: AdminApprovedRequestView),
     MaterialRoute(page: AdminCancelledRequestView),
     MaterialRoute(page: AdminLoginView),
+    MaterialRoute(page: AdminForgotPasswordView),
     MaterialRoute(page: AdminSuppliersView),
     MaterialRoute(page: AdminSupplierDetailView),
     MaterialRoute(page: AdminSupplierFormView),
+    MaterialRoute(page: AdminLocationsView),
+    MaterialRoute(page: AdminLocationFormView),
+    MaterialRoute(page: AdminLocationInventoryView),
     MaterialRoute(page: AdminSettingsView),
     MaterialRoute(page: AdminSupportTicketsView),
     MaterialRoute(page: AdminTicketChatView),
@@ -82,6 +94,7 @@ import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
     MaterialRoute(page: AdminNewReturnView),
     MaterialRoute(page: AdminReturnDetailView),
     MaterialRoute(page: AdminDamagedProductsView),
+    MaterialRoute(page: AdminDeliveryChargesView),
 // @stacked-route
   ],
   dependencies: [
@@ -107,6 +120,9 @@ import 'package:spare_shop_admin/core/services/return_exchange_service.dart';
     LazySingleton(classType: AdminPurchaseService),
     LazySingleton(classType: AdminSupportTicketService),
     LazySingleton(classType: ReturnExchangeService),
+    LazySingleton(classType: LocationService),
+    LazySingleton(classType: StaffService),
+    LazySingleton(classType: DeliveryChargeService),
     // @stacked-service
   ],
   bottomsheets: [

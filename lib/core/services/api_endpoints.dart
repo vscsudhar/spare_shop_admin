@@ -1,8 +1,27 @@
-class ApiEndpoints {
-  static const String hostIp = '192.168.0.174';
+import 'package:flutter/foundation.dart';
 
-  static String get baseUrl => 'http://$hostIp:5000/api/v1';
-  static String get socketUrl => 'http://$hostIp:5000';
+class ApiEndpoints {
+  static const String hostIp = '192.168.0.175';
+
+  static String get baseUrl {
+    if (kIsWeb) {
+      final host = (Uri.base.host.isNotEmpty && Uri.base.host != '0.0.0.0')
+          ? Uri.base.host
+          : hostIp;
+      return 'http://$host:5000/api/v1';
+    }
+    return 'http://$hostIp:5000/api/v1';
+  }
+
+  static String get socketUrl {
+    if (kIsWeb) {
+      final host = (Uri.base.host.isNotEmpty && Uri.base.host != '0.0.0.0')
+          ? Uri.base.host
+          : hostIp;
+      return 'http://$host:5000';
+    }
+    return 'http://$hostIp:5000';
+  }
 
   // Authentication
   static const String customerLogin = '/auth/customer/login';
@@ -51,4 +70,5 @@ class ApiEndpoints {
   static const String permissions = '/permissions';
   static const String settings = '/settings';
   static const String notifications = '/notifications';
+  static const String locations = '/admin/locations';
 }

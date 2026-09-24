@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/app/app.router.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
+import 'package:spare_shop_admin/core/services/location_service.dart';
 import 'package:spare_shop_admin/core/services/rare_request_service.dart';
 import 'package:spare_shop_admin/core/services/socket_service.dart';
+import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:spare_shop_admin/core/services/voltspare_models_extensions.dart';
+import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'package:stacked/stacked.dart';
 
 class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
   final _rareRequestService = locator<RareRequestService>();
   final _socketService = locator<SocketService>();
+  final _locationService = locator<LocationService>();
+  final _tokenService = locator<TokenService>();
 
   late String _requestId;
   String get requestId => _requestId;
@@ -23,6 +28,12 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
   List<RareChatMessageModel> _chatMessages = [];
   List<RareChatMessageModel> get chatMessages => _chatMessages;
 
+  List<LocationModel> _locations = [];
+  List<LocationModel> get locations => _locations;
+
+  bool _canChangeLocation = true;
+  bool get canChangeLocation => _canChangeLocation;
+
   bool _isInitialized = false;
 
   void initialize(String id) async {
@@ -34,6 +45,12 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
     try {
       _request = await _rareRequestService.adminGetRequestById(id);
       _chatMessages = await _rareRequestService.getChatMessages(id);
+
+      try {
+        _locations = await _locationService.getLocations();
+        _canChangeLocation = await _tokenService.canChangeLocation();
+      } catch (_) {}
+
       rebuildUi();
     } catch (e, st) {
       debugPrint('Error loading admin chat init: $e\n$st');
@@ -41,13 +58,15 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
       setBusy(false);
     }
 
-    // Connect real-time socket listeners
-    _socketService.connect();
-    _socketService.joinRequestRoom(id);
-
+    // Unsubscribe from any previous listeners first
     _socketService.off('rare_chat:message');
     _socketService.off('rare_chat:read');
+    _socketService.off('rare_chat:received');
     _socketService.off('rare_request:updated');
+
+    // Connect real-time socket listeners
+    await _socketService.connect();
+    _socketService.joinRequestRoom(id);
 
     // Emit read receipt for existing messages
     _socketService.emit('rare_chat:read', {'requestId': id});
@@ -56,17 +75,30 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
       if (disposed) return;
       if (data != null) {
         try {
-          final newMsg = RareChatMessageModelExtension.fromJson(
-              Map<String, dynamic>.from(data));
-          if (!_chatMessages.any((m) => m.id == newMsg.id)) {
+          final map = data is Map<String, dynamic>
+              ? data
+              : Map<String, dynamic>.from(data as Map);
+          final newMsg = RareChatMessageModelExtension.fromJson(map);
+
+          final existingIdx = _chatMessages.indexWhere((m) =>
+              m.id == newMsg.id ||
+              (m.id.startsWith('temp_') &&
+                  m.message == newMsg.message &&
+                  m.sender == newMsg.sender));
+
+          if (existingIdx != -1) {
+            _chatMessages[existingIdx] = newMsg;
+          } else {
             _chatMessages.add(newMsg);
-
-            // Immediately mark it as read since the chat view is active
-            _socketService.emit('rare_chat:read', {'requestId': _requestId});
-
-            rebuildUi();
           }
-        } catch (_) {}
+
+          // Immediately mark it as read since the chat view is active
+          _socketService.emit('rare_chat:read', {'requestId': _requestId});
+
+          rebuildUi();
+        } catch (e) {
+          debugPrint('Error handling incoming admin chat message: $e');
+        }
       }
     });
 
@@ -145,10 +177,15 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
       final newMsg = await _rareRequestService.adminSendChatMessage(
           _requestId, text.trim());
 
-      final index = _chatMessages.indexWhere((m) => m.id == tempId);
+      final index = _chatMessages.indexWhere((m) =>
+          m.id == tempId ||
+          m.id == newMsg.id ||
+          (m.id.startsWith('temp_') &&
+              m.message == newMsg.message &&
+              m.sender == newMsg.sender));
       if (index != -1) {
         _chatMessages[index] = newMsg;
-      } else if (!_chatMessages.any((m) => m.id == newMsg.id)) {
+      } else {
         _chatMessages.add(newMsg);
       }
       rebuildUi();
@@ -214,6 +251,42 @@ class AdminRareRequestChatViewModel extends BaseViewModel with NavigationMixin {
       Routes.adminCancelledRequestView,
       arguments: AdminCancelledRequestViewArguments(requestId: _requestId),
     );
+  }
+
+  Future<void> updateLocation(
+    String locationId,
+    String locationName,
+    BuildContext context,
+  ) async {
+    setBusy(true);
+    try {
+      final updated = await _rareRequestService.adminUpdateRequestLocation(
+        _requestId,
+        locationId: locationId,
+        locationName: locationName,
+      );
+      _request = updated;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Assigned store hub updated to $locationName'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      rebuildUi();
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update hub: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
   void closeRequest() {

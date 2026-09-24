@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
+import 'package:spare_shop_admin/ui/common/return_exchange_models.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_common_widgets.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_table_widgets.dart';
@@ -23,6 +24,7 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -33,8 +35,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                       style: AdminTextStyles.sectionHeader),
                   const SizedBox(height: 4),
                   Text(
-                    'Track and process returns, damages, and product replacements',
-                    style: AdminTextStyles.bodySecondary,
+                    'Track online app return claims and in-store walk-in returns by location hub',
+                    style: AdminTextStyles.bodySecondary.copyWith(fontSize: 12),
                   ),
                 ],
               ),
@@ -66,9 +68,138 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          // Filters row
+          // Location Filter Section
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AdminColors.panelBackground,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AdminColors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.location_on,
+                        size: 16, color: AdminColors.primaryGreen),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Store Hub Location:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AdminColors.textPrimary,
+                      ),
+                    ),
+                    if (!viewModel.canChangeLocation &&
+                        viewModel.userAssignedLocationName != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: Colors.amber.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Scoped to ${viewModel.userAssignedLocationName}',
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      AdminFilterChip(
+                        label: 'All Locations (HQ)',
+                        isSelected: viewModel.selectedLocationFilter == 'all',
+                        onTap: () => viewModel.setSelectedLocationFilter('all'),
+                      ),
+                      ...viewModel.locations.map((loc) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: AdminFilterChip(
+                            label: '${loc.name} Hub',
+                            isSelected:
+                                viewModel.selectedLocationFilter == loc.id,
+                            onTap: () =>
+                                viewModel.setSelectedLocationFilter(loc.id),
+                          ),
+                        );
+                      }),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: AdminFilterChip(
+                          label: viewModel.unassignedCasesCount > 0
+                              ? '⚠️ Unassigned (${viewModel.unassignedCasesCount})'
+                              : 'Unassigned',
+                          isSelected:
+                              viewModel.selectedLocationFilter == 'unassigned',
+                          onTap: () =>
+                              viewModel.setSelectedLocationFilter('unassigned'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Return Channel Filter (Online App vs In-Store Visit)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                const Text('Channel: ',
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white70)),
+                const SizedBox(width: 6),
+                AdminFilterChip(
+                  label: 'All Channels',
+                  isSelected: viewModel.selectedChannel == 'all',
+                  onTap: () => viewModel.setSelectedChannel('all'),
+                ),
+                const SizedBox(width: 8),
+                AdminFilterChip(
+                  label: '📱 Online Mobile App (${viewModel.onlineClaimsCount})',
+                  isSelected: viewModel.selectedChannel == 'online',
+                  onTap: () => viewModel.setSelectedChannel('online'),
+                ),
+                const SizedBox(width: 8),
+                AdminFilterChip(
+                  label: '🏬 Store Visit / Walk-in (${viewModel.storeVisitsCount})',
+                  isSelected: viewModel.selectedChannel == 'in_store',
+                  onTap: () => viewModel.setSelectedChannel('in_store'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Type & Status Filters row
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -147,7 +278,7 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
           // Cases Table
           if (viewModel.isBusy)
@@ -193,6 +324,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                 'Case Number',
                 'Bill Reference',
                 'Customer',
+                'Hub Location',
+                'Channel',
                 'Type',
                 'Status',
                 'Items',
@@ -210,6 +343,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                 } else if (c.totalPayableAmount > 0) {
                   adjustmentLabel = 'Payable: ₹${c.totalPayableAmount.toStringAsFixed(2)}';
                 }
+
+                final hasLocation = c.locationName != null && c.locationName!.isNotEmpty;
 
                 return AdminTableRow(
                   cells: [
@@ -231,6 +366,74 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                               style: const TextStyle(
                                   fontSize: 11, color: Colors.grey)),
                       ],
+                    ),
+                    // Location Hub Cell
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: hasLocation
+                          ? InkWell(
+                              onTap: () =>
+                                  _showAssignLocationDialog(context, viewModel, c),
+                              borderRadius: BorderRadius.circular(6),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AdminColors.primaryGreen
+                                      .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                      color: AdminColors.primaryGreen
+                                          .withValues(alpha: 0.3)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.location_on,
+                                        size: 13,
+                                        color: AdminColors.primaryGreen),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      c.locationName!,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: AdminColors.primaryGreen,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.arrow_drop_down,
+                                        size: 14, color: Colors.white54),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : OutlinedButton.icon(
+                              onPressed: () =>
+                                  _showAssignLocationDialog(context, viewModel, c),
+                              icon: const Icon(Icons.add_location_alt,
+                                  size: 12, color: Colors.amber),
+                              label: const Text(
+                                '+ Add Hub',
+                                style:
+                                    TextStyle(fontSize: 11, color: Colors.amber),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                    color: Colors.amber.withValues(alpha: 0.5)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6)),
+                              ),
+                            ),
+                    ),
+                    // Channel Cell
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _channelBadge(c.channel),
                     ),
                     _typeBadge(c.type),
                     AdminStatusChip(
@@ -270,6 +473,182 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
     );
   }
 
+  Widget _channelBadge(String channel) {
+    final isOnline = channel.toLowerCase().contains('online') ||
+        channel.toLowerCase().contains('app');
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: isOnline
+            ? Colors.cyan.withValues(alpha: 0.15)
+            : Colors.purple.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: isOnline
+              ? Colors.cyan.withValues(alpha: 0.35)
+              : Colors.purple.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isOnline ? Icons.phone_android : Icons.store_mall_directory_outlined,
+            size: 11,
+            color: isOnline ? Colors.cyanAccent : Colors.purpleAccent,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            isOnline ? 'Online App' : 'Store Visit',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: isOnline ? Colors.cyanAccent : Colors.purpleAccent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAssignLocationDialog(
+    BuildContext context,
+    AdminReturnsListViewModel viewModel,
+    ReturnExchangeCase kase,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AdminColors.panelBackground,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Row(
+            children: [
+              Icon(Icons.location_on, color: AdminColors.primaryGreen, size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Assign Hub for ${kase.caseNumber}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Customer: ${kase.customerName} (Bill #${kase.billNumber})',
+                  style: TextStyle(fontSize: 12, color: AdminColors.textSecondary),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Select Receiving / Fulfillment Hub:',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                if (viewModel.locations.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                    child: Text(
+                      'No locations registered in system.',
+                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                    ),
+                  )
+                else
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 250),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: viewModel.locations.length,
+                      separatorBuilder: (_, __) => const Divider(height: 8),
+                      itemBuilder: (context, index) {
+                        final loc = viewModel.locations[index];
+                        final isCurrent = kase.locationId == loc.id ||
+                            kase.locationName?.toLowerCase() ==
+                                loc.name.toLowerCase();
+                        return ListTile(
+                          dense: true,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          tileColor: isCurrent
+                              ? AdminColors.primaryGreen.withValues(alpha: 0.15)
+                              : Colors.transparent,
+                          leading: Icon(
+                            Icons.storefront_outlined,
+                            size: 18,
+                            color: isCurrent
+                                ? AdminColors.primaryGreen
+                                : Colors.white70,
+                          ),
+                          title: Text(
+                            '${loc.name} Hub',
+                            style: TextStyle(
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isCurrent
+                                  ? AdminColors.primaryGreen
+                                  : Colors.white,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Coverage: ${loc.radiusDisplay}',
+                            style: const TextStyle(
+                                fontSize: 11, color: Colors.white54),
+                          ),
+                          trailing: isCurrent
+                              ? Icon(Icons.check_circle,
+                                  color: AdminColors.primaryGreen, size: 18)
+                              : null,
+                          onTap: () {
+                            Navigator.of(ctx).pop();
+                            viewModel.assignCaseLocation(kase, loc);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Case ${kase.caseNumber} assigned to ${loc.name} Hub'),
+                                backgroundColor: AdminColors.primaryGreen,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            if (kase.locationId != null || kase.locationName != null)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  viewModel.assignCaseLocation(kase, null);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Case ${kase.caseNumber} location removed (Unassigned)'),
+                      backgroundColor: Colors.grey[800],
+                    ),
+                  );
+                },
+                child: const Text('Clear Location',
+                    style: TextStyle(color: Colors.redAccent)),
+              ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _typeBadge(String type) {
     Color bg = Colors.blue.withValues(alpha: 0.15);
     Color fg = Colors.lightBlueAccent;
@@ -298,27 +677,30 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
       ),
       child: Text(
         label,
-        style:
-            TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 10,
+          color: fg,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'completed':
-        return Colors.green;
-      case 'received':
-        return Colors.teal;
-      case 'processing':
-        return Colors.blue;
+      case 'pending':
+        return AdminColors.pending;
       case 'approved':
-        return Colors.amber;
+      case 'completed':
+        return AdminColors.success;
+      case 'received':
+      case 'processing':
+        return AdminColors.inProgress;
       case 'rejected':
       case 'cancelled':
-        return Colors.red;
+        return AdminColors.cancelled;
       default:
-        return Colors.orange;
+        return Colors.grey;
     }
   }
 

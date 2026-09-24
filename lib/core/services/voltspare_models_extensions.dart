@@ -227,11 +227,23 @@ extension CartItemModelExtension on CartItemModel {
 
 extension AddressModelExtension on AddressModel {
   static AddressModel fromJson(Map<String, dynamic> json) {
+    String addr = json['addressLine']?.toString() ?? '';
+    if (addr.isEmpty) {
+      final parts = [
+        json['addressLine1'],
+        json['addressLine2'],
+        json['city'],
+        json['state'],
+        json['postalCode']
+      ].where((p) => p != null && p.toString().trim().isNotEmpty).map((p) => p.toString().trim()).toList();
+      addr = parts.join(', ');
+    }
+
     return AddressModel(
-      id: json['_id'] ?? json['id'] ?? '',
-      name: json['name'] ?? '',
-      phone: json['phone'] ?? '',
-      addressLine: json['addressLine'] ?? '',
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      name: (json['recipientName'] ?? json['name'] ?? 'Customer').toString(),
+      phone: (json['phone'] ?? '').toString(),
+      addressLine: addr,
       isDefault: json['isDefault'] ?? false,
     );
   }
@@ -260,16 +272,33 @@ extension OrderModelExtension on OrderModel {
       status = OrderStatus.processing;
     }
 
-    final itemsList = json['items'] as List<dynamic>? ?? [];
+    final rawItemsList = json['items'];
+    final List<dynamic> itemsList = rawItemsList is List ? rawItemsList : [];
     final items = itemsList.map((item) {
-      final productMap = item['productSnapshot'] is Map<String, dynamic>
-          ? Map<String, dynamic>.from(item['productSnapshot'])
-          : (item['productSnapshot'] is Map
-              ? Map<String, dynamic>.from(item['productSnapshot'] as Map)
-              : <String, dynamic>{});
+      if (item is! Map) {
+        return const CartItemModel(
+          id: '',
+          product: ProductModel(
+            id: '',
+            name: 'Item',
+            price: 0,
+            originalPrice: 0,
+            rating: 5,
+            description: '',
+            categoryId: '',
+            fitmentBadge: 'Universal Fit',
+          ),
+          quantity: 1,
+        );
+      }
+      final itemMap = Map<String, dynamic>.from(item);
 
-      if (item['product'] is Map) {
-        final pMap = item['product'] as Map<String, dynamic>;
+      final Map<String, dynamic> productMap = itemMap['productSnapshot'] is Map
+          ? Map<String, dynamic>.from(itemMap['productSnapshot'] as Map)
+          : <String, dynamic>{};
+
+      if (itemMap['product'] is Map) {
+        final pMap = Map<String, dynamic>.from(itemMap['product'] as Map);
         productMap['_id'] = (pMap['_id'] ?? pMap['id'] ?? '').toString();
         if (!productMap.containsKey('name') || productMap['name'] == null) {
           productMap['name'] = pMap['name'];
@@ -281,34 +310,110 @@ extension OrderModelExtension on OrderModel {
         if (!productMap.containsKey('images') || productMap['images'] == null) {
           productMap['images'] = pMap['images'];
         }
-      } else if (item['product'] != null) {
-        productMap['_id'] = item['product'].toString();
+      } else if (itemMap['product'] != null) {
+        productMap['_id'] = itemMap['product'].toString();
       }
 
       return CartItemModel(
-        id: (item['_id'] ?? item['id'] ?? '').toString(),
+        id: (itemMap['_id'] ?? itemMap['id'] ?? '').toString(),
         product: ProductModelExtension.fromJson(productMap),
-        quantity: item['quantity'] is num ? (item['quantity'] as num).toInt() : 1,
+        quantity: itemMap['quantity'] is num ? (itemMap['quantity'] as num).toInt() : 1,
       );
     }).toList();
 
-    final addressMap = json['shippingAddress'] as Map<String, dynamic>? ?? {};
+    final Map<String, dynamic> addressMap = json['shippingAddress'] is Map
+        ? Map<String, dynamic>.from(json['shippingAddress'] as Map)
+        : (json['address'] is Map
+            ? Map<String, dynamic>.from(json['address'] as Map)
+            : <String, dynamic>{});
 
     double orderTotal = 0.0;
     final rawTotal = json['grandTotal'] ?? json['total'];
     if (rawTotal is num) {
-      orderTotal = rawTotal.toDouble();
+      orderTotal = rawTotal > 1000 ? (rawTotal.toDouble() / 100.0) : rawTotal.toDouble();
+    }
+
+    String? locationId;
+    String? locationName;
+
+    // Check top-level json
+    if (json['locationId'] is Map) {
+      locationId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locationName = json['locationId']['name']?.toString();
+    } else if (json['locationId'] != null) {
+      locationId = json['locationId'].toString();
+    } else if (json['location'] is Map) {
+      locationId = (json['location']['_id'] ?? json['location']['id'])?.toString();
+      locationName = json['location']['name']?.toString();
+    } else if (json['location'] != null) {
+      locationId = json['location'].toString();
+    }
+
+    // Check hub / assignedHub keys on order root
+    if (locationId == null || locationId.isEmpty) {
+      if (json['hub'] is Map) {
+        locationId = (json['hub']['_id'] ?? json['hub']['id'])?.toString();
+        locationName ??= json['hub']['name']?.toString();
+      } else if (json['hubId'] != null) {
+        locationId = json['hubId'].toString();
+      } else if (json['assignedHub'] is Map) {
+        locationId = (json['assignedHub']['_id'] ?? json['assignedHub']['id'])?.toString();
+        locationName ??= json['assignedHub']['name']?.toString();
+      } else if (json['hubLocation'] is Map) {
+        locationId = (json['hubLocation']['_id'] ?? json['hubLocation']['id'])?.toString();
+        locationName ??= json['hubLocation']['name']?.toString();
+      }
+    }
+
+    // Check shippingAddress / address object for locationId or hub assignments
+    if (locationId == null || locationId.isEmpty) {
+      if (addressMap['locationId'] != null) {
+        locationId = addressMap['locationId'].toString();
+      } else if (addressMap['location'] is Map) {
+        locationId = (addressMap['location']['_id'] ?? addressMap['location']['id'])?.toString();
+        locationName ??= addressMap['location']['name']?.toString();
+      } else if (addressMap['location'] != null) {
+        locationId = addressMap['location'].toString();
+      } else if (addressMap['hub'] is Map) {
+        locationId = (addressMap['hub']['_id'] ?? addressMap['hub']['id'])?.toString();
+        locationName ??= addressMap['hub']['name']?.toString();
+      } else if (addressMap['assignedHub'] is Map) {
+        locationId = (addressMap['assignedHub']['_id'] ?? addressMap['assignedHub']['id'])?.toString();
+        locationName ??= addressMap['assignedHub']['name']?.toString();
+      } else if (addressMap['hubLocation'] is Map) {
+        locationId = (addressMap['hubLocation']['_id'] ?? addressMap['hubLocation']['id'])?.toString();
+        locationName ??= addressMap['hubLocation']['name']?.toString();
+      }
+    }
+
+    // Extract location name if not already found
+    if (locationName == null || locationName.isEmpty) {
+      if (json['locationName'] != null && json['locationName'].toString().isNotEmpty) {
+        locationName = json['locationName'].toString();
+      } else if (json['hubName'] != null && json['hubName'].toString().isNotEmpty) {
+        locationName = json['hubName'].toString();
+      } else if (addressMap['locationName'] != null && addressMap['locationName'].toString().isNotEmpty) {
+        locationName = addressMap['locationName'].toString();
+      } else if (addressMap['serviceHub'] != null && addressMap['serviceHub'].toString().isNotEmpty) {
+        locationName = addressMap['serviceHub'].toString();
+      } else if (addressMap['nearHub'] != null && addressMap['nearHub'].toString().isNotEmpty) {
+        locationName = addressMap['nearHub'].toString();
+      } else if (addressMap['nearestHub'] != null && addressMap['nearestHub'].toString().isNotEmpty) {
+        locationName = addressMap['nearestHub'].toString();
+      }
     }
 
     return OrderModel(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       orderNumber: (json['orderNumber'] ?? '').toString(),
-      date: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      date: DateTime.tryParse((json['createdAt'] ?? json['date'] ?? '').toString()) ?? DateTime.now(),
       status: status,
       items: items,
       total: orderTotal,
       address: AddressModelExtension.fromJson(addressMap),
-      paymentMethod: json['paymentMethod'] ?? 'cod',
+      paymentMethod: (json['paymentMethod'] ?? 'cod').toString(),
+      locationId: locationId,
+      locationName: locationName,
     );
   }
 }
@@ -320,21 +425,50 @@ extension RareQuotationModelExtension on RareQuotationModel {
         ? (itemsList[0]['name'] ?? itemsList[0]['partName'] ?? '')
         : (json['partName'] ?? '');
 
+    double parsePrice(dynamic val) {
+      if (val == null) return 0.0;
+      final num n = (val is num) ? val : (num.tryParse(val.toString()) ?? 0);
+      final double d = n.toDouble();
+      if (d <= 0) return 0.0;
+
+      // If stored in paise (>= 10000, e.g. 120000 paise = ₹1200, 130000 paise = ₹1300)
+      if (d >= 10000) {
+        return d / 100.0;
+      }
+      // If stored directly in rupees (e.g. 1200, 1300, 1500) where dividing by 100 would produce 12, 13, 15
+      if (d >= 100) {
+        return d;
+      }
+      return d;
+    }
+
+    final double price = parsePrice(json['subTotal'] ??
+        (itemsList.isNotEmpty ? itemsList[0]['unitPrice'] : null) ??
+        json['price']);
+    final double shipping =
+        parsePrice(json['deliveryFee'] ?? json['shippingCharge']);
+    final double gst = parsePrice(json['taxAmount'] ?? json['gst']);
+    final double discount = parsePrice(json['discount']);
+    double grandTotal = parsePrice(json['grandTotal']);
+
+    if (grandTotal == 0 && price > 0) {
+      grandTotal = price + shipping + gst - discount;
+    }
+
     return RareQuotationModel(
-      id: json['_id'] ?? json['id'] ?? '',
-      partName: partName,
-      price: (json['subTotal'] ?? 0) / 100.0,
-      shippingCharge:
-          (json['deliveryFee'] ?? json['shippingCharge'] ?? 0) / 100.0,
-      gst: (json['taxAmount'] ?? json['gst'] ?? 0) / 100.0,
-      discount: (json['discount'] ?? 0) / 100.0,
-      grandTotal: (json['grandTotal'] ?? 0) / 100.0,
-      deliveryTimeline: json['deliveryTimeline'] ?? '3-5 Days',
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      partName: partName.toString(),
+      price: price,
+      shippingCharge: shipping,
+      gst: gst,
+      discount: discount,
+      grandTotal: grandTotal,
+      deliveryTimeline: (json['deliveryTimeline'] ?? '3-5 Days').toString(),
       expiryDate:
           DateTime.tryParse(json['expiresAt'] ?? json['expiryDate'] ?? '') ??
               DateTime.now().add(const Duration(days: 7)),
-      adminNotes: json['adminNotes'],
-      status: json['status'] ?? 'pending',
+      adminNotes: json['adminNotes']?.toString(),
+      status: (json['status'] ?? 'pending').toString(),
     );
   }
 }
@@ -367,9 +501,9 @@ extension RareProductRequestModelExtension on RareProductRequestModel {
 
     // Safely extract vehicle info whether nested in `vehicle` map or at top level
     VehicleModel vehicle;
-    if (json['vehicle'] is Map<String, dynamic>) {
-      vehicle = VehicleModelExtension.fromJson(
-          json['vehicle'] as Map<String, dynamic>);
+    if (json['vehicle'] is Map) {
+      final vMap = Map<String, dynamic>.from(json['vehicle'] as Map);
+      vehicle = VehicleModelExtension.fromJson(vMap);
     } else {
       final typeString = (json['vehicleType'] ?? json['type'] ?? 'universal')
           .toString()
@@ -385,10 +519,12 @@ extension RareProductRequestModelExtension on RareProductRequestModel {
       );
     }
 
-    final quotationJson = json['activeQuotation'] as Map<String, dynamic>?;
-    final quotation = quotationJson != null
-        ? RareQuotationModelExtension.fromJson(quotationJson)
-        : null;
+    RareQuotationModel? quotation;
+    if (json['activeQuotation'] is Map) {
+      quotation = RareQuotationModelExtension.fromJson(
+        Map<String, dynamic>.from(json['activeQuotation'] as Map),
+      );
+    }
 
     final rawImages = json['images'];
     final List<String> imageList = [];
@@ -408,8 +544,9 @@ extension RareProductRequestModelExtension on RareProductRequestModel {
     String cName = '';
     String cPhone = '';
     if (json['user'] is Map) {
-      cName = (json['user']['name'] ?? '').toString();
-      cPhone = (json['user']['phone'] ?? '').toString();
+      final uMap = json['user'];
+      cName = (uMap['name'] ?? '').toString();
+      cPhone = (uMap['phone'] ?? '').toString();
     }
     if (cName.isEmpty) {
       cName = (json['customerName'] ?? json['customer'] ?? '').toString();
@@ -456,6 +593,15 @@ extension RareProductRequestModelExtension on RareProductRequestModel {
           ? (json['convertedOrder']['orderNumber'] ??
               json['convertedOrder']['_id']?.toString())
           : (json['convertedOrder']?.toString() ?? json['orderId']?.toString()),
+      locationId: (json['locationId'] ??
+              (json['location'] is Map
+                  ? json['location']['_id'] ?? json['location']['id']
+                  : null))
+          ?.toString(),
+      locationName: (json['locationName'] ??
+              (json['location'] is Map ? json['location']['name'] : null))
+          ?.toString(),
+      channel: (json['channel'] ?? 'online').toString(),
     );
   }
 }
@@ -485,10 +631,12 @@ extension RareChatMessageModelExtension on RareChatMessageModel {
     final imagesList =
         json['imageUrl'] != null ? [json['imageUrl'].toString()] : <String>[];
 
-    final quotationMap = json['quotation'] as Map<String, dynamic>?;
-    final quotation = quotationMap != null
-        ? RareQuotationModelExtension.fromJson(quotationMap)
-        : null;
+    RareQuotationModel? quotation;
+    if (json['quotation'] is Map) {
+      quotation = RareQuotationModelExtension.fromJson(
+        Map<String, dynamic>.from(json['quotation'] as Map),
+      );
+    }
 
     final readByList =
         (json['readBy'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??

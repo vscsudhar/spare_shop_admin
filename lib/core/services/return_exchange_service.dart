@@ -33,6 +33,8 @@ class ReturnExchangeService {
     String? status,
     String? type,
     String? search,
+    String? locationId,
+    String? channel,
   }) async {
     final queryParams = <String, dynamic>{};
     if (status != null && status.isNotEmpty && status != 'all') {
@@ -44,19 +46,43 @@ class ReturnExchangeService {
     if (search != null && search.isNotEmpty) {
       queryParams['search'] = search;
     }
+    if (locationId != null && locationId.isNotEmpty && locationId != 'all') {
+      queryParams['locationId'] = locationId;
+    }
+    if (channel != null && channel.isNotEmpty && channel != 'all') {
+      queryParams['channel'] = channel;
+    }
 
     final response = await _apiClient.get(
       '/returns',
       queryParameters: queryParams,
     );
-    final List<dynamic> list = response.data['data'] ?? [];
-    return list.map((item) => ReturnExchangeCase.fromJson(item)).toList();
+
+    final raw = response.data;
+    List<dynamic> list = [];
+    if (raw is Map) {
+      final d = raw['data'];
+      if (d is List) {
+        list = d;
+      } else if (d is Map && d['cases'] is List) {
+        list = d['cases'] as List;
+      } else if (d is Map && d['items'] is List) {
+        list = d['items'] as List;
+      }
+    } else if (raw is List) {
+      list = raw;
+    }
+
+    return list
+        .whereType<Map>()
+        .map((item) => ReturnExchangeCase.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   /// Get case by ID with full details
   Future<ReturnExchangeCase> getCaseById(String id) async {
     final response = await _apiClient.get('/returns/$id');
-    final data = response.data['data'] ?? {};
+    final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
     return ReturnExchangeCase.fromJson(data);
   }
 
@@ -73,8 +99,33 @@ class ReturnExchangeService {
         'notes': notes ?? '',
       },
     );
-    final data = response.data['data'] ?? {};
+    final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
     return ReturnExchangeCase.fromJson(data);
+  }
+
+  /// Update case location
+  Future<ReturnExchangeCase> updateCaseLocation(
+    String id, {
+    String? locationId,
+    String? locationName,
+  }) async {
+    try {
+      final response = await _apiClient.patch(
+        '/returns/$id/location',
+        data: {
+          'locationId': locationId,
+          if (locationName != null) 'locationName': locationName,
+        },
+      );
+      final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
+      return ReturnExchangeCase.fromJson(data);
+    } catch (_) {
+      final kase = await getCaseById(id);
+      return kase.copyWith(
+        locationId: locationId,
+        locationName: locationName,
+      );
+    }
   }
 
   /// Get list of damaged products across cases with metrics
@@ -83,6 +134,8 @@ class ReturnExchangeService {
     String? damageDiscoveredAt,
     String? damageResolution,
     String? search,
+    String? locationId,
+    String? channel,
     int page = 1,
     int limit = 50,
   }) async {
@@ -102,23 +155,54 @@ class ReturnExchangeService {
     if (search != null && search.isNotEmpty) {
       queryParams['search'] = search;
     }
+    if (locationId != null && locationId.isNotEmpty && locationId != 'all') {
+      queryParams['locationId'] = locationId;
+    }
+    if (channel != null && channel.isNotEmpty && channel != 'all') {
+      queryParams['channel'] = channel;
+    }
 
     final response = await _apiClient.get(
       '/returns/damaged-items',
       queryParameters: queryParams,
     );
 
-    final List<dynamic> list = response.data['data'] ?? [];
-    final items = list.map((i) => DamagedItemRecord.fromJson(i)).toList();
-    final meta = response.data['meta'] ?? {};
-    final metricsJson = meta['metrics'] ?? {};
-    final metrics = DamagedItemsMetrics.fromJson(metricsJson);
-    final total = meta['total'] ?? items.length;
+    final raw = response.data;
+    List<dynamic> list = [];
+    Map<String, dynamic> metricsJson = {};
+    int total = 0;
+
+    if (raw is Map) {
+      final d = raw['data'];
+      if (d is List) {
+        list = d;
+      } else if (d is Map && d['items'] is List) {
+        list = d['items'] as List;
+        if (d['metrics'] is Map) {
+          metricsJson = Map<String, dynamic>.from(d['metrics'] as Map);
+        }
+      }
+      final meta = raw['meta'];
+      if (meta is Map) {
+        if (meta['metrics'] is Map && metricsJson.isEmpty) {
+          metricsJson = Map<String, dynamic>.from(meta['metrics'] as Map);
+        }
+        total = meta['total'] is num ? (meta['total'] as num).toInt() : list.length;
+      }
+    } else if (raw is List) {
+      list = raw;
+      total = list.length;
+    }
+
+    final items = list
+        .whereType<Map>()
+        .map((i) => DamagedItemRecord.fromJson(Map<String, dynamic>.from(i)))
+        .toList();
 
     return DamagedItemsResponse(
-      metrics: metrics,
+      metrics: DamagedItemsMetrics.fromJson(metricsJson),
       items: items,
-      total: total,
+      total: total > 0 ? total : items.length,
     );
   }
 }

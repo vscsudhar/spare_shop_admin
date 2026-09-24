@@ -235,6 +235,8 @@ class OrderModel {
   final double total;
   final AddressModel address;
   final String paymentMethod;
+  final String? locationId;
+  final String? locationName;
 
   const OrderModel({
     required this.id,
@@ -245,7 +247,35 @@ class OrderModel {
     required this.total,
     required this.address,
     required this.paymentMethod,
+    this.locationId,
+    this.locationName,
   });
+
+  OrderModel copyWith({
+    String? id,
+    String? orderNumber,
+    DateTime? date,
+    OrderStatus? status,
+    List<CartItemModel>? items,
+    double? total,
+    AddressModel? address,
+    String? paymentMethod,
+    String? locationId,
+    String? locationName,
+  }) {
+    return OrderModel(
+      id: id ?? this.id,
+      orderNumber: orderNumber ?? this.orderNumber,
+      date: date ?? this.date,
+      status: status ?? this.status,
+      items: items ?? this.items,
+      total: total ?? this.total,
+      address: address ?? this.address,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      locationId: locationId ?? this.locationId,
+      locationName: locationName ?? this.locationName,
+    );
+  }
 }
 
 class OrderTrackingStepModel {
@@ -334,6 +364,9 @@ class RareProductRequestModel {
   final RareQuotationModel? quotation;
   final String? cancellationReason;
   final String? orderId;
+  final String? locationId;
+  final String? locationName;
+  final String channel; // 'online' or 'in_store'
 
   const RareProductRequestModel({
     required this.id,
@@ -352,6 +385,9 @@ class RareProductRequestModel {
     this.quotation,
     this.cancellationReason,
     this.orderId,
+    this.locationId,
+    this.locationName,
+    this.channel = 'online',
   });
 
   RareProductRequestModel copyWith({
@@ -371,6 +407,9 @@ class RareProductRequestModel {
     RareQuotationModel? quotation,
     String? cancellationReason,
     String? orderId,
+    String? locationId,
+    String? locationName,
+    String? channel,
   }) {
     return RareProductRequestModel(
       id: id ?? this.id,
@@ -389,6 +428,9 @@ class RareProductRequestModel {
       quotation: quotation ?? this.quotation,
       cancellationReason: cancellationReason ?? this.cancellationReason,
       orderId: orderId ?? this.orderId,
+      locationId: locationId ?? this.locationId,
+      locationName: locationName ?? this.locationName,
+      channel: channel ?? this.channel,
     );
   }
 }

@@ -64,6 +64,36 @@ class AdminSupportTicketsView
           ),
           const SizedBox(height: 16),
 
+          // Location Filter Row
+          if (viewModel.canChangeLocation && viewModel.locations.isNotEmpty) ...[
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _filterChip(
+                    label: '🏢 All Locations',
+                    isSelected: viewModel.selectedLocationFilter == 'all',
+                    onTap: () => viewModel.setSelectedLocationFilter('all'),
+                  ),
+                  ...viewModel.locations.map((loc) {
+                    final count = viewModel.tickets.where((t) => t.locationId == loc.id || (t.locationName != null && t.locationName!.toLowerCase() == loc.name.toLowerCase())).length;
+                    return _filterChip(
+                      label: '📍 ${loc.name} ($count)',
+                      isSelected: viewModel.selectedLocationFilter == loc.id,
+                      onTap: () => viewModel.setSelectedLocationFilter(loc.id),
+                    );
+                  }),
+                  _filterChip(
+                    label: 'Unassigned',
+                    isSelected: viewModel.selectedLocationFilter == 'unassigned',
+                    onTap: () => viewModel.setSelectedLocationFilter('unassigned'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
           // Filters Row with Counts
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
