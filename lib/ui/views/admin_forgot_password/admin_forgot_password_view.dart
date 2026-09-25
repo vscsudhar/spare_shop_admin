@@ -172,9 +172,8 @@ class AdminForgotPasswordView
           height: 32,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isCompleted
-                ? AdminColors.primaryGreen
-                : Colors.grey.shade200,
+            color:
+                isCompleted ? AdminColors.primaryGreen : Colors.grey.shade200,
             border: Border.all(
               color: isCurrent
                   ? AdminColors.accentLime
@@ -202,9 +201,8 @@ class AdminForgotPasswordView
           style: TextStyle(
             fontSize: 11,
             fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
-            color: isCurrent
-                ? AdminColors.textPrimary
-                : AdminColors.textSecondary,
+            color:
+                isCurrent ? AdminColors.textPrimary : AdminColors.textSecondary,
           ),
         ),
       ],
@@ -304,8 +302,7 @@ class AdminForgotPasswordView
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             hintText: 'e.g. rohan.d@voltspare.com',
-            prefixIcon:
-                const Icon(Icons.mail_outline_rounded, size: 18),
+            prefixIcon: const Icon(Icons.mail_outline_rounded, size: 18),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -330,8 +327,7 @@ class AdminForgotPasswordView
           onSubmitted: (_) => viewModel.verifyIdentity(),
           decoration: InputDecoration(
             hintText: 'e.g. +91 98887 66554 or 9888766554',
-            prefixIcon:
-                const Icon(Icons.phone_android_rounded, size: 18),
+            prefixIcon: const Icon(Icons.phone_android_rounded, size: 18),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -428,7 +424,8 @@ class AdminForgotPasswordView
           decoration: BoxDecoration(
             color: AdminColors.primaryGreen.withOpacity(0.08),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AdminColors.primaryGreen.withOpacity(0.3)),
+            border:
+                Border.all(color: AdminColors.primaryGreen.withOpacity(0.3)),
           ),
           child: Row(
             children: [
@@ -475,8 +472,7 @@ class AdminForgotPasswordView
             children: [
               Row(
                 children: [
-                  const Icon(Icons.key_rounded,
-                      size: 20, color: Colors.orange),
+                  const Icon(Icons.key_rounded, size: 20, color: Colors.orange),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,8 +505,8 @@ class AdminForgotPasswordView
                   viewModel.notifyListeners();
                 },
                 child: const Text('Auto-Fill',
-                    style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -584,8 +580,8 @@ class AdminForgotPasswordView
               onPressed: () =>
                   viewModel.goToStep(ForgotPasswordStep.verifyIdentity),
               icon: const Icon(Icons.edit, size: 14),
-              label: const Text('Change Details',
-                  style: TextStyle(fontSize: 12)),
+              label:
+                  const Text('Change Details', style: TextStyle(fontSize: 12)),
             ),
             TextButton.icon(
               onPressed: viewModel.resendOtp,
@@ -621,8 +617,7 @@ class AdminForgotPasswordView
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             hintText: 'Enter new password',
-            prefixIcon:
-                const Icon(Icons.lock_outline_rounded, size: 18),
+            prefixIcon: const Icon(Icons.lock_outline_rounded, size: 18),
             suffixIcon: IconButton(
               icon: Icon(
                 viewModel.isNewPasswordVisible
@@ -656,8 +651,7 @@ class AdminForgotPasswordView
           onSubmitted: (_) => viewModel.resetPassword(),
           decoration: InputDecoration(
             hintText: 'Re-enter new password',
-            prefixIcon:
-                const Icon(Icons.lock_reset_rounded, size: 18),
+            prefixIcon: const Icon(Icons.lock_reset_rounded, size: 18),
             suffixIcon: IconButton(
               icon: Icon(
                 viewModel.isConfirmPasswordVisible
@@ -792,7 +786,8 @@ class AdminForgotPasswordView
           decoration: BoxDecoration(
             color: AdminColors.primaryGreen.withOpacity(0.08),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AdminColors.primaryGreen.withOpacity(0.3)),
+            border:
+                Border.all(color: AdminColors.primaryGreen.withOpacity(0.3)),
           ),
           child: Column(
             children: [

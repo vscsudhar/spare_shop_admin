@@ -88,7 +88,8 @@ class OrderService {
 
     return list
         .whereType<Map>()
-        .map((item) => OrderModelExtension.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) =>
+            OrderModelExtension.fromJson(Map<String, dynamic>.from(item)))
         .toList();
   }
 

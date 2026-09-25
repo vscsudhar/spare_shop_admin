@@ -57,12 +57,68 @@ class CategoryModel {
   final String id;
   final String name;
   final IconData icon;
+  final String slug;
+  final String description;
+  final String type; // 'EV', 'Petrol', 'Universal'
+  final bool active;
+  final String? parentCategoryId;
+  final String? parentCategoryName;
+  final int productCount;
+  final String? image;
 
   const CategoryModel({
     required this.id,
     required this.name,
     required this.icon,
+    this.slug = '',
+    this.description = '',
+    this.type = 'Universal',
+    this.active = true,
+    this.parentCategoryId,
+    this.parentCategoryName,
+    this.productCount = 0,
+    this.image,
   });
+
+  CategoryModel copyWith({
+    String? id,
+    String? name,
+    IconData? icon,
+    String? slug,
+    String? description,
+    String? type,
+    bool? active,
+    String? parentCategoryId,
+    String? parentCategoryName,
+    int? productCount,
+    String? image,
+  }) {
+    return CategoryModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      icon: icon ?? this.icon,
+      slug: slug ?? this.slug,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      active: active ?? this.active,
+      parentCategoryId: parentCategoryId ?? this.parentCategoryId,
+      parentCategoryName: parentCategoryName ?? this.parentCategoryName,
+      productCount: productCount ?? this.productCount,
+      image: image ?? this.image,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      if (description.isNotEmpty) 'description': description,
+      'type': type,
+      'active': active,
+      if (parentCategoryId != null && parentCategoryId!.isNotEmpty)
+        'parentCategory': parentCategoryId,
+      if (image != null && image!.isNotEmpty) 'image': image,
+    };
+  }
 }
 
 class ProductModel {
@@ -237,6 +293,7 @@ class OrderModel {
   final String paymentMethod;
   final String? locationId;
   final String? locationName;
+  final String channel; // 'app', 'online', 'pos', 'in_store'
 
   const OrderModel({
     required this.id,
@@ -249,7 +306,17 @@ class OrderModel {
     required this.paymentMethod,
     this.locationId,
     this.locationName,
+    this.channel = 'app',
   });
+
+  bool get isPosOrder =>
+      channel.toLowerCase() == 'pos' ||
+      channel.toLowerCase() == 'in_store' ||
+      orderNumber.toUpperCase().contains('POS');
+
+  bool get isAppOrder => !isPosOrder;
+
+  String get channelDisplayName => isPosOrder ? 'Store POS' : 'Mobile App';
 
   OrderModel copyWith({
     String? id,
@@ -262,6 +329,7 @@ class OrderModel {
     String? paymentMethod,
     String? locationId,
     String? locationName,
+    String? channel,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -274,6 +342,7 @@ class OrderModel {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       locationId: locationId ?? this.locationId,
       locationName: locationName ?? this.locationName,
+      channel: channel ?? this.channel,
     );
   }
 }

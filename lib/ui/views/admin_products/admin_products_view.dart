@@ -138,6 +138,11 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
 
     String selectedFitType = product.fitType;
     bool isStockManaged = product.stockManaged;
+    String? selectedCatId = product.categoryId.isNotEmpty
+        ? product.categoryId
+        : (viewModel.categories.isNotEmpty
+            ? viewModel.categories.first.id
+            : null);
     final List<Map<String, String?>> compatibilityRows = [];
 
     if (product.compatibleVehicles.isNotEmpty) {
@@ -177,12 +182,57 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          TextField(
-                            controller: nameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Product Name *',
-                              border: OutlineInputBorder(),
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: TextField(
+                                  controller: nameController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Product Name *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                flex: 2,
+                                child: DropdownButtonFormField<String>(
+                                  isExpanded: true,
+                                  initialValue: model.categories
+                                          .any((c) => c.id == selectedCatId)
+                                      ? selectedCatId
+                                      : (model.categories.isNotEmpty
+                                          ? model.categories.first.id
+                                          : null),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Category *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  items: model.categories.map((c) {
+                                    final label = c.type.isNotEmpty &&
+                                            c.type != 'Universal'
+                                        ? '${c.name} (${c.type})'
+                                        : c.name;
+                                    return DropdownMenuItem(
+                                      value: c.id,
+                                      child: Text(
+                                        label.isNotEmpty ? label : c.id,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      setModalState(() {
+                                        selectedCatId = val;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -291,8 +341,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: badgeColor.withValues(
-                                              alpha: 0.1),
+                                          color:
+                                              badgeColor.withValues(alpha: 0.1),
                                           borderRadius:
                                               BorderRadius.circular(6),
                                           border: Border.all(
@@ -314,8 +364,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 6),
                                       decoration: BoxDecoration(
-                                        color:
-                                            Colors.orange.withValues(alpha: 0.1),
+                                        color: Colors.orange
+                                            .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
                                             color: Colors.orange
@@ -367,8 +417,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: model.pickedImageBytes != null
-                                        ? Image.memory(
-                                            model.pickedImageBytes!,
+                                        ? Image.memory(model.pickedImageBytes!,
                                             fit: BoxFit.cover)
                                         : (kIsWeb
                                             ? Image.network(
@@ -415,9 +464,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                     child: Image.network(
                                       product.imageAsset!,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (c, e, s) =>
-                                          const Icon(Icons.broken_image,
-                                              size: 30),
+                                      errorBuilder: (c, e, s) => const Icon(
+                                          Icons.broken_image,
+                                          size: 30),
                                     ),
                                   ),
                                 ),
@@ -473,9 +522,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   double.tryParse(purchasePriceController.text);
                               final double? taxVal =
                                   double.tryParse(taxPercentageController.text);
-                              final int stockVal = int.tryParse(
-                                      stockCountController.text) ??
-                                  0;
+                              final int stockVal =
+                                  int.tryParse(stockCountController.text) ?? 0;
 
                               if (nameController.text.trim().isEmpty ||
                                   sellPrice == null ||
@@ -520,6 +568,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
 
                               await model.updateProductDetails(
                                 productId: product.id,
+                                categoryId: selectedCatId,
                                 name: nameController.text.trim(),
                                 sellingPrice: sellPrice,
                                 mrp: mrpVal,
@@ -621,14 +670,25 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
+                                  isExpanded: true,
                                   initialValue: selectedCatId,
                                   decoration: const InputDecoration(
                                     labelText: 'Category *',
                                     border: OutlineInputBorder(),
                                   ),
                                   items: model.categories.map((c) {
+                                    final label = c.type.isNotEmpty &&
+                                            c.type != 'Universal'
+                                        ? '${c.name} (${c.type})'
+                                        : c.name;
                                     return DropdownMenuItem(
-                                        value: c.id, child: Text(c.name));
+                                      value: c.id,
+                                      child: Text(
+                                        label.isNotEmpty ? label : c.id,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    );
                                   }).toList(),
                                   onChanged: (val) {
                                     if (val != null) {
@@ -653,10 +713,12 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                     border: OutlineInputBorder(),
                                   ),
                                   onChanged: (val) {
-                                    if (mrpController.text.isEmpty && val.isNotEmpty) {
+                                    if (mrpController.text.isEmpty &&
+                                        val.isNotEmpty) {
                                       final p = double.tryParse(val);
                                       if (p != null) {
-                                        mrpController.text = (p * 1.2).toStringAsFixed(0);
+                                        mrpController.text =
+                                            (p * 1.2).toStringAsFixed(0);
                                       }
                                     }
                                   },
@@ -756,8 +818,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: badgeColor.withValues(
-                                              alpha: 0.1),
+                                          color:
+                                              badgeColor.withValues(alpha: 0.1),
                                           borderRadius:
                                               BorderRadius.circular(6),
                                           border: Border.all(
@@ -779,8 +841,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 6),
                                       decoration: BoxDecoration(
-                                        color:
-                                            Colors.orange.withValues(alpha: 0.1),
+                                        color: Colors.orange
+                                            .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
                                             color: Colors.orange
@@ -832,8 +894,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: model.pickedImageBytes != null
-                                        ? Image.memory(
-                                            model.pickedImageBytes!,
+                                        ? Image.memory(model.pickedImageBytes!,
                                             fit: BoxFit.cover)
                                         : (kIsWeb
                                             ? Image.network(
@@ -896,9 +957,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   double.tryParse(purchasePriceController.text);
                               final double? taxVal =
                                   double.tryParse(taxPercentageController.text);
-                              final int stockVal = int.tryParse(
-                                      stockCountController.text) ??
-                                  0;
+                              final int stockVal =
+                                  int.tryParse(stockCountController.text) ?? 0;
                               final String sku = partController.text.trim();
                               final String categoryId = selectedCatId ??
                                   (model.categories.isNotEmpty
@@ -1066,8 +1126,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                     Expanded(
                       child: Text(
                         model.brandLoadError!,
-                        style:
-                            const TextStyle(color: Colors.red, fontSize: 12),
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
                       ),
                     ),
                     TextButton(
@@ -1121,8 +1180,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                           // Brand Dropdown (From DB)
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              initialValue: model.brands.any(
-                                      (b) => b.id == compatibilityRows[i]['brandId'])
+                              isExpanded: true,
+                              initialValue: model.brands.any((b) =>
+                                      b.id == compatibilityRows[i]['brandId'])
                                   ? compatibilityRows[i]['brandId']
                                   : null,
                               decoration: InputDecoration(
@@ -1142,15 +1202,22 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                       )
                                     : null,
                               ),
-                              hint: Text(model.loadingBrands
-                                  ? 'Loading Brands...'
-                                  : (model.brands.isEmpty
-                                      ? 'No Brands Found'
-                                      : 'Select Brand')),
+                              hint: Text(
+                                model.loadingBrands
+                                    ? 'Loading Brands...'
+                                    : (model.brands.isEmpty
+                                        ? 'No Brands Found'
+                                        : 'Select Brand'),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               items: model.brands.map((b) {
                                 return DropdownMenuItem(
                                   value: b.id,
-                                  child: Text(b.name),
+                                  child: Text(
+                                    b.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
                                 );
                               }).toList(),
                               onChanged: (brandId) {
@@ -1182,6 +1249,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   compatibilityRows[i]['modelId'];
 
                               return DropdownButtonFormField<String>(
+                                isExpanded: true,
                                 initialValue: brandModels
                                         .any((m) => m.id == currentModelId)
                                     ? currentModelId
@@ -1211,6 +1279,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                           : (brandModels.isEmpty
                                               ? 'No Models Available'
                                               : 'Select Model')),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 items: hasBrand &&
                                         !isLoadingModels &&
@@ -1218,7 +1287,11 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                     ? brandModels.map((m) {
                                         return DropdownMenuItem(
                                           value: m.id,
-                                          child: Text(m.displayName),
+                                          child: Text(
+                                            m.displayName,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
                                         );
                                       }).toList()
                                     : null,
@@ -1243,8 +1316,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
 
               OutlinedButton.icon(
                 onPressed: () {
-                  compatibilityRows
-                      .add({'brandId': null, 'modelId': null});
+                  compatibilityRows.add({'brandId': null, 'modelId': null});
                   onRowsChanged();
                 },
                 icon: const Icon(Icons.add, size: 16),

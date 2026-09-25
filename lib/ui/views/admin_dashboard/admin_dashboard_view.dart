@@ -42,7 +42,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                 ],
               );
 
-              final locationDropdown = _buildLocationDropdown(context, viewModel);
+              final locationDropdown =
+                  _buildLocationDropdown(context, viewModel);
 
               final actionButton = ElevatedButton.icon(
                 onPressed: () {
@@ -99,7 +100,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
           const SizedBox(height: 16),
 
           // Location Filter Context Banner
-          if (viewModel.isLocationSelected && viewModel.selectedLocation != null) ...[
+          if (viewModel.isLocationSelected &&
+              viewModel.selectedLocation != null) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
@@ -133,7 +135,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                             ),
                           ),
                           TextSpan(
-                            text: ' (${viewModel.selectedLocation!.radiusDisplay} coverage)',
+                            text:
+                                ' (${viewModel.selectedLocation!.radiusDisplay} coverage)',
                             style: TextStyle(
                               color: AdminColors.textSecondary,
                               fontSize: 12,
@@ -146,7 +149,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                   TextButton.icon(
                     onPressed: viewModel.goToSelectedLocationInventory,
                     icon: const Icon(Icons.inventory_2_outlined, size: 15),
-                    label: const Text('Manage Stock', style: TextStyle(fontSize: 12)),
+                    label: const Text('Manage Stock',
+                        style: TextStyle(fontSize: 12)),
                     style: TextButton.styleFrom(
                       foregroundColor: AdminColors.primaryGreen,
                       visualDensity: VisualDensity.compact,
@@ -286,7 +290,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                             if (viewModel.lowStockProducts.isEmpty)
                               const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12.0),
-                                child: Text('No low stock alerts for this selection',
+                                child: Text(
+                                    'No low stock alerts for this selection',
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12)),
                               )
@@ -326,12 +331,14 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
               'Date',
               'Customer',
               'Hub Location',
+              'Channel',
               'Total',
               'Status',
               'Action'
             ],
             rows: viewModel.recentOrders.map((order) {
-              final hasLoc = order.locationName != null && order.locationName!.isNotEmpty;
+              final hasLoc =
+                  order.locationName != null && order.locationName!.isNotEmpty;
               return AdminTableRow(
                 onTap: () => viewModel.openOrderDetail(order),
                 cells: [
@@ -343,7 +350,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: hasLoc
                             ? AdminColors.primaryGreen.withValues(alpha: 0.12)
@@ -361,20 +369,30 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                           Icon(
                             Icons.location_on,
                             size: 12,
-                            color: hasLoc ? AdminColors.primaryGreen : Colors.amber,
+                            color: hasLoc
+                              ? AdminColors.primaryGreen
+                              : Colors.amber,
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            hasLoc ? '${order.locationName!} Hub' : 'Unassigned',
+                            hasLoc
+                                ? '${order.locationName!} Hub'
+                                : 'Unassigned',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: hasLoc ? AdminColors.primaryGreen : Colors.amber,
+                              color: hasLoc
+                                  ? AdminColors.primaryGreen
+                                  : Colors.amber,
                             ),
                           ),
                         ],
                       ),
                     ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: _buildChannelBadge(order),
                   ),
                   Text('₹${order.total.toStringAsFixed(2)}'),
                   Align(
@@ -503,9 +521,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                     Icon(
                       Icons.location_on,
                       size: 16,
-                      color: loc.isActive
-                          ? AdminColors.primaryGreen
-                          : Colors.grey,
+                      color:
+                          loc.isActive ? AdminColors.primaryGreen : Colors.grey,
                     ),
                     const SizedBox(width: 8),
                     Text(loc.name),
@@ -539,6 +556,43 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
       case OrderStatus.cancelled:
         return AdminColors.cancelled;
     }
+  }
+
+  Widget _buildChannelBadge(OrderModel order) {
+    final isPos = order.isPosOrder;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: isPos
+            ? Colors.blue.withValues(alpha: 0.12)
+            : AdminColors.primaryGreen.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: isPos
+              ? Colors.blue.withValues(alpha: 0.3)
+              : AdminColors.primaryGreen.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPos ? Icons.point_of_sale_rounded : Icons.phone_android_rounded,
+            size: 11,
+            color: isPos ? Colors.lightBlueAccent : AdminColors.primaryGreen,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            order.channelDisplayName,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: isPos ? Colors.lightBlueAccent : AdminColors.primaryGreen,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

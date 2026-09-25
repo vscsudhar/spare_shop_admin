@@ -48,13 +48,18 @@ class DeliveryChargeModel {
       id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
       fromAmount: (json['fromAmount'] ?? json['minAmount'] ?? 0).toDouble(),
       toAmount: json['toAmount'] != null ? (json['toAmount']).toDouble() : null,
-      deliveryCharge: (json['deliveryCharge'] ?? json['charge'] ?? 0).toDouble(),
+      deliveryCharge:
+          (json['deliveryCharge'] ?? json['charge'] ?? 0).toDouble(),
       locationId: json['locationId']?.toString(),
       locationName: json['locationName']?.toString() ?? 'All Locations (HQ)',
       description: json['description']?.toString(),
       isActive: json['isActive'] ?? true,
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString())
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'].toString())
+          : null,
     );
   }
 

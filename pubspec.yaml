@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: ^2.2.0
   image_picker: ^1.0.0
   pretty_dio_logger: ^1.4.0
+  intl: ^0.20.3
 
 dev_dependencies:
   build_runner: ^2.4.5

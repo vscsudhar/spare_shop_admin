@@ -798,7 +798,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                         style: TextStyle(fontSize: 10, color: Colors.grey))),
                 const Divider(height: 24),
                 _confirmLine('Invoice Number', invoice['invoiceNumber']),
-                _confirmLine('Branch / Hub', invoice['locationName'] ?? 'Main Branch'),
+                _confirmLine(
+                    'Branch / Hub', invoice['locationName'] ?? 'Main Branch'),
                 _confirmLine('Customer Name', invoice['customerName']),
                 _confirmLine('Date', invoice['dateStr']),
                 const Divider(),
@@ -934,7 +935,10 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                       DataColumn(label: Text('Actions')),
                                     ],
                                     rows: viewModel.pastInvoices.map((inv) {
-                                      final double total = (inv['grandTotal'] as num?)?.toDouble() ?? 0.0;
+                                      final double total =
+                                          (inv['grandTotal'] as num?)
+                                                  ?.toDouble() ??
+                                              0.0;
                                       return DataRow(
                                         cells: [
                                           DataCell(Text(inv['invoiceNumber'])),

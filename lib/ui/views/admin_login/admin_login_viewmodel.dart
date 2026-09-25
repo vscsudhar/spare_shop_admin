@@ -77,11 +77,19 @@ class AdminLoginViewModel extends BaseViewModel with NavigationMixin {
           navigationService.clearStackAndShow(Routes.adminDashboardView);
         }
       } catch (e) {
-        final errStr = e.toString().replaceAll('ApiException: ', '').replaceAll('Exception: ', '');
-        if (errStr.contains('401') || errStr.toLowerCase().contains('unauthorized') || errStr.toLowerCase().contains('invalid')) {
-          _errorMessage = 'Invalid email or password. Please check your credentials.';
-        } else if (errStr.contains('404') || errStr.toLowerCase().contains('not found')) {
-          _errorMessage = 'Staff account not found. Please verify the email or contact admin.';
+        final errStr = e
+            .toString()
+            .replaceAll('ApiException: ', '')
+            .replaceAll('Exception: ', '');
+        if (errStr.contains('401') ||
+            errStr.toLowerCase().contains('unauthorized') ||
+            errStr.toLowerCase().contains('invalid')) {
+          _errorMessage =
+              'Invalid email or password. Please check your credentials.';
+        } else if (errStr.contains('404') ||
+            errStr.toLowerCase().contains('not found')) {
+          _errorMessage =
+              'Staff account not found. Please verify the email or contact admin.';
         } else {
           _errorMessage = errStr;
         }

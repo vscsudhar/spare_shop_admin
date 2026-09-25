@@ -14,7 +14,8 @@ class LocationNotifier extends ChangeNotifier {
       _locationName = 'All Locations (HQ)';
     } else {
       _locationId = locId;
-      _locationName = (locName != null && locName.isNotEmpty) ? locName : 'Location Hub';
+      _locationName =
+          (locName != null && locName.isNotEmpty) ? locName : 'Location Hub';
     }
     notifyListeners();
   }
@@ -105,12 +106,15 @@ class TokenService {
   Future<void> saveUserLocation(
       {String? locationId, String? locationName}) async {
     final prefs = await SharedPreferences.getInstance();
-    final isGlobal = locationId == null || locationId.isEmpty || locationId == 'all';
-    
+    final isGlobal =
+        locationId == null || locationId.isEmpty || locationId == 'all';
+
     if (!isGlobal) {
       await prefs.setString(_userLocationIdKey, locationId);
-      await prefs.setString(_userLocationNameKey, locationName ?? 'Location Hub');
-      locationNotifier.notifyLocationChanged(locationId, locationName ?? 'Location Hub');
+      await prefs.setString(
+          _userLocationNameKey, locationName ?? 'Location Hub');
+      locationNotifier.notifyLocationChanged(
+          locationId, locationName ?? 'Location Hub');
     } else {
       await prefs.remove(_userLocationIdKey);
       await prefs.setString(_userLocationNameKey, 'All Locations (HQ)');
@@ -131,7 +135,8 @@ class TokenService {
   }
 
   Future<String?> getUserLocationName() async {
-    if (locationNotifier.locationName != null && locationNotifier.locationName!.isNotEmpty) {
+    if (locationNotifier.locationName != null &&
+        locationNotifier.locationName!.isNotEmpty) {
       return locationNotifier.locationName!;
     }
     final prefs = await SharedPreferences.getInstance();

@@ -170,7 +170,6 @@ class AdminRareRequestChatView
                                           '${req.quantity} Units'),
                                       _summaryField(
                                           'Urgency Priority', req.urgency),
-                                      
                                     ],
                                   ),
                                   if (req.images.isNotEmpty) ...[
@@ -306,17 +305,30 @@ class AdminRareRequestChatView
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
                                 const SizedBox(height: 16),
-                                _infoRow('Channel', req.channel == 'in_store' ? '🏬 In-Store Walk-in' : '📱 Online Mobile App'),
-                                _infoRow('Assigned Store Hub', req.locationName?.isNotEmpty == true ? req.locationName! : '⚠️ Unassigned HQ'),
-                                if (viewModel.canChangeLocation && viewModel.locations.isNotEmpty) ...[
+                                _infoRow(
+                                    'Channel',
+                                    req.channel == 'in_store'
+                                        ? '🏬 In-Store Walk-in'
+                                        : '📱 Online Mobile App'),
+                                _infoRow(
+                                    'Assigned Store Hub',
+                                    req.locationName?.isNotEmpty == true
+                                        ? req.locationName!
+                                        : '⚠️ Unassigned HQ'),
+                                if (viewModel.canChangeLocation &&
+                                    viewModel.locations.isNotEmpty) ...[
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: TextButton.icon(
-                                      onPressed: () => _showLocationPicker(context, viewModel, req),
-                                      icon: const Icon(Icons.edit_location_alt, size: 14),
-                                      label: const Text('Change Hub', style: TextStyle(fontSize: 12)),
+                                      onPressed: () => _showLocationPicker(
+                                          context, viewModel, req),
+                                      icon: const Icon(Icons.edit_location_alt,
+                                          size: 14),
+                                      label: const Text('Change Hub',
+                                          style: TextStyle(fontSize: 12)),
                                       style: TextButton.styleFrom(
-                                        foregroundColor: AdminColors.primaryGreen,
+                                        foregroundColor:
+                                            AdminColors.primaryGreen,
                                         padding: EdgeInsets.zero,
                                       ),
                                     ),
@@ -332,7 +344,6 @@ class AdminRareRequestChatView
                                 _infoRow('Quantity Requested',
                                     '${req.quantity} Units'),
                                 _infoRow('Urgency Priority', req.urgency),
-                                
                                 _infoRow('Ticket Status',
                                     req.status.name.toUpperCase()),
                               ],
@@ -582,7 +593,8 @@ class AdminRareRequestChatView
           backgroundColor: AdminColors.panelBackground,
           title: Row(
             children: [
-              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 20),
+              Icon(Icons.storefront_outlined,
+                  color: AdminColors.primaryGreen, size: 20),
               const SizedBox(width: 8),
               const Text('Assign Store Hub', style: TextStyle(fontSize: 16)),
             ],
@@ -604,17 +616,25 @@ class AdminRareRequestChatView
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     leading: Icon(
-                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                      color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                      isSelected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
+                      color:
+                          isSelected ? AdminColors.primaryGreen : Colors.grey,
                       size: 18,
                     ),
                     title: Text(loc.name,
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AdminColors.primaryGreen : Colors.white)),
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? AdminColors.primaryGreen
+                                : Colors.white)),
                     subtitle: Text('Radius: ${loc.radiusDisplay}',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                        style:
+                            const TextStyle(fontSize: 11, color: Colors.grey)),
                     onTap: () {
                       Navigator.of(ctx).pop();
                       viewModel.updateLocation(loc.id, loc.name, context);

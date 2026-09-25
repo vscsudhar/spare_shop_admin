@@ -74,7 +74,8 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.error_outline, color: AdminColors.cancelled, size: 48),
+                Icon(Icons.error_outline,
+                    color: AdminColors.cancelled, size: 48),
                 const SizedBox(height: 16),
                 Text(
                   viewModel.errorMessage!,
@@ -355,8 +356,7 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
                                 Expanded(
                                   child: TextField(
                                     controller: viewModel.messageController,
-                                    onSubmitted: (_) =>
-                                        viewModel.sendMessage(),
+                                    onSubmitted: (_) => viewModel.sendMessage(),
                                     decoration: InputDecoration(
                                       hintText: 'Type admin response...',
                                       hintStyle: TextStyle(
@@ -462,8 +462,7 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
                                 _infoRow(
                                     'Priority', ticket.priority.toUpperCase()),
                                 _infoRow('Status', status.displayName),
-                                _infoRow(
-                                    'Created',
+                                _infoRow('Created',
                                     '${ticket.createdAt.day.toString().padLeft(2, '0')}/${ticket.createdAt.month.toString().padLeft(2, '0')}/${ticket.createdAt.year}'),
                                 const SizedBox(height: 12),
                                 Text('Initial Description:',
@@ -481,7 +480,8 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
                                 if (ticket.photos.isNotEmpty) ...[
                                   Divider(
                                       color: AdminColors.border, height: 24),
-                                  Text('Attached Photos (${ticket.photos.length})',
+                                  Text(
+                                      'Attached Photos (${ticket.photos.length})',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13)),
@@ -490,14 +490,12 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
                                     spacing: 8,
                                     runSpacing: 8,
                                     children: ticket.photos.map((photo) {
-                                      final url =
-                                          AdminTicketChatViewModel.formatImageUrl(
-                                              photo.url);
+                                      final url = AdminTicketChatViewModel
+                                          .formatImageUrl(photo.url);
                                       return InkWell(
-                                        onTap: () => _openImageDialog(
-                                            context, url),
-                                        borderRadius:
-                                            BorderRadius.circular(8),
+                                        onTap: () =>
+                                            _openImageDialog(context, url),
+                                        borderRadius: BorderRadius.circular(8),
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8),
@@ -616,8 +614,7 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
                         final formattedUrl =
                             AdminTicketChatViewModel.formatImageUrl(att.url);
                         return InkWell(
-                          onTap: () =>
-                              _openImageDialog(context, formattedUrl),
+                          onTap: () => _openImageDialog(context, formattedUrl),
                           borderRadius: BorderRadius.circular(6),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),

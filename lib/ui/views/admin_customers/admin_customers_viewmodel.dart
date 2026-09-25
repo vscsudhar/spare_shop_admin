@@ -53,7 +53,8 @@ class AdminCustomerModel {
   }
 }
 
-class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin {
+class AdminCustomersViewModel extends FutureViewModel<void>
+    with NavigationMixin {
   final _locationService = locator<LocationService>();
   final _tokenService = locator<TokenService>();
 
@@ -175,7 +176,8 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     notifyListeners();
   }
 
@@ -190,7 +192,9 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
         locationId: filter == 'all' || filter == 'unassigned' ? null : filter,
-        locationName: filter != 'all' && filter != 'unassigned' && _locations.any((l) => l.id == filter)
+        locationName: filter != 'all' &&
+                filter != 'unassigned' &&
+                _locations.any((l) => l.id == filter)
             ? _locations.firstWhere((l) => l.id == filter).name
             : 'All Locations (HQ)',
       );

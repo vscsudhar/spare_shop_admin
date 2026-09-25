@@ -171,11 +171,13 @@ class AdminDashboardViewModel extends FutureViewModel<void>
         final res = HubMatchingHelper.resolveOrderLocation(ord, _locations);
         if (ord.locationId == null || ord.locationId!.isEmpty) {
           if (res.locationId != null && res.locationId!.isNotEmpty) {
-            _orderService.adminUpdateOrderLocation(
-              res.id,
-              locationId: res.locationId,
-              locationName: res.locationName,
-            ).catchError((_) => res);
+            _orderService
+                .adminUpdateOrderLocation(
+                  res.id,
+                  locationId: res.locationId,
+                  locationName: res.locationName,
+                )
+                .catchError((_) => res);
           }
         }
         return res;

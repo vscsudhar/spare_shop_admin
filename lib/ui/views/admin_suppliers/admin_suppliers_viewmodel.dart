@@ -64,11 +64,15 @@ class AdminSuppliersViewModel extends FutureViewModel<void>
       if (_selectedLocationFilter != 'all') {
         final match = _locations.where((l) => l.id == _selectedLocationFilter);
         if (match.isNotEmpty) {
-          final locName = match.first.name.toLowerCase().replaceAll(RegExp(r'\s*hub', caseSensitive: false), '').trim();
+          final locName = match.first.name
+              .toLowerCase()
+              .replaceAll(RegExp(r'\s*hub', caseSensitive: false), '')
+              .trim();
           return s.city.toLowerCase().contains(locName) ||
               s.state.toLowerCase().contains(locName) ||
               s.address.toLowerCase().contains(locName) ||
-              (locName.isNotEmpty && s.companyName.toLowerCase().contains(locName));
+              (locName.isNotEmpty &&
+                  s.companyName.toLowerCase().contains(locName));
         }
         return false;
       }
@@ -117,7 +121,8 @@ class AdminSuppliersViewModel extends FutureViewModel<void>
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     notifyListeners();
   }
 

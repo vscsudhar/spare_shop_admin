@@ -43,7 +43,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: AdminColors.panelBackground,
                       borderRadius: BorderRadius.circular(8),
@@ -68,8 +69,10 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    onPressed: viewModel.isBusy ? null : () => viewModel.loadOrders(),
-                    icon: const Icon(Icons.refresh, size: 18, color: Colors.white70),
+                    onPressed:
+                        viewModel.isBusy ? null : () => viewModel.loadOrders(),
+                    icon: const Icon(Icons.refresh,
+                        size: 18, color: Colors.white70),
                     tooltip: 'Refresh Orders',
                   ),
                 ],
@@ -117,7 +120,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Scoped to ${viewModel.userAssignedLocationName}',
@@ -174,11 +178,37 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
           ),
           const SizedBox(height: 14),
 
-          // Order Status Filter row
+          // Filter row: Channel & Status Filter chips
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
+                // Channel filters
+                AdminFilterChip(
+                  label: 'All Channels',
+                  isSelected: viewModel.selectedChannelFilter == 'all',
+                  onTap: () => viewModel.setSelectedChannelFilter('all'),
+                ),
+                const SizedBox(width: 8),
+                AdminFilterChip(
+                  label: '📱 Mobile App (${viewModel.appOrdersCount})',
+                  isSelected: viewModel.selectedChannelFilter == 'app',
+                  onTap: () => viewModel.setSelectedChannelFilter('app'),
+                ),
+                const SizedBox(width: 8),
+                AdminFilterChip(
+                  label: '🏪 Store POS (${viewModel.posOrdersCount})',
+                  isSelected: viewModel.selectedChannelFilter == 'pos',
+                  onTap: () => viewModel.setSelectedChannelFilter('pos'),
+                ),
+                const SizedBox(width: 14),
+                Container(
+                  height: 22,
+                  width: 1,
+                  color: Colors.white24,
+                ),
+                const SizedBox(width: 14),
+                // Status filters
                 AdminFilterChip(
                   label: 'All Statuses',
                   isSelected: viewModel.selectedStatus == null,
@@ -228,8 +258,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
               'Actions'
             ],
             rows: viewModel.filteredOrders.map((order) {
-              final hasLocation = order.locationName != null &&
-                  order.locationName!.isNotEmpty;
+              final hasLocation =
+                  order.locationName != null && order.locationName!.isNotEmpty;
               return AdminTableRow(
                 onTap: () => viewModel.openOrderDetail(order),
                 cells: [
@@ -258,8 +288,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                     alignment: Alignment.centerLeft,
                     child: hasLocation
                         ? InkWell(
-                            onTap: () =>
-                                _showAssignLocationDialog(context, viewModel, order),
+                            onTap: () => _showAssignLocationDialog(
+                                context, viewModel, order),
                             borderRadius: BorderRadius.circular(6),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -295,8 +325,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                             ),
                           )
                         : OutlinedButton.icon(
-                            onPressed: () =>
-                                _showAssignLocationDialog(context, viewModel, order),
+                            onPressed: () => _showAssignLocationDialog(
+                                context, viewModel, order),
                             icon: const Icon(Icons.add_location_alt,
                                 size: 12, color: Colors.amber),
                             label: const Text(
@@ -325,11 +355,10 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                       color: _statusColor(order.status),
                     ),
                   ),
-                  Text(order.paymentMethod.contains('UPI') ||
-                          order.paymentMethod.contains('Card') ||
-                          order.paymentMethod.contains('online')
-                      ? 'Mobile App'
-                      : 'Store POS'),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: _buildChannelBadge(order),
+                  ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -342,8 +371,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                                 fontWeight: FontWeight.bold)),
                       ),
                       IconButton(
-                        onPressed: () =>
-                            _showAssignLocationDialog(context, viewModel, order),
+                        onPressed: () => _showAssignLocationDialog(
+                            context, viewModel, order),
                         icon: const Icon(Icons.edit_location_alt_outlined,
                             size: 16, color: Colors.white70),
                         tooltip: 'Reassign Hub (e.g. if product out of stock)',
@@ -370,15 +399,18 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AdminColors.panelBackground,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Row(
             children: [
-              Icon(Icons.hub_outlined, color: AdminColors.primaryGreen, size: 22),
+              Icon(Icons.hub_outlined,
+                  color: AdminColors.primaryGreen, size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Fulfillment Hub for ${order.orderNumber}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -566,9 +598,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                           title: Text(
                             '${loc.name} Hub',
                             style: TextStyle(
-                              fontWeight: isCurrent
-                                  ? FontWeight.bold
-                                  : FontWeight.w600,
+                              fontWeight:
+                                  isCurrent ? FontWeight.bold : FontWeight.w600,
                               color: isCurrent
                                   ? AdminColors.primaryGreen
                                   : Colors.white,
@@ -691,8 +722,44 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
     }
   }
 
+  Widget _buildChannelBadge(OrderModel order) {
+    final isPos = order.isPosOrder;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isPos
+            ? Colors.blue.withValues(alpha: 0.12)
+            : AdminColors.primaryGreen.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: isPos
+              ? Colors.blue.withValues(alpha: 0.3)
+              : AdminColors.primaryGreen.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPos ? Icons.point_of_sale_rounded : Icons.phone_android_rounded,
+            size: 13,
+            color: isPos ? Colors.lightBlueAccent : AdminColors.primaryGreen,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            order.channelDisplayName,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: isPos ? Colors.lightBlueAccent : AdminColors.primaryGreen,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   AdminOrdersViewModel viewModelBuilder(BuildContext context) =>
       AdminOrdersViewModel();
 }
-

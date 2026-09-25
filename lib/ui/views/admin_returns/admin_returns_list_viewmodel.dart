@@ -8,7 +8,8 @@ import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/common/return_exchange_models.dart';
 import 'package:stacked/stacked.dart';
 
-class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMixin {
+class AdminReturnsListViewModel extends FutureViewModel<void>
+    with NavigationMixin {
   final _returnsService = locator<ReturnExchangeService>();
   final _locationService = locator<LocationService>();
   final _tokenService = locator<TokenService>();
@@ -51,14 +52,16 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
           c.caseNumber.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           c.billNumber.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           c.customerName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (c.locationName ?? '').toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          (c.locationName ?? '')
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
           c.customerPhone.contains(_searchQuery);
 
-      final matchesType =
-          _selectedType == 'all' || c.type.toLowerCase() == _selectedType.toLowerCase();
+      final matchesType = _selectedType == 'all' ||
+          c.type.toLowerCase() == _selectedType.toLowerCase();
 
-      final matchesStatus =
-          _selectedStatus == 'all' || c.status.toLowerCase() == _selectedStatus.toLowerCase();
+      final matchesStatus = _selectedStatus == 'all' ||
+          c.status.toLowerCase() == _selectedStatus.toLowerCase();
 
       bool matchesLocation = true;
       if (_selectedLocationFilter == 'unassigned') {
@@ -74,10 +77,15 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
 
       bool matchesChannel = true;
       if (_selectedChannel != 'all') {
-        matchesChannel = c.channel.toLowerCase() == _selectedChannel.toLowerCase();
+        matchesChannel =
+            c.channel.toLowerCase() == _selectedChannel.toLowerCase();
       }
 
-      return matchesSearch && matchesType && matchesStatus && matchesLocation && matchesChannel;
+      return matchesSearch &&
+          matchesType &&
+          matchesStatus &&
+          matchesLocation &&
+          matchesChannel;
     }).toList();
   }
 
@@ -104,7 +112,8 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadCases();
   }
 
@@ -128,7 +137,8 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
       }
 
       if (!_canChangeLocation &&
-          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+          (_userAssignedLocationId == null ||
+              _userAssignedLocationId!.isEmpty)) {
         _selectedLocationFilter = '__none__';
       } else if (_userAssignedLocationId != null &&
           _userAssignedLocationId!.isNotEmpty &&
@@ -143,7 +153,8 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
       }
 
       _cases = await _returnsService.getCases(
-        locationId: _selectedLocationFilter != 'all' && _selectedLocationFilter != 'unassigned'
+        locationId: _selectedLocationFilter != 'all' &&
+                _selectedLocationFilter != 'unassigned'
             ? _selectedLocationFilter
             : null,
         channel: _selectedChannel != 'all' ? _selectedChannel : null,
@@ -152,7 +163,8 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
       // Auto-sync location names with registered locations
       for (int i = 0; i < _cases.length; i++) {
         final c = _cases[i];
-        if (c.locationId != null && (c.locationName == null || c.locationName!.isEmpty)) {
+        if (c.locationId != null &&
+            (c.locationName == null || c.locationName!.isEmpty)) {
           final match = _locations.where((l) => l.id == c.locationId);
           if (match.isNotEmpty) {
             _cases[i] = c.copyWith(locationName: match.first.name);
@@ -187,8 +199,12 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
     _selectedLocationFilter = locationId;
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
-        locationId: locationId == 'all' || locationId == 'unassigned' ? null : locationId,
-        locationName: locationId != 'all' && locationId != 'unassigned' && _locations.any((l) => l.id == locationId)
+        locationId: locationId == 'all' || locationId == 'unassigned'
+            ? null
+            : locationId,
+        locationName: locationId != 'all' &&
+                locationId != 'unassigned' &&
+                _locations.any((l) => l.id == locationId)
             ? _locations.firstWhere((l) => l.id == locationId).name
             : 'All Locations (HQ)',
       );
@@ -201,7 +217,8 @@ class AdminReturnsListViewModel extends FutureViewModel<void> with NavigationMix
     notifyListeners();
   }
 
-  Future<void> assignCaseLocation(ReturnExchangeCase kase, LocationModel? location) async {
+  Future<void> assignCaseLocation(
+      ReturnExchangeCase kase, LocationModel? location) async {
     try {
       final updated = await _returnsService.updateCaseLocation(
         kase.id,

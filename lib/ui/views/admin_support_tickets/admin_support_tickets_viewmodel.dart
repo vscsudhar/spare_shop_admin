@@ -39,14 +39,18 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
   List<AdminSupportTicket> get tickets => _tickets;
 
   int get allCount => filteredByLocationTickets.length;
-  int get openCount =>
-      filteredByLocationTickets.where((t) => t.status == AdminTicketStatus.open).length;
-  int get pendingCount =>
-      filteredByLocationTickets.where((t) => t.status == AdminTicketStatus.pending).length;
-  int get resolvedCount =>
-      filteredByLocationTickets.where((t) => t.status == AdminTicketStatus.resolved).length;
-  int get closedCount =>
-      filteredByLocationTickets.where((t) => t.status == AdminTicketStatus.closed).length;
+  int get openCount => filteredByLocationTickets
+      .where((t) => t.status == AdminTicketStatus.open)
+      .length;
+  int get pendingCount => filteredByLocationTickets
+      .where((t) => t.status == AdminTicketStatus.pending)
+      .length;
+  int get resolvedCount => filteredByLocationTickets
+      .where((t) => t.status == AdminTicketStatus.resolved)
+      .length;
+  int get closedCount => filteredByLocationTickets
+      .where((t) => t.status == AdminTicketStatus.closed)
+      .length;
 
   List<AdminSupportTicket> get filteredByLocationTickets {
     if (_selectedLocationFilter == '__none__') return [];
@@ -78,16 +82,14 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
 
     if (_searchQuery.isNotEmpty) {
       result = result.where((t) {
-        final numberMatch =
-            t.ticketNumber.toLowerCase().contains(_searchQuery);
+        final numberMatch = t.ticketNumber.toLowerCase().contains(_searchQuery);
         final nameMatch = t.customerName.toLowerCase().contains(_searchQuery);
-        final emailMatch =
-            t.customerEmail.toLowerCase().contains(_searchQuery);
-        final phoneMatch =
-            t.customerPhone.toLowerCase().contains(_searchQuery);
+        final emailMatch = t.customerEmail.toLowerCase().contains(_searchQuery);
+        final phoneMatch = t.customerPhone.toLowerCase().contains(_searchQuery);
         final subjectMatch = t.subject.toLowerCase().contains(_searchQuery);
         final categoryMatch = t.category.toLowerCase().contains(_searchQuery);
-        final locMatch = (t.locationName ?? '').toLowerCase().contains(_searchQuery);
+        final locMatch =
+            (t.locationName ?? '').toLowerCase().contains(_searchQuery);
         return numberMatch ||
             nameMatch ||
             emailMatch ||
@@ -115,7 +117,8 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadTickets();
   }
 
@@ -133,7 +136,8 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
       }
 
       if (!_canChangeLocation &&
-          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+          (_userAssignedLocationId == null ||
+              _userAssignedLocationId!.isEmpty)) {
         _selectedLocationFilter = '__none__';
       } else if (_userAssignedLocationId != null &&
           _userAssignedLocationId!.isNotEmpty &&
@@ -152,7 +156,8 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
       // Auto-sync location names
       for (int i = 0; i < _tickets.length; i++) {
         final t = _tickets[i];
-        if (t.locationId != null && (t.locationName == null || t.locationName!.isEmpty)) {
+        if (t.locationId != null &&
+            (t.locationName == null || t.locationName!.isEmpty)) {
           final match = _locations.where((l) => l.id == t.locationId);
           if (match.isNotEmpty) {
             _tickets[i] = t.copyWith(locationName: match.first.name);
@@ -192,7 +197,8 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
             if (idx >= 0) {
               if (data['status'] != null) {
                 _tickets[idx] = _tickets[idx].copyWith(
-                  status: AdminTicketStatus.fromString(data['status'].toString()),
+                  status:
+                      AdminTicketStatus.fromString(data['status'].toString()),
                 );
               }
               rebuildUi();
@@ -214,8 +220,12 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
     _selectedLocationFilter = locationId;
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
-        locationId: locationId == 'all' || locationId == 'unassigned' ? null : locationId,
-        locationName: locationId != 'all' && locationId != 'unassigned' && _locations.any((l) => l.id == locationId)
+        locationId: locationId == 'all' || locationId == 'unassigned'
+            ? null
+            : locationId,
+        locationName: locationId != 'all' &&
+                locationId != 'unassigned' &&
+                _locations.any((l) => l.id == locationId)
             ? _locations.firstWhere((l) => l.id == locationId).name
             : 'All Locations (HQ)',
       );
@@ -223,7 +233,8 @@ class AdminSupportTicketsViewModel extends BaseViewModel with NavigationMixin {
     loadTickets();
   }
 
-  void assignTicketLocation(AdminSupportTicket ticket, LocationModel? location) {
+  void assignTicketLocation(
+      AdminSupportTicket ticket, LocationModel? location) {
     final idx = _tickets.indexWhere((t) => t.id == ticket.id);
     if (idx >= 0) {
       _tickets[idx] = ticket.copyWith(

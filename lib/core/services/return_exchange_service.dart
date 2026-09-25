@@ -75,14 +75,17 @@ class ReturnExchangeService {
 
     return list
         .whereType<Map>()
-        .map((item) => ReturnExchangeCase.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) =>
+            ReturnExchangeCase.fromJson(Map<String, dynamic>.from(item)))
         .toList();
   }
 
   /// Get case by ID with full details
   Future<ReturnExchangeCase> getCaseById(String id) async {
     final response = await _apiClient.get('/returns/$id');
-    final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
+    final data = response.data['data'] is Map
+        ? Map<String, dynamic>.from(response.data['data'])
+        : <String, dynamic>{};
     return ReturnExchangeCase.fromJson(data);
   }
 
@@ -99,7 +102,9 @@ class ReturnExchangeService {
         'notes': notes ?? '',
       },
     );
-    final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
+    final data = response.data['data'] is Map
+        ? Map<String, dynamic>.from(response.data['data'])
+        : <String, dynamic>{};
     return ReturnExchangeCase.fromJson(data);
   }
 
@@ -117,7 +122,9 @@ class ReturnExchangeService {
           if (locationName != null) 'locationName': locationName,
         },
       );
-      final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
+      final data = response.data['data'] is Map
+          ? Map<String, dynamic>.from(response.data['data'])
+          : <String, dynamic>{};
       return ReturnExchangeCase.fromJson(data);
     } catch (_) {
       final kase = await getCaseById(id);
@@ -146,10 +153,14 @@ class ReturnExchangeService {
     if (damageType != null && damageType.isNotEmpty && damageType != 'all') {
       queryParams['damageType'] = damageType;
     }
-    if (damageDiscoveredAt != null && damageDiscoveredAt.isNotEmpty && damageDiscoveredAt != 'all') {
+    if (damageDiscoveredAt != null &&
+        damageDiscoveredAt.isNotEmpty &&
+        damageDiscoveredAt != 'all') {
       queryParams['damageDiscoveredAt'] = damageDiscoveredAt;
     }
-    if (damageResolution != null && damageResolution.isNotEmpty && damageResolution != 'all') {
+    if (damageResolution != null &&
+        damageResolution.isNotEmpty &&
+        damageResolution != 'all') {
       queryParams['damageResolution'] = damageResolution;
     }
     if (search != null && search.isNotEmpty) {
@@ -187,7 +198,8 @@ class ReturnExchangeService {
         if (meta['metrics'] is Map && metricsJson.isEmpty) {
           metricsJson = Map<String, dynamic>.from(meta['metrics'] as Map);
         }
-        total = meta['total'] is num ? (meta['total'] as num).toInt() : list.length;
+        total =
+            meta['total'] is num ? (meta['total'] as num).toInt() : list.length;
       }
     } else if (raw is List) {
       list = raw;

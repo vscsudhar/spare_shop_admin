@@ -7,7 +7,8 @@ import 'package:stacked/stacked.dart';
 
 import 'admin_damaged_products_viewmodel.dart';
 
-class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel> {
+class AdminDamagedProductsView
+    extends StackedView<AdminDamagedProductsViewModel> {
   const AdminDamagedProductsView({Key? key}) : super(key: key);
 
   @override
@@ -101,7 +102,8 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                 children: cards
                     .map((c) => Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 6.0),
                             child: c,
                           ),
                         ))
@@ -120,7 +122,7 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
               );
             }
           }),
-          const SizedBox(height: 24),          // Location Filter Section & Hub Selector
+          const SizedBox(height: 24), // Location Filter Section & Hub Selector
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -159,7 +161,8 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Scoped to ${viewModel.userAssignedLocationName}',
@@ -392,8 +395,9 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
               rows: viewModel.filteredDamagedItems.map((item) {
                 final dateStr =
                     '${item.createdAt.day.toString().padLeft(2, '0')}/${item.createdAt.month.toString().padLeft(2, '0')}/${item.createdAt.year}';
-                final isOnline = item.channel.toLowerCase().contains('online') ||
-                    item.channel.toLowerCase().contains('app');
+                final isOnline =
+                    item.channel.toLowerCase().contains('online') ||
+                        item.channel.toLowerCase().contains('app');
 
                 return AdminTableRow(
                   cells: [
@@ -407,7 +411,8 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: item.image.isNotEmpty
-                              ? Image.network(item.image, fit: BoxFit.cover,
+                              ? Image.network(item.image,
+                                  fit: BoxFit.cover,
                                   errorBuilder: (_, __, ___) => const Icon(
                                       Icons.broken_image,
                                       size: 16,
@@ -443,7 +448,8 @@ class AdminDamagedProductsView extends StackedView<AdminDamagedProductsViewModel
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AdminColors.primaryGreen.withValues(alpha: 0.1),
+                          color:
+                              AdminColors.primaryGreen.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
                               color: AdminColors.primaryGreen

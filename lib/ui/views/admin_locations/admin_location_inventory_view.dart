@@ -37,7 +37,8 @@ class AdminLocationInventoryView
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.location_off_outlined, size: 48, color: Colors.grey),
+                  const Icon(Icons.location_off_outlined,
+                      size: 48, color: Colors.grey),
                   const SizedBox(height: 16),
                   const Text(
                     'No location selected.',
@@ -208,7 +209,8 @@ class AdminLocationInventoryView
             )
           else if (viewModel.hasError && viewModel.inventoryItems.isEmpty)
             AdminEmptyState(
-              message: 'Failed to load location inventory.\n${viewModel.modelError ?? "An unexpected error occurred."}',
+              message:
+                  'Failed to load location inventory.\n${viewModel.modelError ?? "An unexpected error occurred."}',
               icon: Icons.error_outline,
             )
           else if (viewModel.inventoryItems.isEmpty)
@@ -290,7 +292,9 @@ class AdminLocationInventoryView
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AdminColors.isDarkTheme ? Colors.white10 : Colors.black12.withValues(alpha: 0.05),
+        color: AdminColors.isDarkTheme
+            ? Colors.white10
+            : Colors.black12.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -335,7 +339,8 @@ class AdminLocationInventoryView
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 12, color: AdminColors.textSecondary),
+                style:
+                    TextStyle(fontSize: 12, color: AdminColors.textSecondary),
               ),
               const SizedBox(height: 4),
               Text(
@@ -395,128 +400,132 @@ class AdminLocationInventoryView
                 ],
                 rows: viewModel.inventoryItems.map((item) {
                   return DataRow(
-              cells: [
-                DataCell(
-                  Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(
-                          Icons.build_circle_outlined,
-                          size: 20,
-                          color: Colors.grey,
+                    cells: [
+                      DataCell(
+                        Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Icon(
+                                Icons.build_circle_outlined,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(
+                                item.productName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Flexible(
-                        child: Text(
-                          item.productName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      DataCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              item.sku.isNotEmpty ? item.sku : '—',
+                              style: const TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (item.category.isNotEmpty)
+                              Text(
+                                item.category,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: AdminColors.textSecondary,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      DataCell(
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${item.quantity}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: item.isInStock
+                                    ? AdminColors.textPrimary
+                                    : Colors.red,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'units',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AdminColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      DataCell(
+                        AdminStatusChip(
+                          label: item.statusDisplay,
+                          color: item.isInStock
+                              ? AdminColors.primaryGreen
+                              : Colors.red,
+                        ),
+                      ),
+                      DataCell(
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, size: 18),
+                              tooltip: 'Update Stock',
+                              onPressed: () => _openEditStockDialog(
+                                context,
+                                viewModel,
+                                item,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                size: 18,
+                                color: Colors.red,
+                              ),
+                              tooltip: 'Remove Record',
+                              onPressed: () => _confirmDeleteRecord(
+                                context,
+                                viewModel,
+                                item,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                ),
-                DataCell(
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        item.sku.isNotEmpty ? item.sku : '—',
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (item.category.isNotEmpty)
-                        Text(
-                          item.category,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AdminColors.textSecondary,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${item.quantity}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                          color: item.isInStock ? AdminColors.textPrimary : Colors.red,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'units',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AdminColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                DataCell(
-                  AdminStatusChip(
-                    label: item.statusDisplay,
-                    color: item.isInStock ? AdminColors.primaryGreen : Colors.red,
-                  ),
-                ),
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 18),
-                        tooltip: 'Update Stock',
-                        onPressed: () => _openEditStockDialog(
-                          context,
-                          viewModel,
-                          item,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          size: 18,
-                          color: Colors.red,
-                        ),
-                        tooltip: 'Remove Record',
-                        onPressed: () => _confirmDeleteRecord(
-                          context,
-                          viewModel,
-                          item,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              );
-            }).toList(),
-          ),
-        ),
-      );
-    },
-  ),
-);
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildInventoryCardsList(
@@ -556,7 +565,8 @@ class AdminLocationInventoryView
                 children: [
                   AdminStatusChip(
                     label: item.statusDisplay,
-                    color: item.isInStock ? AdminColors.primaryGreen : Colors.red,
+                    color:
+                        item.isInStock ? AdminColors.primaryGreen : Colors.red,
                   ),
                   const SizedBox(width: 8),
                   IconButton(
@@ -758,8 +768,8 @@ class _AddUpdateStockDialogState extends State<_AddUpdateStockDialog> {
         );
       } else {
         setState(() {
-          _errorMessage =
-              widget.viewModel.modelError?.toString() ?? 'Failed to update stock';
+          _errorMessage = widget.viewModel.modelError?.toString() ??
+              'Failed to update stock';
         });
       }
     }
@@ -793,7 +803,9 @@ class _AddUpdateStockDialogState extends State<_AddUpdateStockDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      isEdit ? 'Update Stock Quantity' : 'Add Product to Inventory',
+                      isEdit
+                          ? 'Update Stock Quantity'
+                          : 'Add Product to Inventory',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -807,7 +819,8 @@ class _AddUpdateStockDialogState extends State<_AddUpdateStockDialog> {
                 ),
                 Text(
                   'Managing stock for $locName',
-                  style: TextStyle(color: AdminColors.textSecondary, fontSize: 13),
+                  style:
+                      TextStyle(color: AdminColors.textSecondary, fontSize: 13),
                 ),
                 const Divider(height: 24),
 
@@ -821,12 +834,14 @@ class _AddUpdateStockDialogState extends State<_AddUpdateStockDialog> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline, color: Colors.red, size: 18),
+                        const Icon(Icons.error_outline,
+                            color: Colors.red, size: 18),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _errorMessage!,
-                            style: const TextStyle(color: Colors.red, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 12),
                           ),
                         ),
                       ],
@@ -924,7 +939,8 @@ class _AddUpdateStockDialogState extends State<_AddUpdateStockDialog> {
                                         _selectedProduct?.id == p.id;
                                     return ListTile(
                                       selected: isSelected,
-                                      selectedTileColor: AdminColors.primaryGreen
+                                      selectedTileColor: AdminColors
+                                          .primaryGreen
                                           .withValues(alpha: 0.12),
                                       title: Text(
                                         p.name,

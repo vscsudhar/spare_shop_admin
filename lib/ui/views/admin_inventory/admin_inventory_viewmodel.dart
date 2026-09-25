@@ -40,7 +40,8 @@ class AdminInventoryViewModel extends FutureViewModel<void>
 
   int getStockLevel(String productId) {
     if (_selectedLocationFilter != 'all' && _locationInventory != null) {
-      final item = _locationInventory!.items.where((i) => i.productId == productId || i.sku == productId);
+      final item = _locationInventory!.items
+          .where((i) => i.productId == productId || i.sku == productId);
       if (item.isNotEmpty) {
         return item.first.quantity;
       }
@@ -94,11 +95,15 @@ class AdminInventoryViewModel extends FutureViewModel<void>
       if (_locationInventory == null || _locationInventory!.items.isEmpty) {
         return [];
       }
-      final locItemIds = _locationInventory!.items.map((i) => i.productId).toSet();
+      final locItemIds =
+          _locationInventory!.items.map((i) => i.productId).toSet();
       final locItemSkus = _locationInventory!.items.map((i) => i.sku).toSet();
 
       baseList = _allProducts
-          .where((p) => locItemIds.contains(p.id) || locItemSkus.contains(p.id) || locItemSkus.contains(p.name))
+          .where((p) =>
+              locItemIds.contains(p.id) ||
+              locItemSkus.contains(p.id) ||
+              locItemSkus.contains(p.name))
           .toList();
 
       for (final item in _locationInventory!.items) {
@@ -137,7 +142,8 @@ class AdminInventoryViewModel extends FutureViewModel<void>
   double get totalStockValue {
     if (_selectedLocationFilter == '__none__') return 0.0;
     if (_selectedLocationFilter != 'all' && _locationInventory != null) {
-      return _locationInventory!.items.fold(0.0, (sum, i) => sum + (i.price * i.quantity));
+      return _locationInventory!.items
+          .fold(0.0, (sum, i) => sum + (i.price * i.quantity));
     }
     return _allProducts.fold(0, (sum, p) => sum + (p.price * p.stockCount));
   }
@@ -181,7 +187,8 @@ class AdminInventoryViewModel extends FutureViewModel<void>
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadInventory();
   }
 
@@ -204,7 +211,8 @@ class AdminInventoryViewModel extends FutureViewModel<void>
 
       if (_selectedLocationFilter != 'all') {
         try {
-          _locationInventory = await _locationService.getLocationInventory(_selectedLocationFilter);
+          _locationInventory = await _locationService
+              .getLocationInventory(_selectedLocationFilter);
         } catch (_) {
           _locationInventory = null;
         }
@@ -222,9 +230,10 @@ class AdminInventoryViewModel extends FutureViewModel<void>
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
         locationId: locationId == 'all' ? null : locationId,
-        locationName: locationId != 'all' && _locations.any((l) => l.id == locationId)
-            ? _locations.firstWhere((l) => l.id == locationId).name
-            : 'All Locations (HQ)',
+        locationName:
+            locationId != 'all' && _locations.any((l) => l.id == locationId)
+                ? _locations.firstWhere((l) => l.id == locationId).name
+                : 'All Locations (HQ)',
       );
     }
     loadInventory();

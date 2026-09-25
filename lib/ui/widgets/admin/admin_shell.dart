@@ -15,6 +15,8 @@ enum AdminNavigationItem {
   damagedProducts,
   rareRequests,
   supportTickets,
+  suggestions,
+  categories,
   products,
   inventory,
   purchases,
@@ -213,7 +215,7 @@ class AdminShell extends StatelessWidget with NavigationMixin {
     );
   }
 
-    Widget _buildLocationBadge() {
+  Widget _buildLocationBadge() {
     return ListenableBuilder(
       listenable: TokenService.locationNotifier,
       builder: (context, _) {
@@ -230,12 +232,16 @@ class AdminShell extends StatelessWidget with NavigationMixin {
 
             String displayTitle = 'Global (HQ)';
             if (hasSpecificLocation) {
-              if (currentLocationName != null && currentLocationName.isNotEmpty && currentLocationName != 'All Locations (HQ)') {
-                displayTitle = '${currentLocationName.replaceAll(RegExp(r'\\s*hub', caseSensitive: false), '')} Hub';
+              if (currentLocationName != null &&
+                  currentLocationName.isNotEmpty &&
+                  currentLocationName != 'All Locations (HQ)') {
+                displayTitle =
+                    '${currentLocationName.replaceAll(RegExp(r'\\s*hub', caseSensitive: false), '')} Hub';
               } else {
                 final match = locations.where((l) => l.id == currentLocId);
                 if (match.isNotEmpty) {
-                  displayTitle = '${match.first.name.replaceAll(RegExp(r'\\s*hub', caseSensitive: false), '')} Hub';
+                  displayTitle =
+                      '${match.first.name.replaceAll(RegExp(r'\\s*hub', caseSensitive: false), '')} Hub';
                 } else {
                   displayTitle = 'Location Hub';
                 }
@@ -302,13 +308,17 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                         Icon(
                           Icons.location_on,
                           size: 16,
-                          color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                          color: isSelected
+                              ? AdminColors.primaryGreen
+                              : Colors.grey,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '${loc.name} (${loc.radiusDisplay})',
                           style: TextStyle(
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                             color: isSelected ? AdminColors.primaryGreen : null,
                           ),
                         ),
@@ -318,7 +328,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                 }),
               ],
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: hasSpecificLocation
                       ? AdminColors.primaryGreen.withValues(alpha: 0.12)
@@ -465,14 +476,21 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                       AdminNavigationItem.dashboard),
                   _sidebarItem(context, Icons.shopping_bag_rounded, 'Orders',
                       AdminNavigationItem.orders),
-                  _sidebarItem(context, Icons.published_with_changes_rounded,
-                      'Returns & Exchanges', AdminNavigationItem.returnsExchanges),
+                  _sidebarItem(
+                      context,
+                      Icons.published_with_changes_rounded,
+                      'Returns & Exchanges',
+                      AdminNavigationItem.returnsExchanges),
                   _sidebarItem(context, Icons.broken_image_rounded,
                       'Damaged Products', AdminNavigationItem.damagedProducts),
                   _sidebarItem(context, Icons.support_agent_rounded,
                       'Rare Requests', AdminNavigationItem.rareRequests),
                   _sidebarItem(context, Icons.headset_mic_rounded,
                       'Support Tickets', AdminNavigationItem.supportTickets),
+                  _sidebarItem(context, Icons.lightbulb_outline_rounded,
+                      'Suggestions', AdminNavigationItem.suggestions),
+                  _sidebarItem(context, Icons.category_rounded, 'Categories',
+                      AdminNavigationItem.categories),
                   _sidebarItem(context, Icons.build_rounded, 'Products',
                       AdminNavigationItem.products),
                   _sidebarItem(context, Icons.inventory_2_rounded, 'Inventory',
@@ -483,8 +501,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                       AdminNavigationItem.suppliers),
                   _sidebarItem(context, Icons.location_on_rounded, 'Locations',
                       AdminNavigationItem.locations),
-                  _sidebarItem(context, Icons.local_shipping_rounded, 'Delivery Charges',
-                      AdminNavigationItem.deliveryCharges),
+                  _sidebarItem(context, Icons.local_shipping_rounded,
+                      'Delivery Charges', AdminNavigationItem.deliveryCharges),
                   _sidebarItem(context, Icons.people_alt_rounded, 'Customers',
                       AdminNavigationItem.customers),
                   _sidebarItem(context, Icons.payment_rounded, 'Billing / POS',
@@ -510,7 +528,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                     locId != null &&
                     locId.isNotEmpty) {
                   try {
-                    final locations = await locator<LocationService>().getLocations();
+                    final locations =
+                        await locator<LocationService>().getLocations();
                     final match = locations.where((l) => l.id == locId);
                     if (match.isNotEmpty) {
                       loc = match.first.name;
@@ -526,8 +545,10 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                     email != null &&
                     email.isNotEmpty) {
                   try {
-                    final staffList = await locator<StaffService>().getStaffMembers();
-                    final member = staffList.where((s) => s.email.toLowerCase() == email.toLowerCase().trim());
+                    final staffList =
+                        await locator<StaffService>().getStaffMembers();
+                    final member = staffList.where((s) =>
+                        s.email.toLowerCase() == email.toLowerCase().trim());
                     if (member.isNotEmpty &&
                         member.first.locationName.isNotEmpty &&
                         member.first.locationName != 'All Locations (HQ)') {
@@ -557,13 +578,16 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                     : '$loc Hub';
 
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 14,
-                        backgroundColor: AdminColors.primaryGreen.withValues(alpha: 0.2),
-                        child: Icon(Icons.person, size: 16, color: AdminColors.accentLime),
+                        backgroundColor:
+                            AdminColors.primaryGreen.withValues(alpha: 0.2),
+                        child: Icon(Icons.person,
+                            size: 16, color: AdminColors.accentLime),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -585,7 +609,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: AdminColors.accentLime.withValues(alpha: 0.8),
+                                color: AdminColors.accentLime
+                                    .withValues(alpha: 0.8),
                                 fontSize: 10,
                               ),
                             ),
@@ -602,7 +627,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
               color: Colors.transparent,
               child: ListTile(
                 dense: true,
-                leading: const Icon(Icons.logout, color: Colors.white70, size: 18),
+                leading:
+                    const Icon(Icons.logout, color: Colors.white70, size: 18),
                 title: const Text('Exit Console',
                     style: TextStyle(color: Colors.white70, fontSize: 13)),
                 onTap: () async {
@@ -682,6 +708,12 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         break;
       case AdminNavigationItem.supportTickets:
         goToAdminSupportTickets();
+        break;
+      case AdminNavigationItem.suggestions:
+        goToAdminSuggestions();
+        break;
+      case AdminNavigationItem.categories:
+        goToAdminCategories();
         break;
       case AdminNavigationItem.products:
         goToAdminProducts();

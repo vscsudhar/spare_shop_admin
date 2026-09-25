@@ -103,9 +103,15 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                     style: AdminTextStyles.body
                                         .copyWith(fontWeight: FontWeight.bold),
                                   ),
-                                  AdminStatusChip(
-                                    label: viewModel.order.status.name,
-                                    color: _statusColor(viewModel.order.status),
+                                  Row(
+                                    children: [
+                                      _buildChannelBadge(viewModel.order),
+                                      const SizedBox(width: 8),
+                                      AdminStatusChip(
+                                        label: viewModel.order.status.name,
+                                        color: _statusColor(viewModel.order.status),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -206,8 +212,7 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(
-                                          Icons.published_with_changes_rounded,
+                                      Icon(Icons.published_with_changes_rounded,
                                           size: 20,
                                           color: AdminColors.primaryGreen),
                                       const SizedBox(width: 8),
@@ -223,8 +228,7 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                     icon: const Icon(Icons.add, size: 16),
                                     label: const Text('Initiate Return / RMA'),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          AdminColors.primaryGreen,
+                                      backgroundColor: AdminColors.primaryGreen,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 10),
@@ -251,8 +255,7 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                       color:
                                           Colors.white.withValues(alpha: 0.04),
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                          color: Colors.white12),
+                                      border: Border.all(color: Colors.white12),
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
@@ -344,14 +347,14 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                         const SizedBox(width: 8),
                                         Text(
                                           'Fulfillment Hub',
-                                          style: AdminTextStyles.body
-                                              .copyWith(fontWeight: FontWeight.bold),
+                                          style: AdminTextStyles.body.copyWith(
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
                                     ElevatedButton.icon(
-                                      onPressed: () =>
-                                          _showLocationPicker(context, viewModel),
+                                      onPressed: () => _showLocationPicker(
+                                          context, viewModel),
                                       icon: Icon(
                                         viewModel.order.locationName != null
                                             ? Icons.swap_horiz_rounded
@@ -368,7 +371,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AdminColors.primaryGreen,
+                                        backgroundColor:
+                                            AdminColors.primaryGreen,
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
@@ -384,7 +388,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                 ),
                                 const SizedBox(height: 12),
                                 if (viewModel.order.locationName != null &&
-                                    viewModel.order.locationName!.isNotEmpty) ...[
+                                    viewModel
+                                        .order.locationName!.isNotEmpty) ...[
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -429,8 +434,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                                 'Assigned inventory & dispatch hub',
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: AdminColors
-                                                      .textSecondary,
+                                                  color:
+                                                      AdminColors.textSecondary,
                                                 ),
                                               ),
                                             ],
@@ -446,7 +451,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.03),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.03),
                                       borderRadius: BorderRadius.circular(6),
                                       border: Border.all(color: Colors.white10),
                                     ),
@@ -472,7 +478,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.amber.withValues(alpha: 0.1),
+                                      color:
+                                          Colors.amber.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                           color: Colors.amber
@@ -555,6 +562,54 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   ],
                                 ),
                                 const SizedBox(height: 16),
+                                const Divider(),
+                                const SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Order Source',
+                                          style: AdminTextStyles.bodySecondary
+                                              .copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        _buildChannelBadge(viewModel.order),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Payment Method',
+                                          style: AdminTextStyles.bodySecondary
+                                              .copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withValues(alpha: 0.06),
+                                            borderRadius: BorderRadius.circular(6),
+                                            border: Border.all(color: Colors.white24),
+                                          ),
+                                          child: Text(
+                                            viewModel.order.paymentMethod.toUpperCase(),
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
                                 const Divider(),
                                 const SizedBox(height: 12),
                                 Text(
@@ -695,10 +750,12 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AdminColors.panelBackground,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Row(
             children: [
-              Icon(Icons.hub_outlined, color: AdminColors.primaryGreen, size: 22),
+              Icon(Icons.hub_outlined,
+                  color: AdminColors.primaryGreen, size: 22),
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
@@ -803,9 +860,10 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                       separatorBuilder: (_, __) => const Divider(height: 8),
                       itemBuilder: (context, index) {
                         final loc = viewModel.locations[index];
-                        final isCurrent = viewModel.order.locationId == loc.id ||
-                            viewModel.order.locationName?.toLowerCase() ==
-                                loc.name.toLowerCase();
+                        final isCurrent =
+                            viewModel.order.locationId == loc.id ||
+                                viewModel.order.locationName?.toLowerCase() ==
+                                    loc.name.toLowerCase();
                         return ListTile(
                           dense: true,
                           shape: RoundedRectangleBorder(
@@ -823,9 +881,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                           title: Text(
                             '${loc.name} Hub',
                             style: TextStyle(
-                              fontWeight: isCurrent
-                                  ? FontWeight.bold
-                                  : FontWeight.w600,
+                              fontWeight:
+                                  isCurrent ? FontWeight.bold : FontWeight.w600,
                               color: isCurrent
                                   ? AdminColors.primaryGreen
                                   : Colors.white,
@@ -895,8 +952,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                             viewModel.updateOrderLocation(loc);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                    'Order updated with ${loc.name} Hub'),
+                                content:
+                                    Text('Order updated with ${loc.name} Hub'),
                                 backgroundColor: AdminColors.primaryGreen,
                               ),
                             );
@@ -946,6 +1003,43 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
       case OrderStatus.cancelled:
         return AdminColors.cancelled;
     }
+  }
+
+  Widget _buildChannelBadge(OrderModel order) {
+    final isPos = order.isPosOrder;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isPos
+            ? Colors.blue.withValues(alpha: 0.12)
+            : AdminColors.primaryGreen.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: isPos
+              ? Colors.blue.withValues(alpha: 0.3)
+              : AdminColors.primaryGreen.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPos ? Icons.point_of_sale_rounded : Icons.phone_android_rounded,
+            size: 13,
+            color: isPos ? Colors.lightBlueAccent : AdminColors.primaryGreen,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            order.channelDisplayName,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: isPos ? Colors.lightBlueAccent : AdminColors.primaryGreen,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

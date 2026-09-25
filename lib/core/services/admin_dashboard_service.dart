@@ -44,7 +44,8 @@ class AdminDashboardService {
     return response.data['data'] ?? [];
   }
 
-  Future<List<dynamic>> getSalesChart(String range, {String? locationId}) async {
+  Future<List<dynamic>> getSalesChart(String range,
+      {String? locationId}) async {
     final queryParameters = <String, dynamic>{'range': range};
     if (locationId != null && locationId.isNotEmpty && locationId != 'all') {
       queryParameters['locationId'] = locationId;

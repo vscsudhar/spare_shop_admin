@@ -226,7 +226,8 @@ class AdminSupportTicket {
     String? locId;
     String? locName;
     if (json['locationId'] is Map) {
-      locId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locId =
+          (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
       locName = json['locationId']['name']?.toString();
     } else if (json['locationId'] != null) {
       locId = json['locationId'].toString();
@@ -236,7 +237,8 @@ class AdminSupportTicket {
     } else if (json['location'] != null) {
       locId = json['location'].toString();
     }
-    if (json['locationName'] != null && json['locationName'].toString().isNotEmpty) {
+    if (json['locationName'] != null &&
+        json['locationName'].toString().isNotEmpty) {
       locName = json['locationName'].toString();
     }
 

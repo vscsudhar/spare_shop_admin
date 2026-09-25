@@ -65,7 +65,8 @@ class AdminSupportTicketsView
           const SizedBox(height: 16),
 
           // Location Filter Row
-          if (viewModel.canChangeLocation && viewModel.locations.isNotEmpty) ...[
+          if (viewModel.canChangeLocation &&
+              viewModel.locations.isNotEmpty) ...[
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -76,7 +77,13 @@ class AdminSupportTicketsView
                     onTap: () => viewModel.setSelectedLocationFilter('all'),
                   ),
                   ...viewModel.locations.map((loc) {
-                    final count = viewModel.tickets.where((t) => t.locationId == loc.id || (t.locationName != null && t.locationName!.toLowerCase() == loc.name.toLowerCase())).length;
+                    final count = viewModel.tickets
+                        .where((t) =>
+                            t.locationId == loc.id ||
+                            (t.locationName != null &&
+                                t.locationName!.toLowerCase() ==
+                                    loc.name.toLowerCase()))
+                        .length;
                     return _filterChip(
                       label: '📍 ${loc.name} ($count)',
                       isSelected: viewModel.selectedLocationFilter == loc.id,
@@ -85,8 +92,10 @@ class AdminSupportTicketsView
                   }),
                   _filterChip(
                     label: 'Unassigned',
-                    isSelected: viewModel.selectedLocationFilter == 'unassigned',
-                    onTap: () => viewModel.setSelectedLocationFilter('unassigned'),
+                    isSelected:
+                        viewModel.selectedLocationFilter == 'unassigned',
+                    onTap: () =>
+                        viewModel.setSelectedLocationFilter('unassigned'),
                   ),
                 ],
               ),
@@ -138,8 +147,8 @@ class AdminSupportTicketsView
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40.0),
               child: Center(
-                child: CircularProgressIndicator(
-                    color: AdminColors.primaryGreen),
+                child:
+                    CircularProgressIndicator(color: AdminColors.primaryGreen),
               ),
             )
           else if (viewModel.filteredTickets.isEmpty)
@@ -185,9 +194,7 @@ class AdminSupportTicketsView
                 : AdminColors.panelBackground,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isSelected
-                  ? AdminColors.primaryGreen
-                  : AdminColors.border,
+              color: isSelected ? AdminColors.primaryGreen : AdminColors.border,
               width: isSelected ? 1.5 : 1,
             ),
           ),
@@ -209,8 +216,7 @@ class AdminSupportTicketsView
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.w500,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected
                       ? AdminColors.sidebarActiveText
                       : AdminColors.textSecondary,

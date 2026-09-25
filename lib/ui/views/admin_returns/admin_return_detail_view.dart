@@ -10,7 +10,8 @@ import 'admin_return_detail_viewmodel.dart';
 class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
   final String caseId;
 
-  const AdminReturnDetailView({Key? key, required this.caseId}) : super(key: key);
+  const AdminReturnDetailView({Key? key, required this.caseId})
+      : super(key: key);
 
   @override
   Widget builder(
@@ -63,7 +64,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                         children: [
                           IconButton(
                             onPressed: () => viewModel.handleBack(),
-                            icon: const Icon(Icons.arrow_back, color: Colors.white70),
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white70),
                             tooltip: 'Back to Returns List',
                           ),
                           const SizedBox(width: 8),
@@ -96,7 +98,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                             onPressed: viewModel.isBusy
                                 ? null
                                 : () => viewModel.loadCase(),
-                            icon: const Icon(Icons.refresh, color: Colors.white70),
+                            icon: const Icon(Icons.refresh,
+                                color: Colors.white70),
                             tooltip: 'Refresh',
                           ),
                         ],
@@ -116,7 +119,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                                 flex: 3,
                                 child: Column(
                                   children: [
-                                    _buildCaseSummaryCard(context, viewModel, kase),
+                                    _buildCaseSummaryCard(
+                                        context, viewModel, kase),
                                     const SizedBox(height: 20),
                                     _buildItemsList(kase),
                                   ],
@@ -129,8 +133,10 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                                 flex: 2,
                                 child: Column(
                                   children: [
-                                    if (viewModel.availableNextStatuses.isNotEmpty)
-                                      _buildStatusActionCard(context, viewModel),
+                                    if (viewModel
+                                        .availableNextStatuses.isNotEmpty)
+                                      _buildStatusActionCard(
+                                          context, viewModel),
                                     const SizedBox(height: 20),
                                     _buildHistoryTimelineCard(kase),
                                   ],
@@ -143,7 +149,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                             children: [
                               _buildCaseSummaryCard(context, viewModel, kase),
                               const SizedBox(height: 20),
-                              if (viewModel.availableNextStatuses.isNotEmpty) ...[
+                              if (viewModel
+                                  .availableNextStatuses.isNotEmpty) ...[
                                 _buildStatusActionCard(context, viewModel),
                                 const SizedBox(height: 20),
                               ],
@@ -160,8 +167,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
     );
   }
 
-  Widget _buildCaseSummaryCard(
-      BuildContext context, AdminReturnDetailViewModel viewModel, ReturnExchangeCase kase) {
+  Widget _buildCaseSummaryCard(BuildContext context,
+      AdminReturnDetailViewModel viewModel, ReturnExchangeCase kase) {
     return AdminPanelCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,32 +180,47 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
             spacing: 32,
             runSpacing: 12,
             children: [
-              _infoLine('Origin Channel', kase.channel == 'online' ? '📱 Online Mobile App' : '🏬 Store Visit / Counter'),
-              _infoLine('Processing Hub', kase.locationName?.isNotEmpty == true ? kase.locationName! : '⚠️ Unassigned HQ',
-                  color: kase.locationName?.isNotEmpty == true ? AdminColors.primaryGreen : Colors.orangeAccent),
+              _infoLine(
+                  'Origin Channel',
+                  kase.channel == 'online'
+                      ? '📱 Online Mobile App'
+                      : '🏬 Store Visit / Counter'),
+              _infoLine(
+                  'Processing Hub',
+                  kase.locationName?.isNotEmpty == true
+                      ? kase.locationName!
+                      : '⚠️ Unassigned HQ',
+                  color: kase.locationName?.isNotEmpty == true
+                      ? AdminColors.primaryGreen
+                      : Colors.orangeAccent),
               _infoLine('Case Number', kase.caseNumber),
               _infoLine('Bill Number', kase.billNumber),
               if (kase.invoiceNumber.isNotEmpty)
                 _infoLine('Invoice Number', kase.invoiceNumber),
-              _infoLine('Customer', '${kase.customerName} (${kase.customerPhone})'),
+              _infoLine(
+                  'Customer', '${kase.customerName} (${kase.customerPhone})'),
               _infoLine('Created Date',
                   '${kase.createdAt.day}/${kase.createdAt.month}/${kase.createdAt.year} ${kase.createdAt.hour}:${kase.createdAt.minute.toString().padLeft(2, '0')}'),
               _infoLine('Last Updated',
                   '${kase.updatedAt.day}/${kase.updatedAt.month}/${kase.updatedAt.year} ${kase.updatedAt.hour}:${kase.updatedAt.minute.toString().padLeft(2, '0')}'),
               _infoLine('Handled By', kase.createdByName),
               if (kase.totalRefundAmount > 0)
-                _infoLine('Refund Amount', '₹${kase.totalRefundAmount.toStringAsFixed(2)}',
+                _infoLine('Refund Amount',
+                    '₹${kase.totalRefundAmount.toStringAsFixed(2)}',
                     color: Colors.orangeAccent),
               if (kase.totalPayableAmount > 0)
-                _infoLine('Payable Amount', '₹${kase.totalPayableAmount.toStringAsFixed(2)}',
+                _infoLine('Payable Amount',
+                    '₹${kase.totalPayableAmount.toStringAsFixed(2)}',
                     color: Colors.greenAccent),
             ],
           ),
-          if (viewModel.canChangeLocation && viewModel.locations.isNotEmpty) ...[
+          if (viewModel.canChangeLocation &&
+              viewModel.locations.isNotEmpty) ...[
             const Divider(height: 24),
             Row(
               children: [
-                Icon(Icons.storefront_outlined, size: 16, color: AdminColors.primaryGreen),
+                Icon(Icons.storefront_outlined,
+                    size: 16, color: AdminColors.primaryGreen),
                 const SizedBox(width: 8),
                 Text(
                   'Fulfillment & Store Hub: ${kase.locationName ?? "Unassigned"}',
@@ -206,13 +228,17 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                 ),
                 const Spacer(),
                 OutlinedButton.icon(
-                  onPressed: () => _showLocationPicker(context, viewModel, kase),
+                  onPressed: () =>
+                      _showLocationPicker(context, viewModel, kase),
                   icon: const Icon(Icons.edit_location_alt, size: 14),
-                  label: const Text('Change Hub', style: TextStyle(fontSize: 12)),
+                  label:
+                      const Text('Change Hub', style: TextStyle(fontSize: 12)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AdminColors.primaryGreen,
-                    side: BorderSide(color: AdminColors.primaryGreen.withValues(alpha: 0.5)),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    side: BorderSide(
+                        color: AdminColors.primaryGreen.withValues(alpha: 0.5)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
               ],
@@ -222,7 +248,9 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
             const Divider(height: 24),
             Text('Admin Notes: ${kase.adminNotes}',
                 style: const TextStyle(
-                    fontSize: 12, color: Colors.white70, fontStyle: FontStyle.italic)),
+                    fontSize: 12,
+                    color: Colors.white70,
+                    fontStyle: FontStyle.italic)),
           ],
         ],
       ),
@@ -285,7 +313,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                     children: [
                       _infoLine('Quantity Processed',
                           '${item.processedQty} of ${item.originalQty}'),
-                      _infoLine('Unit Price', '₹${item.unitPrice.toStringAsFixed(2)}'),
+                      _infoLine('Unit Price',
+                          '₹${item.unitPrice.toStringAsFixed(2)}'),
                       _infoLine('Reason', item.reasonText),
                       _infoLine('Condition', item.condition.toUpperCase()),
                       _infoLine('Inventory Action',
@@ -418,9 +447,10 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: viewModel.selectedNewStatus != null && !viewModel.isBusy
-                  ? () => viewModel.updateStatus(context)
-                  : null,
+              onPressed:
+                  viewModel.selectedNewStatus != null && !viewModel.isBusy
+                      ? () => viewModel.updateStatus(context)
+                      : null,
               icon: viewModel.isBusy
                   ? const SizedBox(
                       width: 14,
@@ -589,8 +619,8 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
     }
   }
 
-  void _showLocationPicker(
-      BuildContext context, AdminReturnDetailViewModel viewModel, ReturnExchangeCase kase) {
+  void _showLocationPicker(BuildContext context,
+      AdminReturnDetailViewModel viewModel, ReturnExchangeCase kase) {
     showDialog(
       context: context,
       builder: (ctx) {
@@ -598,9 +628,11 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
           backgroundColor: AdminColors.panelBackground,
           title: Row(
             children: [
-              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 20),
+              Icon(Icons.storefront_outlined,
+                  color: AdminColors.primaryGreen, size: 20),
               const SizedBox(width: 8),
-              const Text('Assign Processing Hub / Store', style: TextStyle(fontSize: 16)),
+              const Text('Assign Processing Hub / Store',
+                  style: TextStyle(fontSize: 16)),
             ],
           ),
           content: SizedBox(
@@ -620,17 +652,25 @@ class AdminReturnDetailView extends StackedView<AdminReturnDetailViewModel> {
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     leading: Icon(
-                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                      color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                      isSelected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
+                      color:
+                          isSelected ? AdminColors.primaryGreen : Colors.grey,
                       size: 18,
                     ),
                     title: Text(loc.name,
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AdminColors.primaryGreen : Colors.white)),
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? AdminColors.primaryGreen
+                                : Colors.white)),
                     subtitle: Text('Radius: ${loc.radiusDisplay}',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                        style:
+                            const TextStyle(fontSize: 11, color: Colors.grey)),
                     onTap: () {
                       Navigator.of(ctx).pop();
                       viewModel.updateLocation(loc.id, loc.name, context);

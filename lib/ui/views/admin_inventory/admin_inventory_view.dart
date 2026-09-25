@@ -100,7 +100,8 @@ class AdminInventoryView extends StackedView<AdminInventoryViewModel> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Locked to ${viewModel.userAssignedLocationName}',

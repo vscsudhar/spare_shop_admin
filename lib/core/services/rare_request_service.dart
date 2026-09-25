@@ -104,10 +104,14 @@ class RareRequestService {
     if (search != null && search.isNotEmpty) {
       query['search'] = search;
     }
-    if (locationId != null && locationId.isNotEmpty && locationId.toLowerCase() != 'all') {
+    if (locationId != null &&
+        locationId.isNotEmpty &&
+        locationId.toLowerCase() != 'all') {
       query['locationId'] = locationId;
     }
-    if (channel != null && channel.isNotEmpty && channel.toLowerCase() != 'all') {
+    if (channel != null &&
+        channel.isNotEmpty &&
+        channel.toLowerCase() != 'all') {
       query['channel'] = channel;
     }
 
@@ -133,14 +137,17 @@ class RareRequestService {
 
     return list
         .whereType<Map>()
-        .map((item) => RareProductRequestModelExtension.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) => RareProductRequestModelExtension.fromJson(
+            Map<String, dynamic>.from(item)))
         .toList();
   }
 
   Future<RareProductRequestModel> adminGetRequestById(String id) async {
     final response =
         await _apiClient.get('${ApiEndpoints.adminRareRequests}/$id');
-    final data = response.data['data'] is Map ? Map<String, dynamic>.from(response.data['data']) : <String, dynamic>{};
+    final data = response.data['data'] is Map
+        ? Map<String, dynamic>.from(response.data['data'])
+        : <String, dynamic>{};
     return RareProductRequestModelExtension.fromJson(data);
   }
 

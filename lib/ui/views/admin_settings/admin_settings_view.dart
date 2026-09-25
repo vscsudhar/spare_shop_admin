@@ -247,7 +247,8 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
                           borderRadius: BorderRadius.circular(8)),
                     ),
                     child: const Text('Manage Rates',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),

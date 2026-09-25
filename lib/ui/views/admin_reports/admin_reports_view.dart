@@ -91,7 +91,8 @@ class AdminReportsView extends StackedView<AdminReportsViewModel> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Scoped to ${viewModel.userAssignedLocationName}',

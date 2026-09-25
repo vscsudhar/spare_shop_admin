@@ -7,7 +7,8 @@ import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:stacked/stacked.dart';
 
-export 'package:spare_shop_admin/core/services/staff_service.dart' show StaffMemberModel, StaffRoleDefinition;
+export 'package:spare_shop_admin/core/services/staff_service.dart'
+    show StaffMemberModel, StaffRoleDefinition;
 
 class AdminStaffRolesViewModel extends FutureViewModel<void>
     with NavigationMixin {
@@ -33,35 +34,45 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
     const StaffRoleDefinition(
       id: 'role_owner',
       roleName: 'Owner / Admin',
-      description: 'Unrestricted global access to all branches, billing, and settings.',
+      description:
+          'Unrestricted global access to all branches, billing, and settings.',
       isLocationScoped: false,
       permissions: ['ALL_PERMISSIONS', 'settings.manage', 'locations.manage'],
     ),
     const StaffRoleDefinition(
       id: 'role_manager',
       roleName: 'Store / Hub Manager',
-      description: 'Manages day-to-day operations, staff, orders, and stock for assigned location.',
+      description:
+          'Manages day-to-day operations, staff, orders, and stock for assigned location.',
       isLocationScoped: true,
-      permissions: ['inventory.manage', 'orders.manage', 'billing.create', 'staff.view'],
+      permissions: [
+        'inventory.manage',
+        'orders.manage',
+        'billing.create',
+        'staff.view'
+      ],
     ),
     const StaffRoleDefinition(
       id: 'role_inventory',
       roleName: 'Inventory Specialist',
-      description: 'Tracks, receives, and adjusts stock quantities at the designated location hub.',
+      description:
+          'Tracks, receives, and adjusts stock quantities at the designated location hub.',
       isLocationScoped: true,
       permissions: ['inventory.read', 'inventory.update', 'products.view'],
     ),
     const StaffRoleDefinition(
       id: 'role_sales',
       roleName: 'Sales & POS Staff',
-      description: 'Handles in-store customer billing, counter inquiries, and invoice generation.',
+      description:
+          'Handles in-store customer billing, counter inquiries, and invoice generation.',
       isLocationScoped: true,
       permissions: ['billing.create', 'orders.read', 'inventory.read'],
     ),
     const StaffRoleDefinition(
       id: 'role_delivery',
       roleName: 'Delivery Driver',
-      description: 'Assigned to pickup & deliver orders within the location coverage radius.',
+      description:
+          'Assigned to pickup & deliver orders within the location coverage radius.',
       isLocationScoped: true,
       permissions: ['orders.read', 'delivery.update'],
     ),
@@ -80,15 +91,19 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
           member.email.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           member.phone.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           member.role.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          member.locationName.toLowerCase().contains(_searchQuery.toLowerCase());
+          member.locationName
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase());
 
       final matchesRole = _selectedRoleFilter == 'All' ||
           member.role.toLowerCase().contains(_selectedRoleFilter.toLowerCase());
 
       bool matchesLocation = true;
       if (_selectedLocationFilter == 'all_hq') {
-        matchesLocation = member.locationId == null || member.locationId!.isEmpty;
-      } else if (_selectedLocationFilter != 'All' && _selectedLocationFilter != 'all') {
+        matchesLocation =
+            member.locationId == null || member.locationId!.isEmpty;
+      } else if (_selectedLocationFilter != 'All' &&
+          _selectedLocationFilter != 'all') {
         matchesLocation = member.locationId == _selectedLocationFilter ||
             (member.locationName.isNotEmpty &&
                 _locations.any((l) =>
@@ -115,7 +130,8 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
     return distinctLocs.length;
   }
 
-  bool get isOwner => true; // All authenticated admin dashboard users can manage staff and roles
+  bool get isOwner =>
+      true; // All authenticated admin dashboard users can manage staff and roles
 
   bool _canChangeLocation = true;
   bool get canChangeLocation => _canChangeLocation;
@@ -132,7 +148,8 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'All';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'All';
     loadData();
   }
 
@@ -154,7 +171,8 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
       _teamMembers = List.from(loadedStaff);
 
       if (!_canChangeLocation &&
-          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+          (_userAssignedLocationId == null ||
+              _userAssignedLocationId!.isEmpty)) {
         _selectedLocationFilter = '__none__';
       } else if (_userAssignedLocationId != null &&
           _userAssignedLocationId!.isNotEmpty &&
@@ -196,8 +214,14 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
     if (!_canChangeLocation) return;
     _selectedLocationFilter = locationId;
     locator<TokenService>().saveUserLocation(
-      locationId: locationId == 'All' || locationId == 'all' || locationId == 'all_hq' ? null : locationId,
-      locationName: locationId != 'All' && locationId != 'all' && locationId != 'all_hq' && _locations.any((l) => l.id == locationId)
+      locationId:
+          locationId == 'All' || locationId == 'all' || locationId == 'all_hq'
+              ? null
+              : locationId,
+      locationName: locationId != 'All' &&
+              locationId != 'all' &&
+              locationId != 'all_hq' &&
+              _locations.any((l) => l.id == locationId)
           ? _locations.firstWhere((l) => l.id == locationId).name
           : 'All Locations (HQ)',
     );
@@ -235,7 +259,8 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
       phone: phone.isNotEmpty ? phone : '+91 90000 88000',
       shift: shift,
       status: 'Active',
-      locationId: (locationId == 'all' || locationId == null) ? null : locationId,
+      locationId:
+          (locationId == 'all' || locationId == null) ? null : locationId,
       locationName: resolvedLocationName,
     );
 
@@ -276,7 +301,8 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
         phone: phone,
         shift: shift,
         status: _teamMembers[idx].status,
-        locationId: (locationId == 'all' || locationId == null) ? null : locationId,
+        locationId:
+            (locationId == 'all' || locationId == null) ? null : locationId,
         locationName: resolvedLocationName,
       );
 
@@ -292,7 +318,8 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
     notifyListeners();
   }
 
-  Future<void> updateStaffStatus({required String id, required String status}) async {
+  Future<void> updateStaffStatus(
+      {required String id, required String status}) async {
     final idx = _teamMembers.indexWhere((m) => m.id == id);
     if (idx != -1) {
       final updated = _teamMembers[idx].copyWith(status: status);
@@ -321,5 +348,3 @@ class AdminStaffRolesViewModel extends FutureViewModel<void>
     notifyListeners();
   }
 }
-
-

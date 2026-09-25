@@ -208,6 +208,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
     required String fitType,
     required bool stockManaged,
     required List<Map<String, String>> compatibleVehicles,
+    String? categoryId,
     String? existingImageUrl,
   }) async {
     setBusy(true);
@@ -219,6 +220,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
 
       final payload = {
         'name': name,
+        if (categoryId != null && categoryId.isNotEmpty) 'category': categoryId,
         'sellingPrice': (sellingPrice * 100).toInt(),
         'mrp': (mrp * 100).toInt(),
         'purchasePrice': (purchasePrice * 100).toInt(),

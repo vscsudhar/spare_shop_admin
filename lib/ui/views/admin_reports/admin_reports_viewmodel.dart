@@ -71,7 +71,8 @@ class AdminReportsViewModel extends FutureViewModel<void> with NavigationMixin {
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadData();
   }
 
@@ -87,9 +88,10 @@ class AdminReportsViewModel extends FutureViewModel<void> with NavigationMixin {
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
         locationId: locationId == 'all' ? null : locationId,
-        locationName: locationId != 'all' && _locations.any((l) => l.id == locationId)
-            ? _locations.firstWhere((l) => l.id == locationId).name
-            : 'All Locations (HQ)',
+        locationName:
+            locationId != 'all' && _locations.any((l) => l.id == locationId)
+                ? _locations.firstWhere((l) => l.id == locationId).name
+                : 'All Locations (HQ)',
       );
     }
     loadData();
@@ -104,8 +106,10 @@ class AdminReportsViewModel extends FutureViewModel<void> with NavigationMixin {
         return;
       }
 
-      final locId = _selectedLocationFilter == 'all' ? null : _selectedLocationFilter;
-      _dailySales = await _dashboardService.getSalesChart('daily', locationId: locId);
+      final locId =
+          _selectedLocationFilter == 'all' ? null : _selectedLocationFilter;
+      _dailySales =
+          await _dashboardService.getSalesChart('daily', locationId: locId);
       _calculateStats();
       rebuildUi();
     } catch (e) {

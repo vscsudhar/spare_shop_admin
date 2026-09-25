@@ -57,6 +57,10 @@ mixin NavigationMixin {
     return navigationService.navigateTo(Routes.adminDamagedProductsView);
   }
 
+  Future<dynamic>? goToAdminCategories() {
+    return navigationService.navigateTo(Routes.adminCategoriesView);
+  }
+
   Future<dynamic>? goToAdminProducts() {
     return navigationService.navigateTo(Routes.adminProductsView);
   }
@@ -83,6 +87,10 @@ mixin NavigationMixin {
 
   Future<dynamic>? goToAdminStaffRoles() {
     return navigationService.navigateTo(Routes.adminStaffRolesView);
+  }
+
+  Future<dynamic>? goToAdminSuggestions() {
+    return navigationService.navigateTo(Routes.adminSuggestionsView);
   }
 
   Future<dynamic>? goToAdminSupportTickets() {

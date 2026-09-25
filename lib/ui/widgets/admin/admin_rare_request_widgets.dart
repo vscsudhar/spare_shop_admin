@@ -218,7 +218,8 @@ class RareRequestCard extends StatelessWidget {
                         children: [
                           // Channel badge
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: request.channel == 'in_store'
                                   ? Colors.teal.withValues(alpha: 0.15)
@@ -234,11 +235,15 @@ class RareRequestCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  request.channel == 'in_store' ? '🏬 In-Store' : '📱 App',
+                                  request.channel == 'in_store'
+                                      ? '🏬 In-Store'
+                                      : '📱 App',
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
-                                    color: request.channel == 'in_store' ? Colors.tealAccent : Colors.lightBlueAccent,
+                                    color: request.channel == 'in_store'
+                                        ? Colors.tealAccent
+                                        : Colors.lightBlueAccent,
                                   ),
                                 ),
                               ],
@@ -250,15 +255,20 @@ class RareRequestCard extends StatelessWidget {
                             onTap: onAssignLocation,
                             borderRadius: BorderRadius.circular(4),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: (request.locationName != null && request.locationName!.isNotEmpty)
-                                    ? AdminColors.primaryGreen.withValues(alpha: 0.15)
+                                color: (request.locationName != null &&
+                                        request.locationName!.isNotEmpty)
+                                    ? AdminColors.primaryGreen
+                                        .withValues(alpha: 0.15)
                                     : Colors.orange.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(
-                                  color: (request.locationName != null && request.locationName!.isNotEmpty)
-                                      ? AdminColors.primaryGreen.withValues(alpha: 0.3)
+                                  color: (request.locationName != null &&
+                                          request.locationName!.isNotEmpty)
+                                      ? AdminColors.primaryGreen
+                                          .withValues(alpha: 0.3)
                                       : Colors.orange.withValues(alpha: 0.3),
                                 ),
                               ),
@@ -268,7 +278,8 @@ class RareRequestCard extends StatelessWidget {
                                   Icon(
                                     Icons.storefront_outlined,
                                     size: 11,
-                                    color: (request.locationName != null && request.locationName!.isNotEmpty)
+                                    color: (request.locationName != null &&
+                                            request.locationName!.isNotEmpty)
                                         ? AdminColors.primaryGreen
                                         : Colors.orangeAccent,
                                   ),
@@ -278,14 +289,16 @@ class RareRequestCard extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
-                                      color: (request.locationName != null && request.locationName!.isNotEmpty)
+                                      color: (request.locationName != null &&
+                                              request.locationName!.isNotEmpty)
                                           ? AdminColors.primaryGreen
                                           : Colors.orangeAccent,
                                     ),
                                   ),
                                   if (onAssignLocation != null) ...[
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.edit, size: 10, color: Colors.white60),
+                                    const Icon(Icons.edit,
+                                        size: 10, color: Colors.white60),
                                   ],
                                 ],
                               ),

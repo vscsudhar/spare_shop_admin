@@ -34,16 +34,19 @@ class AdminOrderDetailViewModel extends BaseViewModel with NavigationMixin {
   Future<void> loadLocations() async {
     try {
       _locations = await _locationService.getLocations();
-      final resolved = HubMatchingHelper.resolveOrderLocation(_order, _locations);
+      final resolved =
+          HubMatchingHelper.resolveOrderLocation(_order, _locations);
       if (resolved.locationId != _order.locationId ||
           resolved.locationName != _order.locationName) {
         _order = resolved;
         if (resolved.locationId != null && resolved.locationId!.isNotEmpty) {
-          _orderService.adminUpdateOrderLocation(
-            _order.id,
-            locationId: resolved.locationId,
-            locationName: resolved.locationName,
-          ).catchError((_) => resolved);
+          _orderService
+              .adminUpdateOrderLocation(
+                _order.id,
+                locationId: resolved.locationId,
+                locationName: resolved.locationName,
+              )
+              .catchError((_) => resolved);
         }
       }
       notifyListeners();

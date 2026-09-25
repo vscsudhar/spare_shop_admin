@@ -8,7 +8,8 @@ import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/common/return_exchange_models.dart';
 import 'package:stacked/stacked.dart';
 
-class AdminDamagedProductsViewModel extends FutureViewModel<void> with NavigationMixin {
+class AdminDamagedProductsViewModel extends FutureViewModel<void>
+    with NavigationMixin {
   final _returnsService = locator<ReturnExchangeService>();
   final _locationService = locator<LocationService>();
   final _tokenService = locator<TokenService>();
@@ -51,14 +52,19 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
           item.productName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.sku.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.caseNumber.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.customerName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (item.locationName ?? '').toLowerCase().contains(_searchQuery.toLowerCase());
+          item.customerName
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          (item.locationName ?? '')
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase());
 
-      final matchesType =
-          _selectedDamageType == 'all' || item.damageType.toLowerCase() == _selectedDamageType.toLowerCase();
+      final matchesType = _selectedDamageType == 'all' ||
+          item.damageType.toLowerCase() == _selectedDamageType.toLowerCase();
 
-      final matchesResolution =
-          _selectedResolution == 'all' || item.damageResolution.toLowerCase() == _selectedResolution.toLowerCase();
+      final matchesResolution = _selectedResolution == 'all' ||
+          item.damageResolution.toLowerCase() ==
+              _selectedResolution.toLowerCase();
 
       bool matchesLocation = true;
       if (_selectedLocationFilter == 'unassigned') {
@@ -74,10 +80,15 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
 
       bool matchesChannel = true;
       if (_selectedChannel != 'all') {
-        matchesChannel = item.channel.toLowerCase() == _selectedChannel.toLowerCase();
+        matchesChannel =
+            item.channel.toLowerCase() == _selectedChannel.toLowerCase();
       }
 
-      return matchesSearch && matchesType && matchesResolution && matchesLocation && matchesChannel;
+      return matchesSearch &&
+          matchesType &&
+          matchesResolution &&
+          matchesLocation &&
+          matchesChannel;
     }).toList();
   }
 
@@ -101,7 +112,8 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadDamagedProducts();
   }
 
@@ -125,7 +137,8 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
       }
 
       if (!_canChangeLocation &&
-          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+          (_userAssignedLocationId == null ||
+              _userAssignedLocationId!.isEmpty)) {
         _selectedLocationFilter = '__none__';
       } else if (_userAssignedLocationId != null &&
           _userAssignedLocationId!.isNotEmpty &&
@@ -145,7 +158,8 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
         damageType: _selectedDamageType,
         damageResolution: _selectedResolution,
         search: _searchQuery,
-        locationId: _selectedLocationFilter != 'all' && _selectedLocationFilter != 'unassigned'
+        locationId: _selectedLocationFilter != 'all' &&
+                _selectedLocationFilter != 'unassigned'
             ? _selectedLocationFilter
             : null,
         channel: _selectedChannel != 'all' ? _selectedChannel : null,
@@ -157,7 +171,8 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
       // Auto sync location names
       for (int i = 0; i < _damagedItems.length; i++) {
         final d = _damagedItems[i];
-        if (d.locationId != null && (d.locationName == null || d.locationName!.isEmpty)) {
+        if (d.locationId != null &&
+            (d.locationName == null || d.locationName!.isEmpty)) {
           final match = _locations.where((l) => l.id == d.locationId);
           if (match.isNotEmpty) {
             _damagedItems[i] = d.copyWith(locationName: match.first.name);
@@ -192,8 +207,12 @@ class AdminDamagedProductsViewModel extends FutureViewModel<void> with Navigatio
     _selectedLocationFilter = locationId;
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
-        locationId: locationId == 'all' || locationId == 'unassigned' ? null : locationId,
-        locationName: locationId != 'all' && locationId != 'unassigned' && _locations.any((l) => l.id == locationId)
+        locationId: locationId == 'all' || locationId == 'unassigned'
+            ? null
+            : locationId,
+        locationName: locationId != 'all' &&
+                locationId != 'unassigned' &&
+                _locations.any((l) => l.id == locationId)
             ? _locations.firstWhere((l) => l.id == locationId).name
             : 'All Locations (HQ)',
       );

@@ -103,11 +103,13 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.lock_outline, size: 14, color: Colors.grey),
+                            Icon(Icons.lock_outline,
+                                size: 14, color: Colors.grey),
                             SizedBox(width: 6),
                             Text(
                               'Fixed Location Mode',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -119,7 +121,8 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
                   children: [
                     const Text(
                       'Status: ',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     const SizedBox(width: 8),
                     _filterChip(
@@ -160,7 +163,8 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
             )
           else if (viewModel.locations.isEmpty)
             const AdminEmptyState(
-              message: 'No locations found. Click "+ Add Location" to create one.',
+              message:
+                  'No locations found. Click "+ Add Location" to create one.',
               icon: Icons.location_off_outlined,
             )
           else if (isDesktop)
@@ -193,7 +197,8 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 12, color: AdminColors.textSecondary),
+                style:
+                    TextStyle(fontSize: 12, color: AdminColors.textSecondary),
               ),
               const SizedBox(height: 4),
               Text(
@@ -253,115 +258,121 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
                 ],
                 rows: viewModel.locations.map((loc) {
                   return DataRow(
-              cells: [
-                DataCell(
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 18,
-                        color: loc.isActive
-                            ? AdminColors.primaryGreen
-                            : Colors.grey,
+                    cells: [
+                      DataCell(
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 18,
+                              color: loc.isActive
+                                  ? AdminColors.primaryGreen
+                                  : Colors.grey,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              loc.name,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        loc.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      DataCell(
+                        Text(
+                          loc.coordinatesDisplay,
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            color: AdminColors.textSecondary,
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    loc.coordinatesDisplay,
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 12,
-                      color: AdminColors.textSecondary,
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      loc.radiusDisplay,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  AdminStatusChip(
-                    label: loc.isActive ? 'Active' : 'Inactive',
-                    color: loc.isActive ? AdminColors.primaryGreen : Colors.grey,
-                  ),
-                ),
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.inventory_2_outlined, size: 16),
-                        label: const Text('Inventory', style: TextStyle(fontSize: 12)),
-                        style: OutlinedButton.styleFrom(
+                      DataCell(
+                        Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
+                            horizontal: 8,
+                            vertical: 3,
                           ),
-                          side: BorderSide(color: AdminColors.border),
-                        ),
-                        onPressed: () => viewModel.goToAdminLocationInventory(
-                          locationId: loc.id,
-                          location: loc,
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            loc.radiusDisplay,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue,
+                            ),
+                          ),
                         ),
                       ),
-                      if (viewModel.canChangeLocation) ...[
-                        const SizedBox(width: 6),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          tooltip: 'Edit Location',
-                          onPressed: () async {
-                            await viewModel.goToEditAdminLocation(
-                              locationId: loc.id,
-                            );
-                            viewModel.loadLocations();
-                          },
+                      DataCell(
+                        AdminStatusChip(
+                          label: loc.isActive ? 'Active' : 'Inactive',
+                          color: loc.isActive
+                              ? AdminColors.primaryGreen
+                              : Colors.grey,
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            size: 18,
-                            color: Colors.red,
-                          ),
-                          tooltip: 'Delete Location',
-                          onPressed: () =>
-                              _confirmDelete(context, viewModel, loc),
+                      ),
+                      DataCell(
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            OutlinedButton.icon(
+                              icon: const Icon(Icons.inventory_2_outlined,
+                                  size: 16),
+                              label: const Text('Inventory',
+                                  style: TextStyle(fontSize: 12)),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                side: BorderSide(color: AdminColors.border),
+                              ),
+                              onPressed: () =>
+                                  viewModel.goToAdminLocationInventory(
+                                locationId: loc.id,
+                                location: loc,
+                              ),
+                            ),
+                            if (viewModel.canChangeLocation) ...[
+                              const SizedBox(width: 6),
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined, size: 18),
+                                tooltip: 'Edit Location',
+                                onPressed: () async {
+                                  await viewModel.goToEditAdminLocation(
+                                    locationId: loc.id,
+                                  );
+                                  viewModel.loadLocations();
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                                tooltip: 'Delete Location',
+                                onPressed: () =>
+                                    _confirmDelete(context, viewModel, loc),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
+                      ),
                     ],
-                  ),
-                ),
-              ],
-              );
-            }).toList(),
-          ),
-        ),
-      );
-    },
-  ),
-);
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildLocationsCardsList(
@@ -401,7 +412,8 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
                 children: [
                   AdminStatusChip(
                     label: loc.isActive ? 'Active' : 'Inactive',
-                    color: loc.isActive ? AdminColors.primaryGreen : Colors.grey,
+                    color:
+                        loc.isActive ? AdminColors.primaryGreen : Colors.grey,
                   ),
                   const SizedBox(width: 8),
                   IconButton(
@@ -420,7 +432,8 @@ class AdminLocationsView extends StackedView<AdminLocationsViewModel> {
                     IconButton(
                       icon: const Icon(Icons.edit_outlined, size: 18),
                       onPressed: () async {
-                        await viewModel.goToEditAdminLocation(locationId: loc.id);
+                        await viewModel.goToEditAdminLocation(
+                            locationId: loc.id);
                         viewModel.loadLocations();
                       },
                     ),

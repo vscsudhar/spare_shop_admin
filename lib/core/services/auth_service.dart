@@ -164,7 +164,9 @@ class AuthService {
         // Obtain a valid backend JWT session using backend system owner credentials
         // so that authenticated backend endpoints (/admin/dashboard/summary, /admin/locations) succeed
         try {
-          final ownerPass = staffService.getPasswordForEmail('owner@voltspare.com') ?? 'OwnerPassword123!';
+          final ownerPass =
+              staffService.getPasswordForEmail('owner@voltspare.com') ??
+                  'OwnerPassword123!';
           final sysResponse = await _apiClient.post(
             ApiEndpoints.adminLogin,
             data: {

@@ -104,7 +104,8 @@ class AdminDeliveryChargesViewModel extends FutureViewModel<void>
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadTiers();
   }
 
@@ -122,7 +123,8 @@ class AdminDeliveryChargesViewModel extends FutureViewModel<void>
         _tiers = [];
       } else {
         _tiers = await _deliveryService.getDeliveryCharges(
-          locationId: _selectedLocationFilter == 'all' ? null : _selectedLocationFilter,
+          locationId:
+              _selectedLocationFilter == 'all' ? null : _selectedLocationFilter,
         );
       }
       calculateTestFee();
@@ -143,9 +145,10 @@ class AdminDeliveryChargesViewModel extends FutureViewModel<void>
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
         locationId: locationId == 'all' ? null : locationId,
-        locationName: locationId != 'all' && _locations.any((l) => l.id == locationId)
-            ? _locations.firstWhere((l) => l.id == locationId).name
-            : 'All Locations (HQ)',
+        locationName:
+            locationId != 'all' && _locations.any((l) => l.id == locationId)
+                ? _locations.firstWhere((l) => l.id == locationId).name
+                : 'All Locations (HQ)',
       );
     }
     loadTiers();
@@ -188,7 +191,10 @@ class AdminDeliveryChargesViewModel extends FutureViewModel<void>
         fromAmount: fromAmount,
         toAmount: toAmount,
         deliveryCharge: deliveryCharge,
-        locationId: (locationId != null && locationId.isNotEmpty && locationId != 'all') ? locationId : null,
+        locationId:
+            (locationId != null && locationId.isNotEmpty && locationId != 'all')
+                ? locationId
+                : null,
         locationName: locationName ?? 'All Locations (HQ)',
         description: description,
         isActive: isActive,

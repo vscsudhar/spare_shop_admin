@@ -109,7 +109,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Scoped to ${viewModel.userAssignedLocationName}',
@@ -184,13 +185,15 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
-                  label: '📱 Online Mobile App (${viewModel.onlineClaimsCount})',
+                  label:
+                      '📱 Online Mobile App (${viewModel.onlineClaimsCount})',
                   isSelected: viewModel.selectedChannel == 'online',
                   onTap: () => viewModel.setSelectedChannel('online'),
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
-                  label: '🏬 Store Visit / Walk-in (${viewModel.storeVisitsCount})',
+                  label:
+                      '🏬 Store Visit / Walk-in (${viewModel.storeVisitsCount})',
                   isSelected: viewModel.selectedChannel == 'in_store',
                   onTap: () => viewModel.setSelectedChannel('in_store'),
                 ),
@@ -339,12 +342,15 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
 
                 String adjustmentLabel = '₹0.00';
                 if (c.totalRefundAmount > 0) {
-                  adjustmentLabel = 'Refund: ₹${c.totalRefundAmount.toStringAsFixed(2)}';
+                  adjustmentLabel =
+                      'Refund: ₹${c.totalRefundAmount.toStringAsFixed(2)}';
                 } else if (c.totalPayableAmount > 0) {
-                  adjustmentLabel = 'Payable: ₹${c.totalPayableAmount.toStringAsFixed(2)}';
+                  adjustmentLabel =
+                      'Payable: ₹${c.totalPayableAmount.toStringAsFixed(2)}';
                 }
 
-                final hasLocation = c.locationName != null && c.locationName!.isNotEmpty;
+                final hasLocation =
+                    c.locationName != null && c.locationName!.isNotEmpty;
 
                 return AdminTableRow(
                   cells: [
@@ -360,7 +366,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(c.customerName,
-                            style: const TextStyle(fontWeight: FontWeight.w600)),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w600)),
                         if (c.customerPhone.isNotEmpty)
                           Text(c.customerPhone,
                               style: const TextStyle(
@@ -372,8 +379,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                       alignment: Alignment.centerLeft,
                       child: hasLocation
                           ? InkWell(
-                              onTap: () =>
-                                  _showAssignLocationDialog(context, viewModel, c),
+                              onTap: () => _showAssignLocationDialog(
+                                  context, viewModel, c),
                               borderRadius: BorderRadius.circular(6),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
@@ -409,14 +416,14 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                               ),
                             )
                           : OutlinedButton.icon(
-                              onPressed: () =>
-                                  _showAssignLocationDialog(context, viewModel, c),
+                              onPressed: () => _showAssignLocationDialog(
+                                  context, viewModel, c),
                               icon: const Icon(Icons.add_location_alt,
                                   size: 12, color: Colors.amber),
                               label: const Text(
                                 '+ Add Hub',
-                                style:
-                                    TextStyle(fontSize: 11, color: Colors.amber),
+                                style: TextStyle(
+                                    fontSize: 11, color: Colors.amber),
                               ),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
@@ -440,7 +447,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                       label: c.status.toUpperCase(),
                       color: _statusColor(c.status),
                     ),
-                    Text('${c.items.length} item${c.items.length > 1 ? 's' : ''}'),
+                    Text(
+                        '${c.items.length} item${c.items.length > 1 ? 's' : ''}'),
                     Text(
                       adjustmentLabel,
                       style: TextStyle(
@@ -493,7 +501,9 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isOnline ? Icons.phone_android : Icons.store_mall_directory_outlined,
+            isOnline
+                ? Icons.phone_android
+                : Icons.store_mall_directory_outlined,
             size: 11,
             color: isOnline ? Colors.cyanAccent : Colors.purpleAccent,
           ),
@@ -521,15 +531,18 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AdminColors.panelBackground,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Row(
             children: [
-              Icon(Icons.location_on, color: AdminColors.primaryGreen, size: 22),
+              Icon(Icons.location_on,
+                  color: AdminColors.primaryGreen, size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Assign Hub for ${kase.caseNumber}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -542,7 +555,8 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
               children: [
                 Text(
                   'Customer: ${kase.customerName} (Bill #${kase.billNumber})',
-                  style: TextStyle(fontSize: 12, color: AdminColors.textSecondary),
+                  style:
+                      TextStyle(fontSize: 12, color: AdminColors.textSecondary),
                 ),
                 const SizedBox(height: 12),
                 const Text(

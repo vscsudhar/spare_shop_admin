@@ -220,9 +220,11 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
     for (final f in _itemForms) {
       if (f.action == AfterSalesAction.returnAction && f.refundRequired) {
         sum += f.originalValue;
-      } else if (f.action == AfterSalesAction.damage && f.damageResolution == 'refund') {
+      } else if (f.action == AfterSalesAction.damage &&
+          f.damageResolution == 'refund') {
         sum += f.originalValue;
-      } else if (f.action == AfterSalesAction.exchange && f.exchangeDifference < 0) {
+      } else if (f.action == AfterSalesAction.exchange &&
+          f.exchangeDifference < 0) {
         sum += f.exchangeDifference.abs();
       }
     }
@@ -241,12 +243,14 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
 
   bool get canSubmit {
     if (_bill == null || isBusy) return false;
-    final activeForms = _itemForms.where((f) => f.action != AfterSalesAction.none).toList();
+    final activeForms =
+        _itemForms.where((f) => f.action != AfterSalesAction.none).toList();
     if (activeForms.isEmpty) return false;
 
     for (final f in activeForms) {
       if (f.quantity <= 0 || f.quantity > f.item.availableQty) return false;
-      if (f.action == AfterSalesAction.exchange && f.replacementProduct == null) {
+      if (f.action == AfterSalesAction.exchange &&
+          f.replacementProduct == null) {
         return false;
       }
     }
@@ -260,7 +264,8 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
     _errorMessage = null;
 
     try {
-      final activeForms = _itemForms.where((f) => f.action != AfterSalesAction.none).toList();
+      final activeForms =
+          _itemForms.where((f) => f.action != AfterSalesAction.none).toList();
 
       final itemsPayload = activeForms.map((f) {
         final Map<String, dynamic> itemMap = {
@@ -308,7 +313,8 @@ class AdminNewReturnViewModel extends BaseViewModel with NavigationMixin {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Case ${createdCase.caseNumber} created successfully!'),
+            content:
+                Text('Case ${createdCase.caseNumber} created successfully!'),
             backgroundColor: Colors.green,
           ),
         );

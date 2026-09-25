@@ -26,7 +26,8 @@ class HubMatchingHelper {
     }
 
     // 3. Address text keywords match (e.g. "Madukkarai", "Gandhipuram", "Peelamedu", etc.)
-    final addressText = '${order.address.addressLine} ${order.address.name}'.toLowerCase();
+    final addressText =
+        '${order.address.addressLine} ${order.address.name}'.toLowerCase();
 
     for (final loc in locations) {
       final locName = loc.name.toLowerCase();

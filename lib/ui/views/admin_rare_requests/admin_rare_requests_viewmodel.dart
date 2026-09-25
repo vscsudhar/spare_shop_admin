@@ -91,7 +91,9 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
     if (_selectedLocationFilter == '__none__') return [];
 
     if (_selectedLocationFilter == 'unassigned') {
-      list = list.where((r) => r.locationId == null || r.locationId!.isEmpty).toList();
+      list = list
+          .where((r) => r.locationId == null || r.locationId!.isEmpty)
+          .toList();
     } else if (_selectedLocationFilter != 'all') {
       list = list.where((r) {
         final matchesId = r.locationId == _selectedLocationFilter;
@@ -105,7 +107,10 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
     }
 
     if (_selectedChannel != 'all') {
-      list = list.where((r) => r.channel.toLowerCase() == _selectedChannel.toLowerCase()).toList();
+      list = list
+          .where(
+              (r) => r.channel.toLowerCase() == _selectedChannel.toLowerCase())
+          .toList();
     }
 
     if (_searchQuery.isNotEmpty) {
@@ -144,7 +149,8 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadRequests();
   }
 
@@ -165,7 +171,8 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
       }
 
       if (!_canChangeLocation &&
-          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+          (_userAssignedLocationId == null ||
+              _userAssignedLocationId!.isEmpty)) {
         _selectedLocationFilter = '__none__';
       } else if (_userAssignedLocationId != null &&
           _userAssignedLocationId!.isNotEmpty &&
@@ -180,7 +187,8 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
       }
 
       _allRequests = await _rareRequestService.adminGetAllRequests(
-        locationId: _selectedLocationFilter != 'all' && _selectedLocationFilter != 'unassigned'
+        locationId: _selectedLocationFilter != 'all' &&
+                _selectedLocationFilter != 'unassigned'
             ? _selectedLocationFilter
             : null,
         channel: _selectedChannel != 'all' ? _selectedChannel : null,
@@ -189,7 +197,8 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
       // Auto-sync location names
       for (int i = 0; i < _allRequests.length; i++) {
         final r = _allRequests[i];
-        if (r.locationId != null && (r.locationName == null || r.locationName!.isEmpty)) {
+        if (r.locationId != null &&
+            (r.locationName == null || r.locationName!.isEmpty)) {
           final match = _locations.where((l) => l.id == r.locationId);
           if (match.isNotEmpty) {
             _allRequests[i] = r.copyWith(locationName: match.first.name);
@@ -219,8 +228,12 @@ class AdminRareRequestsViewModel extends BaseViewModel with NavigationMixin {
     _selectedLocationFilter = locationId;
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
-        locationId: locationId == 'all' || locationId == 'unassigned' ? null : locationId,
-        locationName: locationId != 'all' && locationId != 'unassigned' && _locations.any((l) => l.id == locationId)
+        locationId: locationId == 'all' || locationId == 'unassigned'
+            ? null
+            : locationId,
+        locationName: locationId != 'all' &&
+                locationId != 'unassigned' &&
+                _locations.any((l) => l.id == locationId)
             ? _locations.firstWhere((l) => l.id == locationId).name
             : 'All Locations (HQ)',
       );

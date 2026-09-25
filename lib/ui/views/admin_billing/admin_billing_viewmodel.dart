@@ -122,7 +122,8 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
       }
 
       if (!_canChangeLocation &&
-          (_userAssignedLocationId == null || _userAssignedLocationId!.isEmpty)) {
+          (_userAssignedLocationId == null ||
+              _userAssignedLocationId!.isEmpty)) {
         _selectedLocationId = '__none__';
         _selectedLocationName = null;
       } else if (_userAssignedLocationId != null &&
@@ -130,7 +131,8 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
           _userAssignedLocationId != 'all') {
         _selectedLocationId = _userAssignedLocationId;
         final match = _locations.where((l) => l.id == _selectedLocationId);
-        _selectedLocationName = match.isNotEmpty ? match.first.name : _userAssignedLocationName;
+        _selectedLocationName =
+            match.isNotEmpty ? match.first.name : _userAssignedLocationName;
       } else if (_locations.isNotEmpty) {
         _selectedLocationId = _locations.first.id;
         _selectedLocationName = _locations.first.name;
@@ -148,7 +150,9 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
     if (newLocId != null && newLocId.isNotEmpty) {
       _selectedLocationId = newLocId;
       final match = _locations.where((l) => l.id == newLocId);
-      _selectedLocationName = match.isNotEmpty ? match.first.name : TokenService.locationNotifier.locationName;
+      _selectedLocationName = match.isNotEmpty
+          ? match.first.name
+          : TokenService.locationNotifier.locationName;
     } else if (_locations.isNotEmpty) {
       _selectedLocationId = _locations.first.id;
       _selectedLocationName = _locations.first.name;
@@ -460,7 +464,8 @@ class AdminBillingViewModel extends BaseViewModel with NavigationMixin {
             'location': _selectedLocationId,
           if (_selectedLocationId != null && _selectedLocationId!.isNotEmpty)
             'locationId': _selectedLocationId,
-          if (_selectedLocationName != null && _selectedLocationName!.isNotEmpty)
+          if (_selectedLocationName != null &&
+              _selectedLocationName!.isNotEmpty)
             'locationName': _selectedLocationName,
           'items': _invoiceItems
               .map((i) => {

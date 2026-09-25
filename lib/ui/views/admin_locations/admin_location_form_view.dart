@@ -50,7 +50,6 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
               ],
             ),
             const SizedBox(height: 20),
-
             if (viewModel.errorMessage != null) ...[
               Container(
                 padding: const EdgeInsets.all(12),
@@ -62,7 +61,8 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                    const Icon(Icons.error_outline,
+                        color: Colors.red, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -74,7 +74,6 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                 ),
               ),
             ],
-
             Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 750),
@@ -120,7 +119,8 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                           Expanded(
                             child: TextFormField(
                               controller: viewModel.latitudeController,
-                              keyboardType: const TextInputType.numberWithOptions(
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
                                 decimal: true,
                                 signed: true,
                               ),
@@ -138,7 +138,8 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                           Expanded(
                             child: TextFormField(
                               controller: viewModel.longitudeController,
-                              keyboardType: const TextInputType.numberWithOptions(
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
                                 decimal: true,
                                 signed: true,
                               ),
@@ -163,14 +164,16 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                           Expanded(
                             child: TextFormField(
                               controller: viewModel.radiusController,
-                              keyboardType: const TextInputType.numberWithOptions(
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
                                 decimal: true,
                               ),
                               decoration: const InputDecoration(
                                 labelText: 'Coverage Radius (KM) *',
                                 hintText: '20',
                                 suffixText: 'KM',
-                                helperText: 'Service delivery radius around the coordinate point',
+                                helperText:
+                                    'Service delivery radius around the coordinate point',
                                 prefixIcon: Icon(Icons.radar_rounded),
                                 border: OutlineInputBorder(),
                               ),
@@ -244,7 +247,8 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                                     final success =
                                         await viewModel.saveLocation();
                                     if (success && context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
                                           content: Text(
                                             viewModel.isEditMode

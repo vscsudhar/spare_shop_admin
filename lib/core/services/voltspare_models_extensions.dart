@@ -43,10 +43,32 @@ extension VehicleModelExtension on VehicleModel {
 
 extension CategoryModelExtension on CategoryModel {
   static CategoryModel fromJson(Map<String, dynamic> json) {
+    String? parentId;
+    String? parentName;
+
+    final parent = json['parentCategory'];
+    if (parent is Map) {
+      parentId = (parent['_id'] ?? parent['id'] ?? '').toString();
+      parentName = parent['name']?.toString();
+    } else if (parent is String && parent.isNotEmpty) {
+      parentId = parent;
+    }
+
     return CategoryModel(
-      id: json['_id'] ?? json['id'] ?? '',
-      name: json['name'] ?? '',
-      icon: _getIconForCategory(json['name'] ?? ''),
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      icon: _getIconForCategory((json['name'] ?? '').toString()),
+      slug: (json['slug'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      type: (json['type'] ?? 'Universal').toString(),
+      active: json['active'] is bool ? json['active'] as bool : true,
+      parentCategoryId: parentId,
+      parentCategoryName: parentName,
+      productCount: (json['productCount'] ?? json['productsCount'] ?? 0) is num
+          ? ((json['productCount'] ?? json['productsCount'] ?? 0) as num)
+              .toInt()
+          : 0,
+      image: json['image']?.toString(),
     );
   }
 
@@ -56,11 +78,35 @@ extension CategoryModelExtension on CategoryModel {
     if (lower.contains('brake')) return Icons.stop_circle;
     if (lower.contains('electrical') ||
         lower.contains('battery') ||
-        lower.contains('plug')) {
+        lower.contains('plug') ||
+        lower.contains('charge') ||
+        lower.contains('wire')) {
       return Icons.electric_bolt;
     }
-    if (lower.contains('body')) return Icons.directions_bike;
-    return Icons.build;
+    if (lower.contains('suspension') || lower.contains('shock')) {
+      return Icons.airline_seat_recline_extra;
+    }
+    if (lower.contains('body') ||
+        lower.contains('frame') ||
+        lower.contains('chassis')) {
+      return Icons.directions_bike;
+    }
+    if (lower.contains('wheel') ||
+        lower.contains('tyre') ||
+        lower.contains('tire')) {
+      return Icons.radio_button_checked;
+    }
+    if (lower.contains('filter') ||
+        lower.contains('oil') ||
+        lower.contains('fluid')) {
+      return Icons.opacity;
+    }
+    if (lower.contains('light') ||
+        lower.contains('headlight') ||
+        lower.contains('tail')) {
+      return Icons.lightbulb_outline;
+    }
+    return Icons.category_rounded;
   }
 }
 
@@ -89,7 +135,9 @@ extension ProductModelExtension on ProductModel {
 
     final fitType = (json['fitType'] ?? 'vehicle_specific').toString();
     final stockManaged = json['stockManaged'] ?? true;
-    final compatibilitiesList = (json['compatibleVehicles'] ?? json['compatibilities']) as List<dynamic>? ?? [];
+    final compatibilitiesList = (json['compatibleVehicles'] ??
+            json['compatibilities']) as List<dynamic>? ??
+        [];
     final List<CompatibleVehicleEntry> compatibleVehicles = [];
     final List<String> compatibleIds = [];
     String typeTag = 'Universal'; // EV, Petrol, Universal
@@ -137,8 +185,7 @@ extension ProductModelExtension on ProductModel {
             bName.toLowerCase() == 'ola' ||
             bName.toLowerCase() == 'ather') {
           typeTag = 'EV';
-        } else if (modelType == 'petrol' ||
-            bName.toLowerCase() == 'honda') {
+        } else if (modelType == 'petrol' || bName.toLowerCase() == 'honda') {
           typeTag = 'Petrol';
         }
       }
@@ -235,7 +282,10 @@ extension AddressModelExtension on AddressModel {
         json['city'],
         json['state'],
         json['postalCode']
-      ].where((p) => p != null && p.toString().trim().isNotEmpty).map((p) => p.toString().trim()).toList();
+      ]
+          .where((p) => p != null && p.toString().trim().isNotEmpty)
+          .map((p) => p.toString().trim())
+          .toList();
       addr = parts.join(', ');
     }
 
@@ -317,7 +367,9 @@ extension OrderModelExtension on OrderModel {
       return CartItemModel(
         id: (itemMap['_id'] ?? itemMap['id'] ?? '').toString(),
         product: ProductModelExtension.fromJson(productMap),
-        quantity: itemMap['quantity'] is num ? (itemMap['quantity'] as num).toInt() : 1,
+        quantity: itemMap['quantity'] is num
+            ? (itemMap['quantity'] as num).toInt()
+            : 1,
       );
     }).toList();
 
@@ -330,7 +382,8 @@ extension OrderModelExtension on OrderModel {
     double orderTotal = 0.0;
     final rawTotal = json['grandTotal'] ?? json['total'];
     if (rawTotal is num) {
-      orderTotal = rawTotal > 1000 ? (rawTotal.toDouble() / 100.0) : rawTotal.toDouble();
+      orderTotal =
+          rawTotal > 1000 ? (rawTotal.toDouble() / 100.0) : rawTotal.toDouble();
     }
 
     String? locationId;
@@ -338,12 +391,14 @@ extension OrderModelExtension on OrderModel {
 
     // Check top-level json
     if (json['locationId'] is Map) {
-      locationId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locationId =
+          (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
       locationName = json['locationId']['name']?.toString();
     } else if (json['locationId'] != null) {
       locationId = json['locationId'].toString();
     } else if (json['location'] is Map) {
-      locationId = (json['location']['_id'] ?? json['location']['id'])?.toString();
+      locationId =
+          (json['location']['_id'] ?? json['location']['id'])?.toString();
       locationName = json['location']['name']?.toString();
     } else if (json['location'] != null) {
       locationId = json['location'].toString();
@@ -357,10 +412,12 @@ extension OrderModelExtension on OrderModel {
       } else if (json['hubId'] != null) {
         locationId = json['hubId'].toString();
       } else if (json['assignedHub'] is Map) {
-        locationId = (json['assignedHub']['_id'] ?? json['assignedHub']['id'])?.toString();
+        locationId = (json['assignedHub']['_id'] ?? json['assignedHub']['id'])
+            ?.toString();
         locationName ??= json['assignedHub']['name']?.toString();
       } else if (json['hubLocation'] is Map) {
-        locationId = (json['hubLocation']['_id'] ?? json['hubLocation']['id'])?.toString();
+        locationId = (json['hubLocation']['_id'] ?? json['hubLocation']['id'])
+            ?.toString();
         locationName ??= json['hubLocation']['name']?.toString();
       }
     }
@@ -370,43 +427,93 @@ extension OrderModelExtension on OrderModel {
       if (addressMap['locationId'] != null) {
         locationId = addressMap['locationId'].toString();
       } else if (addressMap['location'] is Map) {
-        locationId = (addressMap['location']['_id'] ?? addressMap['location']['id'])?.toString();
+        locationId =
+            (addressMap['location']['_id'] ?? addressMap['location']['id'])
+                ?.toString();
         locationName ??= addressMap['location']['name']?.toString();
       } else if (addressMap['location'] != null) {
         locationId = addressMap['location'].toString();
       } else if (addressMap['hub'] is Map) {
-        locationId = (addressMap['hub']['_id'] ?? addressMap['hub']['id'])?.toString();
+        locationId =
+            (addressMap['hub']['_id'] ?? addressMap['hub']['id'])?.toString();
         locationName ??= addressMap['hub']['name']?.toString();
       } else if (addressMap['assignedHub'] is Map) {
-        locationId = (addressMap['assignedHub']['_id'] ?? addressMap['assignedHub']['id'])?.toString();
+        locationId = (addressMap['assignedHub']['_id'] ??
+                addressMap['assignedHub']['id'])
+            ?.toString();
         locationName ??= addressMap['assignedHub']['name']?.toString();
       } else if (addressMap['hubLocation'] is Map) {
-        locationId = (addressMap['hubLocation']['_id'] ?? addressMap['hubLocation']['id'])?.toString();
+        locationId = (addressMap['hubLocation']['_id'] ??
+                addressMap['hubLocation']['id'])
+            ?.toString();
         locationName ??= addressMap['hubLocation']['name']?.toString();
       }
     }
 
     // Extract location name if not already found
     if (locationName == null || locationName.isEmpty) {
-      if (json['locationName'] != null && json['locationName'].toString().isNotEmpty) {
+      if (json['locationName'] != null &&
+          json['locationName'].toString().isNotEmpty) {
         locationName = json['locationName'].toString();
-      } else if (json['hubName'] != null && json['hubName'].toString().isNotEmpty) {
+      } else if (json['hubName'] != null &&
+          json['hubName'].toString().isNotEmpty) {
         locationName = json['hubName'].toString();
-      } else if (addressMap['locationName'] != null && addressMap['locationName'].toString().isNotEmpty) {
+      } else if (addressMap['locationName'] != null &&
+          addressMap['locationName'].toString().isNotEmpty) {
         locationName = addressMap['locationName'].toString();
-      } else if (addressMap['serviceHub'] != null && addressMap['serviceHub'].toString().isNotEmpty) {
+      } else if (addressMap['serviceHub'] != null &&
+          addressMap['serviceHub'].toString().isNotEmpty) {
         locationName = addressMap['serviceHub'].toString();
-      } else if (addressMap['nearHub'] != null && addressMap['nearHub'].toString().isNotEmpty) {
+      } else if (addressMap['nearHub'] != null &&
+          addressMap['nearHub'].toString().isNotEmpty) {
         locationName = addressMap['nearHub'].toString();
-      } else if (addressMap['nearestHub'] != null && addressMap['nearestHub'].toString().isNotEmpty) {
+      } else if (addressMap['nearestHub'] != null &&
+          addressMap['nearestHub'].toString().isNotEmpty) {
         locationName = addressMap['nearestHub'].toString();
+      }
+    }
+
+    final rawChannel = (json['channel'] ?? '').toString().toLowerCase().trim();
+    String channel = 'app';
+    if (rawChannel == 'pos' ||
+        rawChannel == 'in_store' ||
+        rawChannel == 'store_pos' ||
+        rawChannel == 'store') {
+      channel = 'pos';
+    } else if (rawChannel == 'app' ||
+        rawChannel == 'online' ||
+        rawChannel == 'mobile' ||
+        rawChannel == 'mobile_app') {
+      channel = 'app';
+    } else {
+      // Heuristic fallback for orders without explicit channel property
+      final orderNumber = (json['orderNumber'] ?? '').toString().toUpperCase();
+      final street = (addressMap['addressLine1'] ??
+              addressMap['street'] ??
+              addressMap['address'] ??
+              '')
+          .toString()
+          .toUpperCase();
+      final recipient =
+          (addressMap['recipientName'] ?? addressMap['name'] ?? '')
+              .toString()
+              .toUpperCase();
+      if (orderNumber.contains('POS') ||
+          street.contains('POS') ||
+          street.contains('STORE COUNTER') ||
+          recipient.contains('WALK-IN')) {
+        channel = 'pos';
+      } else {
+        channel = 'app';
       }
     }
 
     return OrderModel(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       orderNumber: (json['orderNumber'] ?? '').toString(),
-      date: DateTime.tryParse((json['createdAt'] ?? json['date'] ?? '').toString()) ?? DateTime.now(),
+      date: DateTime.tryParse(
+              (json['createdAt'] ?? json['date'] ?? '').toString()) ??
+          DateTime.now(),
       status: status,
       items: items,
       total: orderTotal,
@@ -414,6 +521,7 @@ extension OrderModelExtension on OrderModel {
       paymentMethod: (json['paymentMethod'] ?? 'cod').toString(),
       locationId: locationId,
       locationName: locationName,
+      channel: channel,
     );
   }
 }
@@ -569,8 +677,7 @@ extension RareProductRequestModelExtension on RareProductRequestModel {
       vehicle: vehicle,
       partName: title,
       description: desc,
-      quantity:
-          json['quantity'] is num ? (json['quantity'] as num).toInt() : 1,
+      quantity: json['quantity'] is num ? (json['quantity'] as num).toInt() : 1,
       urgency: (json['urgency'] ?? 'medium').toString(),
       budget: json['budget'] != null && json['budget'] is num
           ? ((json['budget'] as num) / 100.0)
@@ -578,11 +685,9 @@ extension RareProductRequestModelExtension on RareProductRequestModel {
       images: imageList,
       notes: json['notes']?.toString(),
       status: status,
-      date: DateTime.tryParse((json['createdAt'] ??
-                  json['requestedAt'] ??
-                  json['date'] ??
-                  '')
-              .toString()) ??
+      date: DateTime.tryParse(
+              (json['createdAt'] ?? json['requestedAt'] ?? json['date'] ?? '')
+                  .toString()) ??
           DateTime.now(),
       quotation: quotation,
       cancellationReason: json['cancellationReason']?.toString() ??

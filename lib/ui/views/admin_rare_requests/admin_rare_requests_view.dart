@@ -108,7 +108,8 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AdminColors.primaryGreen.withValues(alpha: 0.15),
+                          color:
+                              AdminColors.primaryGreen.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -128,15 +129,18 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
                   child: Row(
                     children: [
                       if (viewModel.canChangeLocation) ...[
-                        _locationChip('all', 'All Locations / Global HQ', viewModel),
+                        _locationChip(
+                            'all', 'All Locations / Global HQ', viewModel),
                         ...viewModel.locations.map((loc) {
                           return _locationChip(loc.id, loc.name, viewModel);
                         }),
-                        _locationChip('unassigned', '⚠️ Unassigned HQ', viewModel),
+                        _locationChip(
+                            'unassigned', '⚠️ Unassigned HQ', viewModel),
                       ] else ...[
                         _locationChip(
                           viewModel.userAssignedLocationId ?? 'all',
-                          viewModel.userAssignedLocationName ?? 'My Hub Location',
+                          viewModel.userAssignedLocationName ??
+                              'My Hub Location',
                           viewModel,
                         ),
                       ],
@@ -158,7 +162,8 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Channel:', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text('Channel:',
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
                   const SizedBox(width: 6),
                   _channelChip('all', 'All Channels', viewModel),
                   _channelChip('online', '📱 Online App', viewModel),
@@ -171,8 +176,8 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _filterChip(
-                        'All', 'All Requests (${viewModel.allCount})', viewModel),
+                    _filterChip('All', 'All Requests (${viewModel.allCount})',
+                        viewModel),
                     _filterChip('Submitted',
                         'Submitted (${viewModel.submittedCount})', viewModel),
                     _filterChip('Searching',
@@ -181,8 +186,8 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
                         'Quotation Sent',
                         'Quotation Sent (${viewModel.quotationSentCount})',
                         viewModel),
-                    _filterChip('Approved', 'Approved (${viewModel.approvedCount})',
-                        viewModel),
+                    _filterChip('Approved',
+                        'Approved (${viewModel.approvedCount})', viewModel),
                     _filterChip('Cancelled',
                         'Cancelled (${viewModel.cancelledCount})', viewModel),
                   ],
@@ -257,8 +262,10 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
                 return RareRequestCard(
                   request: request,
                   onTap: () => viewModel.openChat(request),
-                  onAssignLocation: viewModel.canChangeLocation && viewModel.locations.isNotEmpty
-                      ? () => _showAssignLocationDialog(context, viewModel, request)
+                  onAssignLocation: viewModel.canChangeLocation &&
+                          viewModel.locations.isNotEmpty
+                      ? () =>
+                          _showAssignLocationDialog(context, viewModel, request)
                       : null,
                 );
               },
@@ -282,7 +289,8 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
         selectedColor: AdminColors.primaryGreen.withValues(alpha: 0.2),
         checkmarkColor: AdminColors.primaryGreen,
         labelStyle: TextStyle(
-          color: isSelected ? AdminColors.primaryGreen : AdminColors.textSecondary,
+          color:
+              isSelected ? AdminColors.primaryGreen : AdminColors.textSecondary,
           fontSize: 12,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
@@ -308,7 +316,8 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
         selected: isSelected,
         selectedColor: AdminColors.primaryGreen.withValues(alpha: 0.2),
         labelStyle: TextStyle(
-          color: isSelected ? AdminColors.primaryGreen : AdminColors.textSecondary,
+          color:
+              isSelected ? AdminColors.primaryGreen : AdminColors.textSecondary,
           fontSize: 11,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
@@ -350,9 +359,11 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
           backgroundColor: AdminColors.panelBackground,
           title: Row(
             children: [
-              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 20),
+              Icon(Icons.storefront_outlined,
+                  color: AdminColors.primaryGreen, size: 20),
               const SizedBox(width: 8),
-              const Text('Assign Request Hub / Store', style: TextStyle(fontSize: 16)),
+              const Text('Assign Request Hub / Store',
+                  style: TextStyle(fontSize: 16)),
             ],
           ),
           content: SizedBox(
@@ -372,20 +383,29 @@ class AdminRareRequestsView extends StackedView<AdminRareRequestsViewModel> {
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     leading: Icon(
-                      isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                      color: isSelected ? AdminColors.primaryGreen : Colors.grey,
+                      isSelected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
+                      color:
+                          isSelected ? AdminColors.primaryGreen : Colors.grey,
                       size: 18,
                     ),
                     title: Text(loc.name,
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AdminColors.primaryGreen : Colors.white)),
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? AdminColors.primaryGreen
+                                : Colors.white)),
                     subtitle: Text('Radius: ${loc.radiusDisplay}',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                        style:
+                            const TextStyle(fontSize: 11, color: Colors.grey)),
                     onTap: () {
                       Navigator.of(ctx).pop();
-                      viewModel.updateRequestLocation(request.id, loc.id, loc.name, context);
+                      viewModel.updateRequestLocation(
+                          request.id, loc.id, loc.name, context);
                     },
                   );
                 }),

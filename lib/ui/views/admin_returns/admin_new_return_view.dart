@@ -92,7 +92,8 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                           controller: viewModel.searchController,
                           onSubmitted: (_) => viewModel.searchBill(),
                           decoration: InputDecoration(
-                            hintText: 'e.g. INV-3408944 or ORD-782910 or 9876543210',
+                            hintText:
+                                'e.g. INV-3408944 or ORD-782910 or 9876543210',
                             prefixIcon: const Icon(Icons.search, size: 20),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 12),
@@ -122,7 +123,8 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                     const SizedBox(height: 12),
                     Text(
                       viewModel.errorMessage!,
-                      style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+                      style: const TextStyle(
+                          color: Colors.redAccent, fontSize: 13),
                     ),
                   ],
                 ],
@@ -201,11 +203,15 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
         children: [
           Row(
             children: [
-              Icon(Icons.storefront_outlined, color: AdminColors.primaryGreen, size: 18),
+              Icon(Icons.storefront_outlined,
+                  color: AdminColors.primaryGreen, size: 18),
               const SizedBox(width: 8),
               const Text(
                 'Intake Channel & Processing Location',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ],
           ),
@@ -219,23 +225,27 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Intake Channel *', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text('Intake Channel *',
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
                   const SizedBox(height: 6),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ChoiceChip(
-                        avatar: const Text('🏬', style: TextStyle(fontSize: 14)),
+                        avatar:
+                            const Text('🏬', style: TextStyle(fontSize: 14)),
                         label: const Text('In-Store Visit / Counter'),
                         selected: viewModel.selectedChannel == 'in_store',
-                        selectedColor: AdminColors.primaryGreen.withValues(alpha: 0.2),
+                        selectedColor:
+                            AdminColors.primaryGreen.withValues(alpha: 0.2),
                         onSelected: (val) {
                           if (val) viewModel.setSelectedChannel('in_store');
                         },
                       ),
                       const SizedBox(width: 8),
                       ChoiceChip(
-                        avatar: const Text('📱', style: TextStyle(fontSize: 14)),
+                        avatar:
+                            const Text('📱', style: TextStyle(fontSize: 14)),
                         label: const Text('Online Mobile App'),
                         selected: viewModel.selectedChannel == 'online',
                         selectedColor: Colors.blue.withValues(alpha: 0.2),
@@ -262,16 +272,19 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                         initialValue: viewModel.selectedLocationId,
                         dropdownColor: AdminColors.panelBackground,
                         decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           border: OutlineInputBorder(),
                         ),
                         items: viewModel.locations.map((loc) {
                           return DropdownMenuItem(
                             value: loc.id,
-                            child: Text(loc.name, overflow: TextOverflow.ellipsis),
+                            child:
+                                Text(loc.name, overflow: TextOverflow.ellipsis),
                           );
                         }).toList(),
-                        onChanged: (val) => viewModel.setSelectedLocationId(val),
+                        onChanged: (val) =>
+                            viewModel.setSelectedLocationId(val),
                       ),
                     ),
                   ],
@@ -287,8 +300,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
         const SizedBox(height: 2),
         Text(
           val,
@@ -307,8 +319,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Purchased Items & Actions',
-            style: AdminTextStyles.sectionHeader),
+        Text('Purchased Items & Actions', style: AdminTextStyles.sectionHeader),
         const SizedBox(height: 4),
         const Text(
           'Select an action for each product. Unchanged items can remain "No Action".',
@@ -356,9 +367,10 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: item.image.isNotEmpty
-                    ? Image.network(item.image, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            const Icon(Icons.build, color: Colors.grey, size: 20))
+                    ? Image.network(item.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.build,
+                            color: Colors.grey, size: 20))
                     : const Icon(Icons.build, color: Colors.grey, size: 20),
               ),
               const SizedBox(width: 12),
@@ -371,12 +383,12 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                             fontSize: 14, fontWeight: FontWeight.bold)),
                     if (item.sku.isNotEmpty)
                       Text('SKU: ${item.sku}',
-                          style:
-                              const TextStyle(fontSize: 11, color: Colors.grey)),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.grey)),
                     const SizedBox(height: 4),
                     Text('Unit Price: ₹${item.unitPrice.toStringAsFixed(2)}',
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.white70)),
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.white70)),
                   ],
                 ),
               ),
@@ -391,7 +403,8 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                       item.exchangedQty > 0)
                     Text(
                       'Prev: Ret ${item.returnedQty} | Dam ${item.damagedQty} | Exch ${item.exchangedQty}',
-                      style: const TextStyle(fontSize: 10, color: Colors.orange),
+                      style:
+                          const TextStyle(fontSize: 10, color: Colors.orange),
                     ),
                   const SizedBox(height: 4),
                   Container(
@@ -452,8 +465,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                   onChanged: (val) {
                     if (val != null) viewModel.setItemQuantity(form, val);
                   },
-                  items: List.generate(
-                          item.availableQty, (index) => index + 1)
+                  items: List.generate(item.availableQty, (index) => index + 1)
                       .map((q) => DropdownMenuItem(
                             value: q,
                             child: Text(q.toString()),
@@ -805,7 +817,8 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                           ))
                       .toList(),
                   onChanged: (q) {
-                    if (q != null) viewModel.setItemReplacementQuantity(form, q);
+                    if (q != null)
+                      viewModel.setItemReplacementQuantity(form, q);
                   },
                 ),
               ),

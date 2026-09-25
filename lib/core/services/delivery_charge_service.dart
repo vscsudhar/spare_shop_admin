@@ -14,7 +14,8 @@ class DeliveryChargeService {
   DeliveryChargeService({ApiClient? apiClient})
       : _apiClient = apiClient ?? locator<ApiClient>();
 
-  Future<List<DeliveryChargeModel>> getDeliveryCharges({String? locationId}) async {
+  Future<List<DeliveryChargeModel>> getDeliveryCharges(
+      {String? locationId}) async {
     // 1. Load from SharedPreferences cache first
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -22,7 +23,8 @@ class DeliveryChargeService {
       if (raw != null && raw.isNotEmpty) {
         final decoded = jsonDecode(raw) as List<dynamic>;
         _cache = decoded
-            .map((item) => DeliveryChargeModel.fromJson(item as Map<String, dynamic>))
+            .map((item) =>
+                DeliveryChargeModel.fromJson(item as Map<String, dynamic>))
             .toList();
       } else if (_cache.isEmpty) {
         _cache = DeliveryChargeModel.defaultTiers();
@@ -64,16 +66,19 @@ class DeliveryChargeService {
     }
 
     if (locationId != null && locationId.isNotEmpty && locationId != 'all') {
-      return _cache.where((t) =>
-          t.locationId == locationId ||
-          t.locationId == null ||
-          t.locationId!.isEmpty).toList();
+      return _cache
+          .where((t) =>
+              t.locationId == locationId ||
+              t.locationId == null ||
+              t.locationId!.isEmpty)
+          .toList();
     }
 
     return List<DeliveryChargeModel>.from(_cache);
   }
 
-  Future<DeliveryChargeModel> createDeliveryCharge(DeliveryChargeModel tier) async {
+  Future<DeliveryChargeModel> createDeliveryCharge(
+      DeliveryChargeModel tier) async {
     await getDeliveryCharges();
     final newId = tier.id.isNotEmpty
         ? tier.id

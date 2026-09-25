@@ -492,197 +492,202 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                 ],
                 rows: viewModel.filteredTeamMembers.map((member) {
                   return DataRow(
-              cells: [
-                DataCell(
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor:
-                            AdminColors.primaryGreen.withValues(alpha: 0.15),
-                        child: Text(
-                          member.name.isNotEmpty
-                              ? member.name[0].toUpperCase()
-                              : 'S',
-                          style: TextStyle(
-                            color: AdminColors.primaryGreen,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            member.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          if (member.email.isNotEmpty)
-                            Text(
-                              member.email,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: AdminColors.textSecondary,
+                    cells: [
+                      DataCell(
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: AdminColors.primaryGreen
+                                  .withValues(alpha: 0.15),
+                              child: Text(
+                                member.name.isNotEmpty
+                                    ? member.name[0].toUpperCase()
+                                    : 'S',
+                                style: TextStyle(
+                                  color: AdminColors.primaryGreen,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                DataCell(
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(6),
-                      border:
-                          Border.all(color: Colors.blue.withValues(alpha: 0.2)),
-                    ),
-                    child: Text(
-                      member.role,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        member.isLocationBound
-                            ? Icons.location_on
-                            : Icons.public,
-                        size: 14,
-                        color: member.isLocationBound
-                            ? AdminColors.primaryGreen
-                            : Colors.grey,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        member.locationName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: member.isLocationBound
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          color: member.isLocationBound
-                              ? AdminColors.textPrimary
-                              : AdminColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    member.phone,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    member.shift,
-                    style: TextStyle(
-                        fontSize: 12, color: AdminColors.textSecondary),
-                  ),
-                ),
-                DataCell(
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: isOwner
-                        ? DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: member.status,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: _getStatusColor(member.status),
-                              ),
-                              onChanged: (String? val) {
-                                if (val != null) {
-                                  viewModel.updateStaffStatus(
-                                    id: member.id,
-                                    status: val,
-                                  );
-                                }
-                              },
-                              items: const [
-                                DropdownMenuItem(
-                                    value: 'Active', child: Text('Active')),
-                                DropdownMenuItem(
-                                    value: 'On Leave', child: Text('On Leave')),
-                                DropdownMenuItem(
-                                    value: 'Inactive', child: Text('Inactive')),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  member.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                if (member.email.isNotEmpty)
+                                  Text(
+                                    member.email,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AdminColors.textSecondary,
+                                    ),
+                                  ),
                               ],
                             ),
-                          )
-                        : AdminStatusChip(
-                            label: member.status,
-                            color: _getStatusColor(member.status),
+                          ],
+                        ),
+                      ),
+                      DataCell(
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: Colors.blue.withValues(alpha: 0.2)),
                           ),
-                  ),
-                ),
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.key_outlined,
-                            size: 18, color: AdminColors.primaryGreen),
-                        tooltip: 'View Login Credentials',
-                        onPressed: () => _showStaffCredentialsDialog(
-                            context, viewModel, member),
+                          child: Text(
+                            member.role,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 18),
-                        tooltip: 'Edit Staff',
-                        onPressed: () {
-                          if (!isOwner) {
-                            _showOwnerAlert(context);
-                          } else {
-                            _showEditStaffDialog(context, viewModel, member);
-                          }
-                        },
+                      DataCell(
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              member.isLocationBound
+                                  ? Icons.location_on
+                                  : Icons.public,
+                              size: 14,
+                              color: member.isLocationBound
+                                  ? AdminColors.primaryGreen
+                                  : Colors.grey,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              member.locationName,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: member.isLocationBound
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: member.isLocationBound
+                                    ? AdminColors.textPrimary
+                                    : AdminColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            size: 18, color: Colors.red),
-                        tooltip: 'Remove Staff',
-                        onPressed: () {
-                          if (!isOwner) {
-                            _showOwnerAlert(context);
-                          } else {
-                            _confirmDeleteStaff(context, viewModel, member);
-                          }
-                        },
+                      DataCell(
+                        Text(
+                          member.phone,
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          member.shift,
+                          style: TextStyle(
+                              fontSize: 12, color: AdminColors.textSecondary),
+                        ),
+                      ),
+                      DataCell(
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: isOwner
+                              ? DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: member.status,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: _getStatusColor(member.status),
+                                    ),
+                                    onChanged: (String? val) {
+                                      if (val != null) {
+                                        viewModel.updateStaffStatus(
+                                          id: member.id,
+                                          status: val,
+                                        );
+                                      }
+                                    },
+                                    items: const [
+                                      DropdownMenuItem(
+                                          value: 'Active',
+                                          child: Text('Active')),
+                                      DropdownMenuItem(
+                                          value: 'On Leave',
+                                          child: Text('On Leave')),
+                                      DropdownMenuItem(
+                                          value: 'Inactive',
+                                          child: Text('Inactive')),
+                                    ],
+                                  ),
+                                )
+                              : AdminStatusChip(
+                                  label: member.status,
+                                  color: _getStatusColor(member.status),
+                                ),
+                        ),
+                      ),
+                      DataCell(
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.key_outlined,
+                                  size: 18, color: AdminColors.primaryGreen),
+                              tooltip: 'View Login Credentials',
+                              onPressed: () => _showStaffCredentialsDialog(
+                                  context, viewModel, member),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, size: 18),
+                              tooltip: 'Edit Staff',
+                              onPressed: () {
+                                if (!isOwner) {
+                                  _showOwnerAlert(context);
+                                } else {
+                                  _showEditStaffDialog(
+                                      context, viewModel, member);
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline,
+                                  size: 18, color: Colors.red),
+                              tooltip: 'Remove Staff',
+                              onPressed: () {
+                                if (!isOwner) {
+                                  _showOwnerAlert(context);
+                                } else {
+                                  _confirmDeleteStaff(
+                                      context, viewModel, member);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ),
-                ),
-              ],
-              );
-            }).toList(),
-          ),
-        ),
-      );
-    },
-  ),
-);
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildStaffCardsList(

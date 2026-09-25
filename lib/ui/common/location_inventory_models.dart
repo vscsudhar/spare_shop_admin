@@ -52,7 +52,8 @@ class LocationInventoryItem {
     if (json['productId'] is Map) {
       final p = json['productId'] as Map;
       prodId = (p['_id'] ?? p['id'] ?? prodId).toString();
-      if (prodName.isEmpty && p['name'] != null) prodName = p['name'].toString();
+      if (prodName.isEmpty && p['name'] != null)
+        prodName = p['name'].toString();
       if (sku.isEmpty && p['sku'] != null) sku = p['sku'].toString();
       if (category.isEmpty && p['category'] != null) {
         category = p['category'] is Map

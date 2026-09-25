@@ -265,7 +265,8 @@ class AdminForgotPasswordViewModel extends BaseViewModel with NavigationMixin {
       }
 
       _currentStep = ForgotPasswordStep.success;
-      _successMessage = 'Password updated successfully. You can now log in with your new password.';
+      _successMessage =
+          'Password updated successfully. You can now log in with your new password.';
     } catch (e) {
       _errorMessage = 'Failed to update password: ${e.toString()}';
     } finally {

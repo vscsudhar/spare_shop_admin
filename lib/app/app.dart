@@ -44,6 +44,8 @@ import 'package:spare_shop_admin/core/services/admin_supplier_service.dart';
 import 'package:spare_shop_admin/core/services/admin_purchase_service.dart';
 import 'package:spare_shop_admin/core/services/admin_support_ticket_service.dart';
 import 'package:spare_shop_admin/ui/views/admin_support_tickets/admin_support_tickets_view.dart';
+import 'package:spare_shop_admin/ui/views/admin_suggestions/admin_suggestions_view.dart';
+import 'package:spare_shop_admin/core/services/suggestion_service.dart';
 import 'package:spare_shop_admin/ui/views/admin_ticket_chat/admin_ticket_chat_view.dart';
 import 'package:spare_shop_admin/ui/views/admin_returns/admin_returns_list_view.dart';
 import 'package:spare_shop_admin/ui/views/admin_returns/admin_new_return_view.dart';
@@ -58,6 +60,8 @@ import 'package:spare_shop_admin/core/services/staff_service.dart';
 import 'package:spare_shop_admin/ui/views/admin_delivery_charges/admin_delivery_charges_view.dart';
 import 'package:spare_shop_admin/ui/views/admin_forgot_password/admin_forgot_password_view.dart';
 import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
+import 'package:spare_shop_admin/core/services/category_service.dart';
+import 'package:spare_shop_admin/ui/views/admin_categories/admin_categories_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -67,6 +71,7 @@ import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
     MaterialRoute(page: AdminDashboardView),
     MaterialRoute(page: AdminOrdersView),
     MaterialRoute(page: AdminOrderDetailView),
+    MaterialRoute(page: AdminCategoriesView),
     MaterialRoute(page: AdminProductsView),
     MaterialRoute(page: AdminInventoryView),
     MaterialRoute(page: AdminPurchasesView),
@@ -89,6 +94,7 @@ import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
     MaterialRoute(page: AdminLocationInventoryView),
     MaterialRoute(page: AdminSettingsView),
     MaterialRoute(page: AdminSupportTicketsView),
+    MaterialRoute(page: AdminSuggestionsView),
     MaterialRoute(page: AdminTicketChatView),
     MaterialRoute(page: AdminReturnsListView),
     MaterialRoute(page: AdminNewReturnView),
@@ -109,6 +115,7 @@ import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
     LazySingleton(classType: SocketService),
     LazySingleton(classType: NetworkInfoService),
     LazySingleton(classType: AuthService),
+    LazySingleton(classType: CategoryService),
     LazySingleton(classType: ProductService),
     LazySingleton(classType: CartService),
     LazySingleton(classType: WishlistService),
@@ -123,6 +130,7 @@ import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
     LazySingleton(classType: LocationService),
     LazySingleton(classType: StaffService),
     LazySingleton(classType: DeliveryChargeService),
+    LazySingleton(classType: SuggestionService),
     // @stacked-service
   ],
   bottomsheets: [

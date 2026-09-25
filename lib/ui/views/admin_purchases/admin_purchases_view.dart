@@ -91,7 +91,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Scoped to ${viewModel.userAssignedLocationName}',
@@ -185,8 +186,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
               'Action'
             ],
             rows: viewModel.filteredPurchaseOrders.map((po) {
-              final hasLocation = po.locationName != null &&
-                  po.locationName!.isNotEmpty;
+              final hasLocation =
+                  po.locationName != null && po.locationName!.isNotEmpty;
               return AdminTableRow(
                 cells: [
                   Text(po.poNumber,
@@ -198,8 +199,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                     alignment: Alignment.centerLeft,
                     child: hasLocation
                         ? InkWell(
-                            onTap: () =>
-                                _showAssignLocationDialog(context, viewModel, po),
+                            onTap: () => _showAssignLocationDialog(
+                                context, viewModel, po),
                             borderRadius: BorderRadius.circular(6),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -235,8 +236,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                             ),
                           )
                         : OutlinedButton.icon(
-                            onPressed: () =>
-                                _showAssignLocationDialog(context, viewModel, po),
+                            onPressed: () => _showAssignLocationDialog(
+                                context, viewModel, po),
                             icon: const Icon(Icons.add_location_alt,
                                 size: 12, color: Colors.amber),
                             label: const Text(
@@ -323,7 +324,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: AdminColors.panelBackground,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               title: const Text('New Supplier Purchase Order'),
               content: SingleChildScrollView(
                 child: Column(
@@ -560,7 +562,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: AdminColors.panelBackground,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               title: Text('Edit Purchase Order: ${po.poNumber}'),
               content: SingleChildScrollView(
                 child: Column(
@@ -758,15 +761,18 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AdminColors.panelBackground,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Row(
             children: [
-              Icon(Icons.location_on, color: AdminColors.primaryGreen, size: 22),
+              Icon(Icons.location_on,
+                  color: AdminColors.primaryGreen, size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Assign Destination Hub for ${po.poNumber}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -789,7 +795,8 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                     children: [
                       Text(
                         'Supplier: ${po.supplier}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                       if (po.locationName != null) ...[
                         const SizedBox(height: 4),

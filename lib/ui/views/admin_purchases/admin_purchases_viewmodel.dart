@@ -184,7 +184,8 @@ class AdminPurchasesViewModel extends FutureViewModel<void>
 
   void _onLocationNotifierChanged() {
     final newLocId = TokenService.locationNotifier.locationId;
-    _selectedLocationFilter = (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
+    _selectedLocationFilter =
+        (newLocId != null && newLocId.isNotEmpty) ? newLocId : 'all';
     loadPurchases();
     notifyListeners();
   }
@@ -200,7 +201,9 @@ class AdminPurchasesViewModel extends FutureViewModel<void>
     if (_canChangeLocation) {
       locator<TokenService>().saveUserLocation(
         locationId: filter == 'all' || filter == 'unassigned' ? null : filter,
-        locationName: filter != 'all' && filter != 'unassigned' && _locations.any((l) => l.id == filter)
+        locationName: filter != 'all' &&
+                filter != 'unassigned' &&
+                _locations.any((l) => l.id == filter)
             ? _locations.firstWhere((l) => l.id == filter).name
             : 'All Locations (HQ)',
       );
@@ -319,7 +322,8 @@ class AdminPurchasesViewModel extends FutureViewModel<void>
           }
         ],
         if (locationId != null && locationId.isNotEmpty) 'location': locationId,
-        if (locationId != null && locationId.isNotEmpty) 'locationId': locationId,
+        if (locationId != null && locationId.isNotEmpty)
+          'locationId': locationId,
         if (locationName != null && locationName.isNotEmpty)
           'locationName': locationName,
         if (notes != null && notes.isNotEmpty) 'notes': notes,

@@ -77,10 +77,13 @@ class StaffMemberModel {
   factory StaffMemberModel.fromJson(Map<String, dynamic> json) {
     final email = json['email']?.toString() ?? '';
     final id = (json['_id'] ?? json['id'])?.toString() ?? '';
-    final isOwner = email.toLowerCase() == 'owner@voltspare.com' || id == 'staff_1';
+    final isOwner =
+        email.toLowerCase() == 'owner@voltspare.com' || id == 'staff_1';
     final defaultPass = isOwner ? 'OwnerPassword123!' : 'Staff12345!';
     final rawPass = json['password']?.toString();
-    final password = (rawPass != null && rawPass.trim().isNotEmpty) ? rawPass.trim() : defaultPass;
+    final password = (rawPass != null && rawPass.trim().isNotEmpty)
+        ? rawPass.trim()
+        : defaultPass;
 
     String roleName = 'Inventory Specialist';
     if (json['role'] is Map) {
@@ -103,7 +106,8 @@ class StaffMemberModel {
     String? locId;
     String locName = isOwner ? 'All Locations (HQ)' : 'Madukkarai';
     if (json['locationId'] is Map) {
-      locId = (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
+      locId =
+          (json['locationId']['_id'] ?? json['locationId']['id'])?.toString();
       locName = json['locationId']['name']?.toString() ?? locName;
     } else if (json['locationId'] != null) {
       locId = json['locationId'].toString();
@@ -144,7 +148,8 @@ class StaffRoleDefinition {
 }
 
 class StaffService {
-  static const String _passwordsStorageKey = 'voltspare_custom_user_passwords_v2';
+  static const String _passwordsStorageKey =
+      'voltspare_custom_user_passwords_v2';
   static const String _staffStorageKey = 'voltspare_staff_list_v2';
   static Map<String, String> _customPasswords = {};
 
@@ -214,7 +219,8 @@ class StaffService {
       final raw = prefs.getString(_passwordsStorageKey);
       if (raw != null && raw.isNotEmpty) {
         final Map<String, dynamic> decoded = jsonDecode(raw);
-        _customPasswords = decoded.map((k, v) => MapEntry(k.toLowerCase(), v.toString()));
+        _customPasswords =
+            decoded.map((k, v) => MapEntry(k.toLowerCase(), v.toString()));
       }
     } catch (e) {
       debugPrint('Error loading custom passwords: $e');
@@ -238,7 +244,9 @@ class StaffService {
     if (clean == 'owner@voltspare.com') {
       return 'OwnerPassword123!';
     }
-    if (clean == 'rohan.d@voltspare.com' || clean == 'priya.nair@voltspare.com' || clean == 'vikram.s@voltspare.com') {
+    if (clean == 'rohan.d@voltspare.com' ||
+        clean == 'priya.nair@voltspare.com' ||
+        clean == 'vikram.s@voltspare.com') {
       return 'Staff12345!';
     }
     final match = _cache.where((s) => s.email.trim().toLowerCase() == clean);
@@ -277,7 +285,8 @@ class StaffService {
       if (raw != null && raw.isNotEmpty) {
         final decoded = jsonDecode(raw) as List<dynamic>;
         _cache = decoded
-            .map((item) => StaffMemberModel.fromJson(item as Map<String, dynamic>))
+            .map((item) =>
+                StaffMemberModel.fromJson(item as Map<String, dynamic>))
             .toList();
       } else if (_cache.isEmpty) {
         _cache = List<StaffMemberModel>.from(_defaultStaff);
@@ -323,11 +332,13 @@ class StaffService {
             String preservedPass = backendStaff.password;
             if (_customPasswords.containsKey(emailLower)) {
               preservedPass = _customPasswords[emailLower]!;
-            } else if (existingIdx != -1 && _cache[existingIdx].password.isNotEmpty) {
+            } else if (existingIdx != -1 &&
+                _cache[existingIdx].password.isNotEmpty) {
               preservedPass = _cache[existingIdx].password;
             }
 
-            final staffWithPass = backendStaff.copyWith(password: preservedPass);
+            final staffWithPass =
+                backendStaff.copyWith(password: preservedPass);
 
             if (existingIdx != -1) {
               _cache[existingIdx] = staffWithPass;
@@ -365,9 +376,8 @@ class StaffService {
       await _saveCustomPasswords();
     }
 
-    final idx = _cache.indexWhere((s) =>
-        s.id == staff.id ||
-        s.email.toLowerCase() == cleanEmail);
+    final idx = _cache.indexWhere(
+        (s) => s.id == staff.id || s.email.toLowerCase() == cleanEmail);
     if (idx != -1) {
       _cache[idx] = staff;
     } else {
@@ -395,9 +405,8 @@ class StaffService {
           response.data['data']['_id'] != null) {
         final realId = response.data['data']['_id'].toString();
         final updatedStaff = staff.copyWith(id: realId);
-        final cacheIdx = _cache.indexWhere((s) =>
-            s.id == staff.id ||
-            s.email.toLowerCase() == cleanEmail);
+        final cacheIdx = _cache.indexWhere(
+            (s) => s.id == staff.id || s.email.toLowerCase() == cleanEmail);
         if (cacheIdx != -1) {
           _cache[cacheIdx] = updatedStaff;
           await _persistStaff();
@@ -417,9 +426,8 @@ class StaffService {
       await _saveCustomPasswords();
     }
 
-    final idx = _cache.indexWhere((s) =>
-        s.id == staff.id ||
-        s.email.toLowerCase() == cleanEmail);
+    final idx = _cache.indexWhere(
+        (s) => s.id == staff.id || s.email.toLowerCase() == cleanEmail);
     if (idx != -1) {
       _cache[idx] = staff;
     } else {
@@ -462,9 +470,8 @@ class StaffService {
             resp.data['data']['_id'] != null) {
           final realId = resp.data['data']['_id'].toString();
           final updatedStaff = staff.copyWith(id: realId);
-          final cacheIdx = _cache.indexWhere((s) =>
-              s.id == staff.id ||
-              s.email.toLowerCase() == cleanEmail);
+          final cacheIdx = _cache.indexWhere(
+              (s) => s.id == staff.id || s.email.toLowerCase() == cleanEmail);
           if (cacheIdx != -1) {
             _cache[cacheIdx] = updatedStaff;
             await _persistStaff();
@@ -528,25 +535,31 @@ class StaffService {
     }
   }
 
-  Future<StaffMemberModel?> authenticateStaff(String email, String password) async {
+  Future<StaffMemberModel?> authenticateStaff(
+      String email, String password) async {
     await _loadCustomPasswords();
     final cleanEmail = email.trim().toLowerCase();
     final cleanPassword = password.trim();
 
     // 1. Check custom passwords map directly
-    if (_customPasswords.containsKey(cleanEmail) && _customPasswords[cleanEmail] == cleanPassword) {
+    if (_customPasswords.containsKey(cleanEmail) &&
+        _customPasswords[cleanEmail] == cleanPassword) {
       final staffList = await getStaffMembers();
-      final match = staffList.where((s) => s.email.trim().toLowerCase() == cleanEmail);
+      final match =
+          staffList.where((s) => s.email.trim().toLowerCase() == cleanEmail);
       if (match.isNotEmpty) {
         return match.first.copyWith(password: cleanPassword);
       }
       // Create fallback model if user has updated password but not in staff list
       return StaffMemberModel(
         id: cleanEmail == 'owner@voltspare.com' ? 'staff_1' : 'staff_custom',
-        name: cleanEmail == 'owner@voltspare.com' ? 'Amit Patel' : 'Staff Member',
+        name:
+            cleanEmail == 'owner@voltspare.com' ? 'Amit Patel' : 'Staff Member',
         email: cleanEmail,
         password: cleanPassword,
-        role: cleanEmail == 'owner@voltspare.com' ? 'Owner / Admin' : 'Staff Member',
+        role: cleanEmail == 'owner@voltspare.com'
+            ? 'Owner / Admin'
+            : 'Staff Member',
         phone: '+91 99880 77665',
         shift: 'Flexible',
         status: 'Active',
@@ -574,4 +587,3 @@ class StaffService {
     }
   }
 }
-

@@ -40,7 +40,8 @@ class LocationService {
   }
 
   /// Create a new location
-  Future<LocationModel> createLocation(Map<String, dynamic> locationData) async {
+  Future<LocationModel> createLocation(
+      Map<String, dynamic> locationData) async {
     final response = await _apiClient.post(
       ApiEndpoints.locations,
       data: locationData,

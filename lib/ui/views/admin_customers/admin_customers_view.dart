@@ -130,7 +130,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock, size: 12, color: Colors.amber),
+                            const Icon(Icons.lock,
+                                size: 12, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               'Scoped to ${viewModel.userAssignedLocationName}',
@@ -325,8 +326,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
     String selectedType = customer?.type ?? 'Retail Customer';
     String? selectedLocationId = customer?.locationId;
     if (selectedLocationId == null && customer?.locationName != null) {
-      final match = viewModel.locations
-          .where((l) => l.name.toLowerCase() == customer!.locationName!.toLowerCase());
+      final match = viewModel.locations.where(
+          (l) => l.name.toLowerCase() == customer!.locationName!.toLowerCase());
       if (match.isNotEmpty) selectedLocationId = match.first.id;
     }
 
@@ -339,7 +340,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: AdminColors.panelBackground,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               title: Text(
                 customer == null ? 'Add New Customer' : 'Edit Customer',
                 style: TextStyle(color: AdminColors.textPrimary),
@@ -433,11 +435,11 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: dueController,
-                        decoration:
-                            const InputDecoration(labelText: 'Outstanding Due (₹)'),
+                        decoration: const InputDecoration(
+                            labelText: 'Outstanding Due (₹)'),
                         style: TextStyle(color: AdminColors.textPrimary),
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
                             return 'Due amount is required';
@@ -455,7 +457,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -495,7 +498,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: AdminColors.primaryGreen),
-                  child: const Text('Save', style: TextStyle(color: Colors.white)),
+                  child:
+                      const Text('Save', style: TextStyle(color: Colors.white)),
                 ),
               ],
             );
@@ -515,15 +519,18 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AdminColors.panelBackground,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Row(
             children: [
-              Icon(Icons.location_on, color: AdminColors.primaryGreen, size: 22),
+              Icon(Icons.location_on,
+                  color: AdminColors.primaryGreen, size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Assign Hub for ${customer.name}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -546,7 +553,8 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                     children: [
                       Text(
                         'Customer: ${customer.name} (${customer.phone})',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                       if (customer.locationName != null) ...[
                         const SizedBox(height: 4),

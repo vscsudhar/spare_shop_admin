@@ -8,7 +8,8 @@ import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:stacked/stacked.dart';
 
-class AdminReturnDetailViewModel extends FutureViewModel<void> with NavigationMixin {
+class AdminReturnDetailViewModel extends FutureViewModel<void>
+    with NavigationMixin {
   final String caseId;
   final _returnsService = locator<ReturnExchangeService>();
   final _locationService = locator<LocationService>();
@@ -61,7 +62,8 @@ class AdminReturnDetailViewModel extends FutureViewModel<void> with NavigationMi
     }
   }
 
-  Future<void> updateLocation(String locationId, String locationName, BuildContext context) async {
+  Future<void> updateLocation(
+      String locationId, String locationName, BuildContext context) async {
     setBusy(true);
     try {
       final updated = await _returnsService.updateCaseLocation(
@@ -133,7 +135,8 @@ class AdminReturnDetailViewModel extends FutureViewModel<void> with NavigationMi
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Case status updated to ${_kase!.status.toUpperCase()}'),
+            content:
+                Text('Case status updated to ${_kase!.status.toUpperCase()}'),
             backgroundColor: Colors.green,
           ),
         );

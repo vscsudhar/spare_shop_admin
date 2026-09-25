@@ -334,7 +334,10 @@ class AdminDeliveryChargesView
                       ],
                     ),
                   ),
-                  if (isColumn) const SizedBox(height: 16) else const SizedBox(width: 24),
+                  if (isColumn)
+                    const SizedBox(height: 16)
+                  else
+                    const SizedBox(width: 24),
                   Expanded(
                     flex: isColumn ? 0 : 3,
                     child: Container(
@@ -439,8 +442,8 @@ class AdminDeliveryChargesView
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Search by tier, amount or hub...',
-                      prefixIcon:
-                          const Icon(Icons.search, size: 20, color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search,
+                          size: 20, color: Colors.grey),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
                       border: OutlineInputBorder(
@@ -535,7 +538,8 @@ class AdminDeliveryChargesView
             decoration: BoxDecoration(
               color: AdminColors.primaryGreen.withOpacity(0.08),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AdminColors.primaryGreen.withOpacity(0.2)),
+              border:
+                  Border.all(color: AdminColors.primaryGreen.withOpacity(0.2)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -636,8 +640,7 @@ class AdminDeliveryChargesView
 
           // Delete Button
           IconButton(
-            icon:
-                const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+            icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
             tooltip: 'Delete Tier',
             onPressed: () => _confirmDelete(context, viewModel, tier),
           ),
@@ -682,7 +685,9 @@ class AdminDeliveryChargesView
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               title: Text(
-                isEdit ? 'Edit Delivery Charge Tier' : 'Add Delivery Charge Tier',
+                isEdit
+                    ? 'Edit Delivery Charge Tier'
+                    : 'Add Delivery Charge Tier',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               content: SizedBox(
@@ -723,7 +728,9 @@ class AdminDeliveryChargesView
                               enabled: !isUnbounded,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
-                                labelText: isUnbounded ? 'No Upper Limit' : 'To Amount (₹)',
+                                labelText: isUnbounded
+                                    ? 'No Upper Limit'
+                                    : 'To Amount (₹)',
                                 prefixText: isUnbounded ? '' : '₹ ',
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8)),
@@ -834,7 +841,8 @@ class AdminDeliveryChargesView
                         borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: () async {
-                    final from = double.tryParse(fromController.text.trim()) ?? 0.0;
+                    final from =
+                        double.tryParse(fromController.text.trim()) ?? 0.0;
                     final to = isUnbounded
                         ? null
                         : double.tryParse(toController.text.trim());
