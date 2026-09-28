@@ -68,13 +68,49 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Back button
-          TextButton.icon(
-            onPressed: viewModel.goBack,
-            icon: Icon(Icons.arrow_back,
-                size: 16, color: AdminColors.textSecondary),
-            label: Text('Back to Orders',
-                style: TextStyle(color: AdminColors.textSecondary)),
+          // Header bar with Back button & Invoice Actions
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: viewModel.goBack,
+                icon: Icon(Icons.arrow_back,
+                    size: 16, color: AdminColors.textSecondary),
+                label: Text('Back to Orders',
+                    style: TextStyle(color: AdminColors.textSecondary)),
+              ),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => viewModel.viewInvoice(context),
+                    icon: const Icon(Icons.receipt_long, size: 16),
+                    label: const Text('View GST Invoice'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AdminColors.primaryGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  OutlinedButton.icon(
+                    onPressed: () => viewModel.downloadInvoice(context),
+                    icon: const Icon(Icons.download, size: 16),
+                    label: const Text('Download PDF'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AdminColors.primaryGreen,
+                      side: BorderSide(color: AdminColors.primaryGreen),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
@@ -125,10 +161,26 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
 
                               // Pricing summaries
                               const SizedBox(height: 12),
-                              _priceRow('Subtotal',
-                                  '₹${(viewModel.order.total - 150).toStringAsFixed(2)}'),
+                              _priceRow('Item Total',
+                                  '₹${(viewModel.order.subTotal > 0 ? viewModel.order.subTotal : (viewModel.order.total - viewModel.order.deliveryFee + viewModel.order.discountAmount)).toStringAsFixed(2)}'),
+                              if (viewModel.order.taxAmount > 0) ...[
+                                const SizedBox(height: 8),
+                                _priceRow('GST & Taxes (Incl.)',
+                                    '₹${viewModel.order.taxAmount.toStringAsFixed(2)}',
+                                    isGreen: true),
+                              ],
                               const SizedBox(height: 8),
-                              _priceRow('Standard Shipping', '₹150.00'),
+                              _priceRow('Delivery Charges',
+                                  viewModel.order.deliveryFee > 0
+                                      ? '₹${viewModel.order.deliveryFee.toStringAsFixed(2)}'
+                                      : 'FREE',
+                                  isGreen: viewModel.order.deliveryFee == 0),
+                              if (viewModel.order.discountAmount > 0) ...[
+                                const SizedBox(height: 8),
+                                _priceRow('Discount Applied',
+                                    '-₹${viewModel.order.discountAmount.toStringAsFixed(2)}',
+                                    isGreen: true),
+                              ],
                               const Divider(height: 24),
                               _priceRow('Grand Total',
                                   '₹${viewModel.order.total.toStringAsFixed(2)}',
@@ -680,7 +732,7 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
     );
   }
 
-  Widget _priceRow(String label, String value, {bool isBold = false}) {
+  Widget _priceRow(String label, String value, {bool isBold = false, bool isGreen = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -695,7 +747,9 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
         Text(
           value,
           style: TextStyle(
-            color: isBold ? AdminColors.primaryGreen : AdminColors.textPrimary,
+            color: isGreen
+                ? AdminColors.primaryGreen
+                : (isBold ? AdminColors.primaryGreen : AdminColors.textPrimary),
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             fontSize: isBold ? 16 : 13,
           ),
@@ -780,15 +834,15 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                     border:
                         Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const Icon(Icons.info_outline,
+                      Icon(Icons.info_outline,
                           color: Colors.lightBlueAccent, size: 16),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'If the current hub does not have product stock for this order, reassign to another hub below:',
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 11, color: Colors.lightBlueAccent),
                         ),
                       ),

@@ -6,6 +6,8 @@ import 'package:stacked/stacked.dart';
 
 import 'admin_billing_viewmodel.dart';
 import 'package:spare_shop_admin/core/utils/thermal_printer_web.dart';
+import 'package:spare_shop_admin/core/services/invoice_service.dart';
+import 'package:spare_shop_admin/ui/widgets/admin/admin_invoice_dialog.dart';
 
 class AdminBillingView extends StackedView<AdminBillingViewModel> {
   const AdminBillingView({Key? key}) : super(key: key);
@@ -846,14 +848,21 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextButton(
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.receipt_long, size: 16),
+                        label: const Text('Full GST Invoice'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AdminColors.primaryGreen,
+                          side: BorderSide(color: AdminColors.primaryGreen),
+                        ),
                         onPressed: () {
-                          Navigator.pop(context);
+                          final invoiceService = InvoiceService();
+                          final model = invoiceService.createInvoiceFromPosData(invoice);
+                          AdminInvoiceDialog.show(context, model);
                         },
-                        child: const Text('Cancel/Close'),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.print, size: 16),
@@ -879,7 +888,12 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                       ),
                     ),
                   ],
-                )
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
               ],
             ),
           ),
@@ -954,6 +968,7 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 IconButton(
+                                                  tooltip: 'View Receipt Slip',
                                                   icon: const Icon(
                                                       Icons.visibility_outlined,
                                                       size: 18),
@@ -965,6 +980,19 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                                   },
                                                 ),
                                                 IconButton(
+                                                  tooltip: 'View Full GST Invoice',
+                                                  icon: Icon(
+                                                      Icons.receipt_long_outlined,
+                                                      color: AdminColors.primaryGreen,
+                                                      size: 18),
+                                                  onPressed: () {
+                                                    final invoiceService = InvoiceService();
+                                                    final model = invoiceService.createInvoiceFromPosData(inv);
+                                                    AdminInvoiceDialog.show(context, model);
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  tooltip: 'Print Thermal Receipt',
                                                   icon: const Icon(Icons.print,
                                                       size: 18),
                                                   onPressed: () {

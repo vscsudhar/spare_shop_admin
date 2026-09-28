@@ -164,6 +164,19 @@ class ProductModel {
     this.compatibleVehicles = const [],
   });
 
+  /// Base selling price without tax (Actual selling amount)
+  double get actualSellingPrice {
+    if (taxPercentage <= 0) return price;
+    final base = price / (1.0 + (taxPercentage / 100.0));
+    return double.parse(base.toStringAsFixed(2));
+  }
+
+  /// Tax amount included in the selling price
+  double get taxAmount {
+    final diff = price - actualSellingPrice;
+    return diff > 0 ? double.parse(diff.toStringAsFixed(2)) : 0.0;
+  }
+
   String get deliveryText {
     if (stockManaged) {
       if (stockCount > 0) {
@@ -289,8 +302,13 @@ class OrderModel {
   final OrderStatus status;
   final List<CartItemModel> items;
   final double total;
+  final double subTotal;
+  final double taxAmount;
+  final double deliveryFee;
+  final double discountAmount;
   final AddressModel address;
   final String paymentMethod;
+  final String? paymentStatus;
   final String? locationId;
   final String? locationName;
   final String channel; // 'app', 'online', 'pos', 'in_store'
@@ -302,8 +320,13 @@ class OrderModel {
     required this.status,
     required this.items,
     required this.total,
+    this.subTotal = 0.0,
+    this.taxAmount = 0.0,
+    this.deliveryFee = 0.0,
+    this.discountAmount = 0.0,
     required this.address,
     required this.paymentMethod,
+    this.paymentStatus,
     this.locationId,
     this.locationName,
     this.channel = 'app',
@@ -325,8 +348,13 @@ class OrderModel {
     OrderStatus? status,
     List<CartItemModel>? items,
     double? total,
+    double? subTotal,
+    double? taxAmount,
+    double? deliveryFee,
+    double? discountAmount,
     AddressModel? address,
     String? paymentMethod,
+    String? paymentStatus,
     String? locationId,
     String? locationName,
     String? channel,
@@ -338,8 +366,13 @@ class OrderModel {
       status: status ?? this.status,
       items: items ?? this.items,
       total: total ?? this.total,
+      subTotal: subTotal ?? this.subTotal,
+      taxAmount: taxAmount ?? this.taxAmount,
+      deliveryFee: deliveryFee ?? this.deliveryFee,
+      discountAmount: discountAmount ?? this.discountAmount,
       address: address ?? this.address,
       paymentMethod: paymentMethod ?? this.paymentMethod,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
       locationId: locationId ?? this.locationId,
       locationName: locationName ?? this.locationName,
       channel: channel ?? this.channel,

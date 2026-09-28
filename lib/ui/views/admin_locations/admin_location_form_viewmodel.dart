@@ -12,15 +12,30 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
   bool get isEditMode => _locationId != null && _locationId!.isNotEmpty;
 
   final nameController = TextEditingController();
-  final latitudeController = TextEditingController();
-  final longitudeController = TextEditingController();
   final radiusController = TextEditingController(text: '20');
+
+  // Selected Coordinates from OpenStreetMap
+  double? _selectedLatitude;
+  double? get selectedLatitude => _selectedLatitude;
+
+  double? _selectedLongitude;
+  double? get selectedLongitude => _selectedLongitude;
+
+  bool _hasUserSelectedLocation = false;
+  bool get hasUserSelectedLocation => _hasUserSelectedLocation;
+
+  double _radiusKm = 20.0;
+  double get radiusKm => _radiusKm;
 
   bool _isActive = true;
   bool get isActive => _isActive;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  // Default coordinate center for Tamil Nadu / Coimbatore hub
+  static const double defaultLat = 10.9027;
+  static const double defaultLng = 76.9634;
 
   Future<void> init(String? id) async {
     _locationId = id;
@@ -30,9 +45,11 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
       try {
         final loc = await _locationService.getLocationById(id);
         nameController.text = loc.name;
-        latitudeController.text = loc.latitude.toString();
-        longitudeController.text = loc.longitude.toString();
-        radiusController.text = loc.radiusKm.toString();
+        _radiusKm = loc.radiusKm > 0 ? loc.radiusKm : 20.0;
+        radiusController.text = _radiusKm.toString();
+        _selectedLatitude = loc.latitude;
+        _selectedLongitude = loc.longitude;
+        _hasUserSelectedLocation = (loc.latitude != 0.0 || loc.longitude != 0.0);
         _isActive = loc.isActive;
         rebuildUi();
       } catch (e) {
@@ -41,6 +58,35 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
       } finally {
         setBusy(false);
       }
+    } else {
+      // Add mode - default view coordinates
+      _selectedLatitude = defaultLat;
+      _selectedLongitude = defaultLng;
+      _hasUserSelectedLocation = true;
+      _radiusKm = 20.0;
+      radiusController.text = '20';
+      rebuildUi();
+    }
+  }
+
+  void updateCoordinates(double lat, double lng, {String? placeName}) {
+    _selectedLatitude = double.parse(lat.toStringAsFixed(6));
+    _selectedLongitude = double.parse(lng.toStringAsFixed(6));
+    _hasUserSelectedLocation = true;
+    _errorMessage = null;
+
+    if (placeName != null && placeName.isNotEmpty && nameController.text.trim().isEmpty) {
+      nameController.text = placeName;
+    }
+
+    notifyListeners();
+  }
+
+  void updateRadius(String val) {
+    final num = double.tryParse(val.trim());
+    if (num != null && num > 0) {
+      _radiusKm = num;
+      notifyListeners();
     }
   }
 
@@ -52,34 +98,6 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
   String? validateName(String? val) {
     if (val == null || val.trim().isEmpty) {
       return 'Location name is required';
-    }
-    return null;
-  }
-
-  String? validateLatitude(String? val) {
-    if (val == null || val.trim().isEmpty) {
-      return 'Latitude is required';
-    }
-    final num = double.tryParse(val.trim());
-    if (num == null) {
-      return 'Please enter a valid decimal number';
-    }
-    if (num < -90 || num > 90) {
-      return 'Latitude must be between -90 and 90';
-    }
-    return null;
-  }
-
-  String? validateLongitude(String? val) {
-    if (val == null || val.trim().isEmpty) {
-      return 'Longitude is required';
-    }
-    final num = double.tryParse(val.trim());
-    if (num == null) {
-      return 'Please enter a valid decimal number';
-    }
-    if (num < -180 || num > 180) {
-      return 'Longitude must be between -180 and 180';
     }
     return null;
   }
@@ -100,13 +118,19 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
       return false;
     }
 
+    if (_selectedLatitude == null || _selectedLongitude == null) {
+      _errorMessage = 'Please select a location on the OpenStreetMap';
+      notifyListeners();
+      return false;
+    }
+
     setBusy(true);
     _errorMessage = null;
 
     final name = nameController.text.trim();
-    final lat = double.parse(latitudeController.text.trim());
-    final lng = double.parse(longitudeController.text.trim());
-    final radius = double.parse(radiusController.text.trim());
+    final lat = _selectedLatitude!;
+    final lng = _selectedLongitude!;
+    final radius = double.tryParse(radiusController.text.trim()) ?? _radiusKm;
 
     final data = {
       'name': name,
@@ -136,8 +160,6 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
   @override
   void dispose() {
     nameController.dispose();
-    latitudeController.dispose();
-    longitudeController.dispose();
     radiusController.dispose();
     super.dispose();
   }

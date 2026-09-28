@@ -817,8 +817,9 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                           ))
                       .toList(),
                   onChanged: (q) {
-                    if (q != null)
+                    if (q != null) {
                       viewModel.setItemReplacementQuantity(form, q);
+                    }
                   },
                 ),
               ),

@@ -371,6 +371,13 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                                 fontWeight: FontWeight.bold)),
                       ),
                       IconButton(
+                        onPressed: () => viewModel.viewInvoice(context, order),
+                        icon: Icon(Icons.receipt_long_outlined,
+                            size: 16, color: AdminColors.primaryGreen),
+                        tooltip: 'View & Download GST Invoice',
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      IconButton(
                         onPressed: () => _showAssignLocationDialog(
                             context, viewModel, order),
                         icon: const Icon(Icons.edit_location_alt_outlined,
@@ -539,15 +546,15 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                     border:
                         Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const Icon(Icons.info_outline,
+                      Icon(Icons.info_outline,
                           color: Colors.lightBlueAccent, size: 16),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'If the current hub does not have product stock, reassign to another hub with available inventory below:',
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 11, color: Colors.lightBlueAccent),
                         ),
                       ),

@@ -91,7 +91,7 @@ class DeliveryChargeModel {
     return DeliveryChargeModel(
       id: id ?? this.id,
       fromAmount: fromAmount ?? this.fromAmount,
-      toAmount: toAmount != null ? toAmount : this.toAmount,
+      toAmount: toAmount ?? this.toAmount,
       deliveryCharge: deliveryCharge ?? this.deliveryCharge,
       locationId: locationId ?? this.locationId,
       locationName: locationName ?? this.locationName,

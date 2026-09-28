@@ -35,6 +35,7 @@ import '../core/services/suggestion_service.dart';
 import '../core/services/token_service.dart';
 import '../core/services/upload_service.dart';
 import '../core/services/wishlist_service.dart';
+import '../core/services/invoice_service.dart';
 import '../core/theme/theme_service.dart';
 
 final locator = StackedLocator.instance;
@@ -73,4 +74,5 @@ Future<void> setupLocator(
   locator.registerLazySingleton(() => StaffService());
   locator.registerLazySingleton(() => DeliveryChargeService());
   locator.registerLazySingleton(() => SuggestionService());
+  locator.registerLazySingleton(() => InvoiceService());
 }

@@ -28,8 +28,9 @@ class AdminDashboardViewModel extends FutureViewModel<void>
   String? get selectedLocationId => _selectedLocationId;
 
   LocationModel? get selectedLocation {
-    if (_selectedLocationId == null || _selectedLocationId!.isEmpty)
+    if (_selectedLocationId == null || _selectedLocationId!.isEmpty) {
       return null;
+    }
     try {
       return _locations.firstWhere((l) => l.id == _selectedLocationId);
     } catch (_) {

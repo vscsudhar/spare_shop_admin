@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_common_widgets.dart';
+import 'package:spare_shop_admin/ui/widgets/admin/admin_location_map_picker.dart';
 import 'package:stacked/stacked.dart';
 
 import 'admin_location_form_viewmodel.dart';
@@ -76,14 +77,14 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
             ],
             Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 750),
+                constraints: const BoxConstraints(maxWidth: 820),
                 child: AdminPanelCard(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Location Details',
+                        'Location & Service Boundary',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -91,7 +92,7 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Configure business and delivery service boundaries for inventory mapping and customer proximity matching.',
+                        'Select the location pin directly on the interactive OpenStreetMap. Coordinates and service coverage area are automatically synchronized.',
                         style: TextStyle(
                           color: AdminColors.textSecondary,
                           fontSize: 13,
@@ -110,47 +111,180 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                         ),
                         validator: viewModel.validateName,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
 
-                      // Latitude and Longitude Fields (2 columns)
+                      // Section Header for Map Selection
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: viewModel.latitudeController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                decimal: true,
-                                signed: true,
+                          Row(
+                            children: [
+                              Icon(Icons.map_rounded,
+                                  size: 18, color: AdminColors.primaryGreen),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Pinpoint Location on OpenStreetMap *',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
                               ),
-                              decoration: const InputDecoration(
-                                labelText: 'Latitude *',
-                                hintText: 'e.g. 10.9027',
-                                helperText: 'Valid range: -90.0 to 90.0',
-                                prefixIcon: Icon(Icons.my_location_rounded),
-                                border: OutlineInputBorder(),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AdminColors.primaryGreen
+                                  .withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Interactive Map',
+                              style: TextStyle(
+                                color: AdminColors.primaryGreen,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
                               ),
-                              validator: viewModel.validateLatitude,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Interactive OpenStreetMap Location Picker
+                      if (viewModel.isBusy)
+                        Container(
+                          height: 420,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                            color: Colors.grey.shade50,
+                          ),
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(),
+                        )
+                      else
+                        AdminLocationMapPicker(
+                          initialLatitude: viewModel.selectedLatitude ??
+                              AdminLocationFormViewModel.defaultLat,
+                          initialLongitude: viewModel.selectedLongitude ??
+                              AdminLocationFormViewModel.defaultLng,
+                          radiusKm: viewModel.radiusKm,
+                          onLocationChanged: (lat, lng, {placeName}) =>
+                              viewModel.updateCoordinates(lat, lng,
+                                  placeName: placeName),
+                        ),
+                      const SizedBox(height: 16),
+
+                      // Read-Only Auto-Synced Coordinates Display Cards
+                      Row(
+                        children: [
                           Expanded(
-                            child: TextFormField(
-                              controller: viewModel.longitudeController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                decimal: true,
-                                signed: true,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: AdminColors.isDarkTheme
+                                    ? Colors.white.withValues(alpha: 0.05)
+                                    : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AdminColors.isDarkTheme
+                                      ? Colors.white.withValues(alpha: 0.1)
+                                      : Colors.grey.shade300,
+                                ),
                               ),
-                              decoration: const InputDecoration(
-                                labelText: 'Longitude *',
-                                hintText: 'e.g. 76.9634',
-                                helperText: 'Valid range: -180.0 to 180.0',
-                                prefixIcon: Icon(Icons.explore_outlined),
-                                border: OutlineInputBorder(),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.my_location_rounded,
+                                      size: 20, color: AdminColors.primaryGreen),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Latitude (Read-Only)',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: AdminColors.textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          viewModel.selectedLatitude != null
+                                              ? viewModel.selectedLatitude!
+                                                  .toStringAsFixed(6)
+                                              : 'Not selected',
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(Icons.lock_outline_rounded,
+                                      size: 16, color: Colors.grey),
+                                ],
                               ),
-                              validator: viewModel.validateLongitude,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: AdminColors.isDarkTheme
+                                    ? Colors.white.withValues(alpha: 0.05)
+                                    : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AdminColors.isDarkTheme
+                                      ? Colors.white.withValues(alpha: 0.1)
+                                      : Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.explore_outlined,
+                                      size: 20, color: AdminColors.primaryGreen),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Longitude (Read-Only)',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: AdminColors.textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          viewModel.selectedLongitude != null
+                                              ? viewModel.selectedLongitude!
+                                                  .toStringAsFixed(6)
+                                              : 'Not selected',
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(Icons.lock_outline_rounded,
+                                      size: 16, color: Colors.grey),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -158,29 +292,22 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                       const SizedBox(height: 20),
 
                       // Coverage Radius Field
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: viewModel.radiusController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
-                              decoration: const InputDecoration(
-                                labelText: 'Coverage Radius (KM) *',
-                                hintText: '20',
-                                suffixText: 'KM',
-                                helperText:
-                                    'Service delivery radius around the coordinate point',
-                                prefixIcon: Icon(Icons.radar_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: viewModel.validateRadius,
-                            ),
-                          ),
-                        ],
+                      TextFormField(
+                        controller: viewModel.radiusController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'Coverage Radius (KM) *',
+                          hintText: '20',
+                          suffixText: 'KM',
+                          helperText:
+                              'Service delivery radius around the selected coordinate point (green circle on map)',
+                          prefixIcon: Icon(Icons.radar_rounded),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: viewModel.updateRadius,
+                        validator: viewModel.validateRadius,
                       ),
                       const SizedBox(height: 20),
 

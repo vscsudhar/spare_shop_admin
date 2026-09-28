@@ -379,12 +379,24 @@ extension OrderModelExtension on OrderModel {
             ? Map<String, dynamic>.from(json['address'] as Map)
             : <String, dynamic>{});
 
-    double orderTotal = 0.0;
-    final rawTotal = json['grandTotal'] ?? json['total'];
-    if (rawTotal is num) {
-      orderTotal =
-          rawTotal > 1000 ? (rawTotal.toDouble() / 100.0) : rawTotal.toDouble();
+    double parsePaise(dynamic val) {
+      if (val is num) {
+        return val > 1000 ? (val.toDouble() / 100.0) : val.toDouble();
+      }
+      if (val != null) {
+        final parsed = double.tryParse(val.toString());
+        if (parsed != null) {
+          return parsed > 1000 ? (parsed / 100.0) : parsed;
+        }
+      }
+      return 0.0;
     }
+
+    final double orderTotal = parsePaise(json['grandTotal'] ?? json['total']);
+    final double subTotal = parsePaise(json['subTotal']);
+    final double taxAmount = parsePaise(json['taxAmount']);
+    final double deliveryFee = parsePaise(json['deliveryFee'] ?? json['deliveryCharge']);
+    final double discountAmount = parsePaise(json['discountAmount'] ?? json['discount']);
 
     String? locationId;
     String? locationName;
@@ -517,8 +529,13 @@ extension OrderModelExtension on OrderModel {
       status: status,
       items: items,
       total: orderTotal,
+      subTotal: subTotal,
+      taxAmount: taxAmount,
+      deliveryFee: deliveryFee,
+      discountAmount: discountAmount,
       address: AddressModelExtension.fromJson(addressMap),
       paymentMethod: (json['paymentMethod'] ?? 'cod').toString(),
+      paymentStatus: json['paymentStatus']?.toString(),
       locationId: locationId,
       locationName: locationName,
       channel: channel,

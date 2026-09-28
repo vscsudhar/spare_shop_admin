@@ -1,9 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/location_service.dart';
 import 'package:spare_shop_admin/core/services/order_service.dart';
 import 'package:spare_shop_admin/core/services/token_service.dart';
+import 'package:spare_shop_admin/core/services/invoice_service.dart';
+import 'package:spare_shop_admin/ui/widgets/admin/admin_invoice_dialog.dart';
+import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 import 'package:spare_shop_admin/core/utils/hub_matching_helper.dart';
 import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_mock_data.dart';
@@ -14,6 +17,7 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
   final _orderService = locator<OrderService>();
   final _locationService = locator<LocationService>();
   final _tokenService = locator<TokenService>();
+  final _invoiceService = locator<InvoiceService>();
 
   String _searchQuery = '';
   OrderStatus? _selectedStatus;
@@ -254,5 +258,59 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
   Future<void> openOrderDetail(OrderModel order) async {
     await goToAdminOrderDetail(order: order);
     await loadOrders();
+  }
+
+  Future<void> viewInvoice(BuildContext context, OrderModel order) async {
+    try {
+      await _invoiceService.loadBusinessSettings();
+      InvoiceModel? invoice;
+      try {
+        invoice = await _invoiceService.fetchInvoiceFromBackend(order.id);
+      } catch (_) {}
+      invoice ??= _invoiceService.createInvoiceFromOrder(order);
+      if (context.mounted) {
+        AdminInvoiceDialog.show(context, invoice);
+      }
+    } catch (e) {
+      debugPrint('Error viewing invoice: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Unable to generate invoice: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> downloadInvoice(BuildContext context, OrderModel order) async {
+    try {
+      await _invoiceService.loadBusinessSettings();
+      InvoiceModel? invoice;
+      try {
+        invoice = await _invoiceService.fetchInvoiceFromBackend(order.id);
+      } catch (_) {}
+      invoice ??= _invoiceService.createInvoiceFromOrder(order);
+      await _invoiceService.printOrDownloadInvoice(invoice);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Generating PDF for ${invoice.invoiceNumber}...'),
+            backgroundColor: AdminColors.primaryGreen,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error downloading invoice: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Download failed: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 }

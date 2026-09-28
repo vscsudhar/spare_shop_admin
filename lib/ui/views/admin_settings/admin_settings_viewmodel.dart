@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/api_client.dart';
+import 'package:spare_shop_admin/core/services/invoice_service.dart';
 import 'package:spare_shop_admin/core/theme/theme_service.dart';
 import 'package:stacked/stacked.dart';
 
@@ -14,14 +15,31 @@ class AdminSettingsViewModel extends FutureViewModel<void>
   String _selectedSection = 'General';
   String get selectedSection => _selectedSection;
 
-  // General Settings
+  // General Settings - Business & Tax Information
   final storeNameController =
       TextEditingController(text: 'VoltSpare Headquarters');
+  final legalNameController = TextEditingController(
+      text: 'VoltSpare Automotive Technologies Pvt. Ltd.');
   final phoneController = TextEditingController(text: '+91 99000 88000');
   final emailController = TextEditingController(text: 'billing@voltspare.com');
-  final addressController =
-      TextEditingController(text: '12, MG Road, Landmark Block');
   final gstNumberController = TextEditingController(text: '29AAAAA0000A1Z1');
+  final panController = TextEditingController(text: 'AAAAA0000A');
+  final websiteController = TextEditingController(text: 'www.voltspare.com');
+
+  // General Settings - Address & Map Coordinates
+  final addressLine1Controller =
+      TextEditingController(text: '12, MG Road, Landmark Block');
+  final addressLine2Controller =
+      TextEditingController(text: 'Indiranagar Commercial Zone');
+  final cityController = TextEditingController(text: 'Bangalore');
+  final stateController = TextEditingController(text: 'Karnataka');
+  final stateCodeController = TextEditingController(text: '29');
+  final pincodeController = TextEditingController(text: '560001');
+
+  // OpenStreetMap Coordinates
+  double latitude = 12.9716;
+  double longitude = 77.5946;
+  bool isMapMoved = false;
 
   // Billing Settings
   final invoicePrefixController = TextEditingController(text: 'VS-POS-');
@@ -69,6 +87,31 @@ class AdminSettingsViewModel extends FutureViewModel<void>
     notifyListeners();
   }
 
+  void updateLocation(double lat, double lng) {
+    latitude = lat;
+    longitude = lng;
+    isMapMoved = true;
+    notifyListeners();
+  }
+
+  void onAreaSelected(String taluk, String district, String state,
+      [String? postalCode]) {
+    if (taluk.isNotEmpty && taluk != 'Area') {
+      addressLine2Controller.text = taluk;
+    }
+    if (district.isNotEmpty && district != 'City') {
+      cityController.text = district;
+    }
+    if (state.isNotEmpty && state != 'State') {
+      stateController.text = state;
+      stateCodeController.text = InvoiceService.getStateCode(state);
+    }
+    if (postalCode != null && postalCode.isNotEmpty) {
+      pincodeController.text = postalCode;
+    }
+    notifyListeners();
+  }
+
   Future<void> loadSettings() async {
     setBusy(true);
     try {
@@ -76,9 +119,64 @@ class AdminSettingsViewModel extends FutureViewModel<void>
       final data = response.data['data'] ?? {};
 
       final general = data['general'] ?? {};
-      storeNameController.text = general['appName'] ?? 'VoltSpare Headquarters';
-      phoneController.text = general['supportPhone'] ?? '+91 99000 88000';
-      emailController.text = general['supportEmail'] ?? 'billing@voltspare.com';
+      storeNameController.text =
+          (general['appName'] ?? 'VoltSpare Headquarters').toString();
+      legalNameController.text = (general['legalName'] ??
+              general['appName'] ??
+              'VoltSpare Automotive Technologies Pvt. Ltd.')
+          .toString();
+      phoneController.text =
+          (general['supportPhone'] ?? '+91 99000 88000').toString();
+      emailController.text =
+          (general['supportEmail'] ?? 'billing@voltspare.com').toString();
+      gstNumberController.text =
+          (general['gstin'] ?? general['gstNumber'] ?? '29AAAAA0000A1Z1')
+              .toString();
+      panController.text = (general['pan'] ?? 'AAAAA0000A').toString();
+      websiteController.text =
+          (general['website'] ?? 'www.voltspare.com').toString();
+
+      addressLine1Controller.text = (general['addressLine1'] ??
+              general['address'] ??
+              '12, MG Road, Landmark Block')
+          .toString();
+      addressLine2Controller.text =
+          (general['addressLine2'] ?? 'Indiranagar Commercial Zone').toString();
+      cityController.text = (general['city'] ?? 'Bangalore').toString();
+      stateController.text = (general['state'] ?? 'Karnataka').toString();
+      stateCodeController.text = (general['stateCode'] ??
+              InvoiceService.getStateCode(stateController.text))
+          .toString();
+      pincodeController.text =
+          (general['postalCode'] ?? general['pincode'] ?? '560001').toString();
+
+      if (general['latitude'] != null) {
+        final latNum = double.tryParse(general['latitude'].toString());
+        if (latNum != null) latitude = latNum;
+      }
+      if (general['longitude'] != null) {
+        final lngNum = double.tryParse(general['longitude'].toString());
+        if (lngNum != null) longitude = lngNum;
+      }
+
+      // Cache business details for invoice generation
+      InvoiceService.updateCachedBusinessInfo(
+        InvoiceBusinessInfo(
+          name: storeNameController.text,
+          legalName: legalNameController.text,
+          addressLine1: addressLine1Controller.text,
+          addressLine2: addressLine2Controller.text,
+          city: cityController.text,
+          state: stateController.text,
+          stateCode: stateCodeController.text,
+          pincode: pincodeController.text,
+          phone: phoneController.text,
+          email: emailController.text,
+          gstin: gstNumberController.text,
+          pan: panController.text,
+          website: websiteController.text,
+        ),
+      );
 
       final billing = data['billing'] ?? {};
       invoicePrefixController.text = billing['invoicePrefix'] ?? 'VS-POS-';
@@ -94,7 +192,7 @@ class AdminSettingsViewModel extends FutureViewModel<void>
 
       notifyListeners();
     } catch (e) {
-      print('Error loading settings: $e');
+      debugPrint('Error loading settings: $e');
     } finally {
       setBusy(false);
     }
@@ -103,12 +201,50 @@ class AdminSettingsViewModel extends FutureViewModel<void>
   Future<void> saveSettings(BuildContext context) async {
     setBusy(true);
     try {
-      // 1. General settings
+      final stateCode = stateCodeController.text.trim().isNotEmpty
+          ? stateCodeController.text.trim()
+          : InvoiceService.getStateCode(stateController.text.trim());
+
+      // 1. General settings with full address, coordinates, tax numbers
       await _apiClient.patch('/settings/general', data: {
         'appName': storeNameController.text.trim(),
+        'legalName': legalNameController.text.trim(),
         'supportEmail': emailController.text.trim(),
         'supportPhone': phoneController.text.trim(),
+        'gstin': gstNumberController.text.trim(),
+        'gstNumber': gstNumberController.text.trim(),
+        'pan': panController.text.trim(),
+        'address': addressLine1Controller.text.trim(),
+        'addressLine1': addressLine1Controller.text.trim(),
+        'addressLine2': addressLine2Controller.text.trim(),
+        'city': cityController.text.trim(),
+        'state': stateController.text.trim(),
+        'stateCode': stateCode,
+        'postalCode': pincodeController.text.trim(),
+        'pincode': pincodeController.text.trim(),
+        'latitude': latitude,
+        'longitude': longitude,
+        'website': websiteController.text.trim(),
       });
+
+      // Synchronize in-memory InvoiceService business info
+      InvoiceService.updateCachedBusinessInfo(
+        InvoiceBusinessInfo(
+          name: storeNameController.text.trim(),
+          legalName: legalNameController.text.trim(),
+          addressLine1: addressLine1Controller.text.trim(),
+          addressLine2: addressLine2Controller.text.trim(),
+          city: cityController.text.trim(),
+          state: stateController.text.trim(),
+          stateCode: stateCode,
+          pincode: pincodeController.text.trim(),
+          phone: phoneController.text.trim(),
+          email: emailController.text.trim(),
+          gstin: gstNumberController.text.trim(),
+          pan: panController.text.trim(),
+          website: websiteController.text.trim(),
+        ),
+      );
 
       // 2. Billing settings
       final double tax =
@@ -130,20 +266,24 @@ class AdminSettingsViewModel extends FutureViewModel<void>
         'lowStockThreshold': threshold,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Settings saved successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Settings saved & synced to Invoices successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      print('Error saving settings: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to save settings: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error saving settings: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save settings: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -151,10 +291,24 @@ class AdminSettingsViewModel extends FutureViewModel<void>
 
   void resetSettings() {
     storeNameController.text = 'VoltSpare Headquarters';
+    legalNameController.text =
+        'VoltSpare Automotive Technologies Pvt. Ltd.';
     phoneController.text = '+91 99000 88000';
     emailController.text = 'billing@voltspare.com';
-    addressController.text = '12, MG Road, Landmark Block';
     gstNumberController.text = '29AAAAA0000A1Z1';
+    panController.text = 'AAAAA0000A';
+    websiteController.text = 'www.voltspare.com';
+
+    addressLine1Controller.text = '12, MG Road, Landmark Block';
+    addressLine2Controller.text = 'Indiranagar Commercial Zone';
+    cityController.text = 'Bangalore';
+    stateController.text = 'Karnataka';
+    stateCodeController.text = '29';
+    pincodeController.text = '560001';
+    latitude = 12.9716;
+    longitude = 77.5946;
+    isMapMoved = false;
+
     invoicePrefixController.text = 'VS-POS-';
     nextInvoiceController.text = '2489';
     gstEnabled = true;

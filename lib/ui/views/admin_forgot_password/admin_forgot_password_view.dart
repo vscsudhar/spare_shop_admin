@@ -33,7 +33,7 @@ class AdminForgotPasswordView
               border: Border.all(color: AdminColors.border),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.35),
+                  color: Colors.black.withValues(alpha: 0.35),
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 ),
@@ -80,7 +80,7 @@ class AdminForgotPasswordView
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AdminColors.primaryGreen.withOpacity(0.15),
+                color: AdminColors.primaryGreen.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -213,9 +213,9 @@ class AdminForgotPasswordView
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AdminColors.cancelled.withOpacity(0.1),
+        color: AdminColors.cancelled.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AdminColors.cancelled.withOpacity(0.4)),
+        border: Border.all(color: AdminColors.cancelled.withValues(alpha: 0.4)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,9 +242,9 @@ class AdminForgotPasswordView
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AdminColors.primaryGreen.withOpacity(0.12),
+        color: AdminColors.primaryGreen.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AdminColors.primaryGreen.withOpacity(0.4)),
+        border: Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
@@ -339,9 +339,9 @@ class AdminForgotPasswordView
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.06),
+            color: Colors.blue.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.withOpacity(0.2)),
+            border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
@@ -422,10 +422,10 @@ class AdminForgotPasswordView
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AdminColors.primaryGreen.withOpacity(0.08),
+            color: AdminColors.primaryGreen.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(10),
             border:
-                Border.all(color: AdminColors.primaryGreen.withOpacity(0.3)),
+                Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
@@ -463,9 +463,9 @@ class AdminForgotPasswordView
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.orange.withOpacity(0.4)),
+            border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -770,7 +770,7 @@ class AdminForgotPasswordView
             height: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AdminColors.primaryGreen.withOpacity(0.15),
+              color: AdminColors.primaryGreen.withValues(alpha: 0.15),
               border: Border.all(color: AdminColors.primaryGreen, width: 3),
             ),
             child: Icon(
@@ -784,10 +784,10 @@ class AdminForgotPasswordView
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AdminColors.primaryGreen.withOpacity(0.08),
+            color: AdminColors.primaryGreen.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
             border:
-                Border.all(color: AdminColors.primaryGreen.withOpacity(0.3)),
+                Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
           ),
           child: Column(
             children: [

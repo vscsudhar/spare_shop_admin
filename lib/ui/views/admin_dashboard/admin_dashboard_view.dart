@@ -5,6 +5,8 @@ import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_common_widgets.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_chart_widgets.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_table_widgets.dart';
+import 'package:spare_shop_admin/ui/widgets/admin/admin_invoice_dialog.dart';
+import 'package:spare_shop_admin/core/services/invoice_service.dart';
 import 'package:stacked/stacked.dart';
 
 import 'admin_dashboard_viewmodel.dart';
@@ -370,8 +372,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                             Icons.location_on,
                             size: 12,
                             color: hasLoc
-                              ? AdminColors.primaryGreen
-                              : Colors.amber,
+                                ? AdminColors.primaryGreen
+                                : Colors.amber,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -404,11 +406,30 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      onPressed: () => viewModel.openOrderDetail(order),
-                      child: Text('Details',
-                          style: TextStyle(
-                              color: AdminColors.primaryGreen, fontSize: 13)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton(
+                          onPressed: () => viewModel.openOrderDetail(order),
+                          child: Text('Details',
+                              style: TextStyle(
+                                  color: AdminColors.primaryGreen,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        IconButton(
+                          tooltip: 'View & Download GST Invoice',
+                          icon: Icon(Icons.receipt_long_outlined,
+                              size: 16, color: AdminColors.primaryGreen),
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () {
+                            final invoiceService = InvoiceService();
+                            final invoice =
+                                invoiceService.createInvoiceFromOrder(order);
+                            AdminInvoiceDialog.show(context, invoice);
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ],

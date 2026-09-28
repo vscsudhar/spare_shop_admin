@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 import 'package:spare_shop_admin/ui/common/delivery_charge_models.dart';
-import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/ui/views/admin_delivery_charges/admin_delivery_charges_viewmodel.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:stacked/stacked.dart';
@@ -174,7 +173,7 @@ class AdminDeliveryChargesView
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -185,7 +184,7 @@ class AdminDeliveryChargesView
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 24),
@@ -247,7 +246,7 @@ class AdminDeliveryChargesView
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -264,7 +263,7 @@ class AdminDeliveryChargesView
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AdminColors.primaryGreen.withOpacity(0.25),
+                      color: AdminColors.primaryGreen.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -306,10 +305,10 @@ class AdminDeliveryChargesView
                         const SizedBox(height: 6),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.08),
+                            color: Colors.white.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                                color: Colors.white.withOpacity(0.15)),
+                                color: Colors.white.withValues(alpha: 0.15)),
                           ),
                           child: TextField(
                             controller: viewModel.testAmountController,
@@ -344,10 +343,10 @@ class AdminDeliveryChargesView
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: AdminColors.primaryGreen.withOpacity(0.3)),
+                            color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -380,8 +379,8 @@ class AdminDeliveryChargesView
                                 horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
                               color: viewModel.calculatedFee == 0
-                                  ? Colors.green.withOpacity(0.2)
-                                  : AdminColors.primaryGreen.withOpacity(0.2),
+                                  ? Colors.green.withValues(alpha: 0.2)
+                                  : AdminColors.primaryGreen.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: viewModel.calculatedFee == 0
@@ -424,7 +423,7 @@ class AdminDeliveryChargesView
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -536,10 +535,10 @@ class AdminDeliveryChargesView
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: AdminColors.primaryGreen.withOpacity(0.08),
+              color: AdminColors.primaryGreen.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
               border:
-                  Border.all(color: AdminColors.primaryGreen.withOpacity(0.2)),
+                  Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.2)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -790,7 +789,7 @@ class AdminDeliveryChargesView
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
-                        value: selectedLocationId,
+                        initialValue: selectedLocationId,
                         decoration: InputDecoration(
                           labelText: 'Applicable Hub',
                           border: OutlineInputBorder(
