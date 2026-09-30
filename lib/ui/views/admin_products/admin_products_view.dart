@@ -115,9 +115,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                     ),
                   ),
                   Text('₹${product.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A))),
+                          color: AdminColors.textPrimary)),
                   Align(
                     alignment: Alignment.centerLeft,
                     child:
@@ -241,6 +241,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 flex: 2,
                                 child: DropdownButtonFormField<String>(
                                   isExpanded: true,
+                                  dropdownColor: AdminColors.panelBackground,
+                                  style: TextStyle(color: AdminColors.textPrimary, fontSize: 13),
                                   initialValue: model.categories
                                           .any((c) => c.id == selectedCatId)
                                       ? selectedCatId
@@ -310,10 +312,14 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   controller: sellingPriceController,
                                   readOnly: true,
                                   enabled: false,
+                                  style: TextStyle(
+                                    color: AdminColors.textPrimary.withValues(alpha: 0.8),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   decoration: InputDecoration(
                                     labelText: 'Selling Price (₹) (Incl. Tax)',
                                     filled: true,
-                                    fillColor: Colors.grey.shade100,
+                                    fillColor: AdminColors.isDarkTheme ? Colors.white10 : Colors.grey.shade100,
                                     border: const OutlineInputBorder(),
                                     helperText: 'Disabled: Auto-computed',
                                     helperStyle: const TextStyle(fontSize: 10, color: Colors.green),
@@ -783,6 +789,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   isExpanded: true,
+                                  dropdownColor: AdminColors.panelBackground,
+                                  style: TextStyle(color: AdminColors.textPrimary, fontSize: 13),
                                   initialValue: selectedCatId,
                                   decoration: const InputDecoration(
                                     labelText: 'Category *',
@@ -847,10 +855,14 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   controller: sellingPriceController,
                                   readOnly: true,
                                   enabled: false,
+                                  style: TextStyle(
+                                    color: AdminColors.textPrimary.withValues(alpha: 0.8),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   decoration: InputDecoration(
                                     labelText: 'Selling Price (₹) (Incl. Tax)',
                                     filled: true,
-                                    fillColor: Colors.grey.shade100,
+                                    fillColor: AdminColors.isDarkTheme ? Colors.white10 : Colors.grey.shade100,
                                     border: const OutlineInputBorder(),
                                     helperText: 'Disabled: Auto-computed',
                                     helperStyle: const TextStyle(fontSize: 10, color: Colors.green),
@@ -1249,9 +1261,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'Enter the vehicle brand name to add it to the catalog.',
-                      style: TextStyle(fontSize: 13, color: Colors.black54),
+                      style: TextStyle(fontSize: 13, color: AdminColors.textSecondary),
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -1634,10 +1646,10 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
   }) {
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: AdminColors.panelBackground,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: Colors.grey.shade300),
+        side: BorderSide(color: AdminColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1721,9 +1733,11 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: AdminColors.isDarkTheme
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: AdminColors.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1765,6 +1779,10 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               return DropdownButtonFormField<String>(
                                 key: ValueKey('brand_${i}_$currentBrandId'),
                                 isExpanded: true,
+                                dropdownColor: AdminColors.panelBackground,
+                                style: TextStyle(
+                                    color: AdminColors.textPrimary,
+                                    fontSize: 13),
                                 initialValue:
                                     isBrandInList ? currentBrandId : null,
                                 decoration: InputDecoration(
@@ -1872,6 +1890,10 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 key: ValueKey(
                                     'model_${i}_${currentBrandId}_$currentModelId'),
                                 isExpanded: true,
+                                dropdownColor: AdminColors.panelBackground,
+                                style: TextStyle(
+                                    color: AdminColors.textPrimary,
+                                    fontSize: 13),
                                 initialValue:
                                     isModelInList ? currentModelId : null,
                                 decoration: InputDecoration(

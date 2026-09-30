@@ -920,12 +920,25 @@ class InvoiceService {
       margin-bottom: 20px;
     }
 
+    .brand-section .logo-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .brand-section .brand-logo {
+      height: 44px;
+      max-width: 220px;
+      object-fit: contain;
+    }
+
     .brand-section h1 {
       font-size: 22px;
       font-weight: 700;
       color: #0f172a;
       letter-spacing: -0.5px;
-      margin-bottom: 4px;
+      margin: 0;
     }
 
     .brand-section .subtitle {
@@ -1160,7 +1173,13 @@ class InvoiceService {
     <!-- Header -->
     <div class="header-bar">
       <div class="brand-section">
-        <h1>${business.name}</h1>
+        <div class="logo-wrapper">
+          <img class="brand-logo" src="assets/images/logo_full.png" alt="VoltSpare" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="logo-fallback" style="display: none; align-items: center; gap: 8px;">
+            <div style="background: #0f172a; color: #10b981; border-radius: 6px; padding: 4px 8px; font-weight: bold; font-size: 16px;">&#9889;</div>
+            <h1>${business.name}</h1>
+          </div>
+        </div>
         <div class="subtitle">${business.legalName}</div>
         <div class="brand-details">
           ${businessStreet.isNotEmpty ? '$businessStreet<br>' : ''}

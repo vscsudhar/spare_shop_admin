@@ -159,10 +159,27 @@ class AdminShell extends StatelessWidget with NavigationMixin {
               height: 40,
               child: TextField(
                 onChanged: onSearch,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AdminColors.textPrimary,
+                  fontFamily: 'Inter',
+                ),
+                cursorColor: AdminColors.primaryGreen,
                 decoration: InputDecoration(
                   hintText: 'Search...',
-                  prefixIcon: const Icon(Icons.search, size: 18),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  hintStyle: TextStyle(
+                    fontSize: 13,
+                    color: AdminColors.textSecondary,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 18,
+                    color: AdminColors.textSecondary,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AdminRadius.chip),
                     borderSide: BorderSide(color: AdminColors.border),
@@ -170,6 +187,13 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AdminRadius.chip),
                     borderSide: BorderSide(color: AdminColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AdminRadius.chip),
+                    borderSide: BorderSide(
+                      color: AdminColors.primaryGreen,
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -392,6 +416,12 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         final selectedValue =
             roles.contains(currentNormalized) ? currentNormalized : roles.first;
 
+        final popupBgColor = isCompact
+            ? const Color(0xFF1E293B)
+            : AdminColors.panelBackground;
+        final itemTextColor =
+            isCompact ? Colors.white : AdminColors.textPrimary;
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
@@ -402,7 +432,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: selectedValue,
-              dropdownColor: AdminColors.panelBackground,
+              dropdownColor: popupBgColor,
+              iconEnabledColor: isCompact ? Colors.white70 : AdminColors.textSecondary,
               onChanged: (String? newValue) {
                 if (newValue != null) {
                   setState(() {
@@ -419,7 +450,9 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                   child: Text(
                     value,
                     style: TextStyle(
-                      color: isCompact ? Colors.white : AdminColors.textPrimary,
+                      color: itemTextColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 );

@@ -206,6 +206,7 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   Expanded(
                                     child: DropdownButtonFormField<OrderStatus>(
                                       initialValue: viewModel.order.status,
+                                      dropdownColor: AdminColors.panelBackground,
                                       decoration: InputDecoration(
                                         labelText: 'Update Status',
                                         contentPadding:

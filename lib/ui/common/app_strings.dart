@@ -2,9 +2,11 @@
 class VoltSpareBusinessConfig {
   // Brand & Identity
   static const String appName = 'VoltSpare';
-  static const String appTagline = 'Automotive Spares & EV Components Management';
+  static const String appTagline =
+      'Automotive Spares & EV Components Management';
   static const String storeName = 'VoltSpare Headquarters';
-  static const String legalEntityName = 'VoltSpare Automotive Technologies Pvt. Ltd.';
+  static const String legalEntityName =
+      'VoltSpare Automotive Technologies Pvt. Ltd.';
 
   // Support & Contact Information
   static const String supportEmail = 'support@voltspare.com';
@@ -14,12 +16,12 @@ class VoltSpareBusinessConfig {
   static const String websiteFull = 'https://www.voltspare.com';
 
   // Default Business Location & Tax Details (Configurable via Admin Settings / Backend API)
-  static const String defaultAddressLine1 = '12, MG Road, Landmark Block';
-  static const String defaultAddressLine2 = 'Indiranagar Commercial Zone';
-  static const String defaultCity = 'Bangalore';
-  static const String defaultState = 'Karnataka';
+  static const String defaultAddressLine1 = 'Mdukkarai market';
+  static const String defaultAddressLine2 = 'Madukkarai Zone';
+  static const String defaultCity = 'Coimbatore';
+  static const String defaultState = 'Tamil Nadu';
   static const String defaultStateCode = '29';
-  static const String defaultPincode = '560001';
+  static const String defaultPincode = '641105';
   static const String defaultGstin = '29AAAAA0000A1Z1';
   static const String defaultPan = 'AAAAA0000A';
 

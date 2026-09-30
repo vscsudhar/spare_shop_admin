@@ -144,6 +144,7 @@ class AdminSuggestionsView extends StackedView<AdminSuggestionsViewModel> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: viewModel.selectedFilter,
+                      dropdownColor: AdminColors.panelBackground,
                       items: const [
                         DropdownMenuItem(
                             value: 'all', child: Text('All Statuses')),
@@ -493,6 +494,7 @@ class AdminSuggestionsView extends StackedView<AdminSuggestionsViewModel> {
                 DropdownButtonFormField<String>(
                   isExpanded: true,
                   initialValue: currentStatus,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(AdminRadius.chip),

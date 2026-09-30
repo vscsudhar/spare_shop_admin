@@ -357,6 +357,10 @@ class AdminTicketChatView extends StackedView<AdminTicketChatViewModel> {
                                   child: TextField(
                                     controller: viewModel.messageController,
                                     onSubmitted: (_) => viewModel.sendMessage(),
+                                    style: TextStyle(
+                                        color: AdminColors.textPrimary,
+                                        fontSize: 13),
+                                    cursorColor: AdminColors.primaryGreen,
                                     decoration: InputDecoration(
                                       hintText: 'Type admin response...',
                                       hintStyle: TextStyle(

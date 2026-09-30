@@ -1,65 +1,30 @@
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
+import 'package:spare_shop_admin/core/services/admin_customer_service.dart';
 import 'package:spare_shop_admin/core/services/location_service.dart';
 import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:stacked/stacked.dart';
 
-class AdminCustomerModel {
-  final String name;
-  final String email;
-  final String phone;
-  final String type; // 'Retailer' or 'Workshop'
-  final int ordersCount;
-  final double totalSpend;
-  final double outstandingDue;
-  final String? locationId;
-  final String? locationName;
+export 'package:spare_shop_admin/core/services/admin_customer_service.dart'
+    show AdminCustomerModel, CustomerVehicleModel;
 
-  AdminCustomerModel({
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.type,
-    required this.ordersCount,
-    required this.totalSpend,
-    required this.outstandingDue,
-    this.locationId,
-    this.locationName,
-  });
-
-  AdminCustomerModel copyWith({
-    String? name,
-    String? email,
-    String? phone,
-    String? type,
-    int? ordersCount,
-    double? totalSpend,
-    double? outstandingDue,
-    String? locationId,
-    String? locationName,
-  }) {
-    return AdminCustomerModel(
-      name: name ?? this.name,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      type: type ?? this.type,
-      ordersCount: ordersCount ?? this.ordersCount,
-      totalSpend: totalSpend ?? this.totalSpend,
-      outstandingDue: outstandingDue ?? this.outstandingDue,
-      locationId: locationId ?? this.locationId,
-      locationName: locationName ?? this.locationName,
-    );
-  }
-}
-
-class AdminCustomersViewModel extends FutureViewModel<void>
-    with NavigationMixin {
+class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin {
+  final _customerService = locator<AdminCustomerService>();
   final _locationService = locator<LocationService>();
   final _tokenService = locator<TokenService>();
 
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
+
+  String _selectedStatusFilter = 'all'; // 'all', 'Active', 'Suspended', 'Disabled'
+  String get selectedStatusFilter => _selectedStatusFilter;
+
+  String _selectedTypeFilter = 'all'; // 'all', 'Retail Customer', 'Workshop Owner', 'Fleet Owner'
+  String get selectedTypeFilter => _selectedTypeFilter;
+
+  String _selectedChannelFilter = 'all'; // 'all', 'mobile', 'store'
+  String get selectedChannelFilter => _selectedChannelFilter;
 
   String _selectedLocationFilter = 'all'; // 'all', 'unassigned', or locationId
   String get selectedLocationFilter => _selectedLocationFilter;
@@ -76,49 +41,57 @@ class AdminCustomersViewModel extends FutureViewModel<void>
   String? _userAssignedLocationName;
   String? get userAssignedLocationName => _userAssignedLocationName;
 
-  final List<AdminCustomerModel> _customers = [
-    AdminCustomerModel(
-      name: 'Ravi Kumar',
-      email: 'ravi.kumar@gmail.com',
-      phone: '+91 98765 43210',
-      type: 'Workshop Owner',
-      ordersCount: 24,
-      totalSpend: 48900.00,
-      outstandingDue: 4500.00,
-      locationName: 'Madukkarai',
-    ),
-    AdminCustomerModel(
-      name: 'Anjali Sharma',
-      email: 'anjali@live.com',
-      phone: '+91 98123 45678',
-      type: 'Retail Customer',
-      ordersCount: 4,
-      totalSpend: 8400.00,
-      outstandingDue: 0.00,
-      locationName: 'Gandhipuram',
-    ),
-    AdminCustomerModel(
-      name: 'Suresh EV Services',
-      email: 'contact@sureshev.com',
-      phone: '+91 94440 12345',
-      type: 'Workshop Owner',
-      ordersCount: 89,
-      totalSpend: 245000.00,
-      outstandingDue: 18500.00,
-      locationName: 'Madukkarai',
-    ),
-  ];
+  List<AdminCustomerModel> _customers = [];
+  List<AdminCustomerModel> get customers => _customers;
+
+  bool _isLoadingData = false;
+  bool get isLoadingData => _isLoadingData;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   List<AdminCustomerModel> get filteredCustomers {
     if (_selectedLocationFilter == '__none__') return [];
 
     return _customers.where((c) {
-      final matchesSearch = _searchQuery.isEmpty ||
-          c.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          c.phone.contains(_searchQuery);
-      if (!matchesSearch) return false;
+      // 1. Search Query
+      if (_searchQuery.isNotEmpty) {
+        final query = _searchQuery.toLowerCase();
+        final nameMatch = c.name.toLowerCase().contains(query);
+        final phoneMatch = c.phone.contains(_searchQuery);
+        final emailMatch = c.email.toLowerCase().contains(query);
+        final vehicleMatch = c.vehicles.any(
+            (v) => v.brand.toLowerCase().contains(query) || v.model.toLowerCase().contains(query));
+        if (!nameMatch && !phoneMatch && !emailMatch && !vehicleMatch) {
+          return false;
+        }
+      }
 
-      // Location filter
+      // 2. Status Filter
+      if (_selectedStatusFilter != 'all') {
+        if (c.status.toLowerCase() != _selectedStatusFilter.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 3. Type Filter
+      if (_selectedTypeFilter != 'all') {
+        if (!c.type.toLowerCase().contains(_selectedTypeFilter.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // 4. Channel / User Origin Filter (Mobile App vs In-Store)
+      if (_selectedChannelFilter != 'all') {
+        if (_selectedChannelFilter == 'mobile' && !c.isMobileUser) {
+          return false;
+        }
+        if (_selectedChannelFilter == 'store' && !c.isStoreUser) {
+          return false;
+        }
+      }
+
+      // 5. Location Filter
       if (_selectedLocationFilter == 'unassigned') {
         return c.locationId == null ||
             c.locationId!.isEmpty ||
@@ -139,6 +112,14 @@ class AdminCustomersViewModel extends FutureViewModel<void>
     }).toList();
   }
 
+  int get totalCustomersCount => _customers.length;
+  int get activeCustomersCount => _customers.where((c) => c.status.toLowerCase() == 'active').length;
+  int get suspendedCustomersCount => _customers.where((c) => c.status.toLowerCase() == 'suspended').length;
+  int get mobileUsersCount => _customers.where((c) => c.isMobileUser).length;
+  int get storeUsersCount => _customers.where((c) => c.isStoreUser).length;
+  int get workshopCustomersCount => _customers.where((c) => c.type.toLowerCase().contains('workshop')).length;
+  int get retailCustomersCount => _customers.where((c) => c.type.toLowerCase().contains('retail')).length;
+
   int get unassignedCustomersCount => _customers
       .where((c) =>
           c.locationId == null ||
@@ -146,6 +127,12 @@ class AdminCustomersViewModel extends FutureViewModel<void>
           c.locationName == null ||
           c.locationName!.isEmpty)
       .length;
+
+  double get totalLifetimeSpend =>
+      filteredCustomers.fold(0.0, (sum, c) => sum + c.totalSpend);
+
+  double get totalOutstandingDue =>
+      filteredCustomers.fold(0.0, (sum, c) => sum + c.outstandingDue);
 
   @override
   Future<void> futureToRun() async {
@@ -172,6 +159,8 @@ class AdminCustomersViewModel extends FutureViewModel<void>
     } else {
       _selectedLocationFilter = 'all';
     }
+
+    await loadCustomers();
   }
 
   void _onLocationNotifierChanged() {
@@ -185,6 +174,26 @@ class AdminCustomersViewModel extends FutureViewModel<void>
   void dispose() {
     TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
     super.dispose();
+  }
+
+  Future<void> loadCustomers() async {
+    _isLoadingData = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _customers = await _customerService.getCustomers(
+        locationId: _selectedLocationFilter == 'all' || _selectedLocationFilter == 'unassigned' || _selectedLocationFilter == '__none__'
+            ? null
+            : _selectedLocationFilter,
+        status: _selectedStatusFilter == 'all' ? null : _selectedStatusFilter,
+      );
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoadingData = false;
+      notifyListeners();
+    }
   }
 
   void setSelectedLocationFilter(String filter) {
@@ -202,73 +211,161 @@ class AdminCustomersViewModel extends FutureViewModel<void>
     notifyListeners();
   }
 
+  void setSelectedStatusFilter(String status) {
+    _selectedStatusFilter = status;
+    notifyListeners();
+  }
+
+  void setSelectedTypeFilter(String type) {
+    _selectedTypeFilter = type;
+    notifyListeners();
+  }
+
+  void setSelectedChannelFilter(String channel) {
+    _selectedChannelFilter = channel;
+    notifyListeners();
+  }
+
   void setSearchQuery(String query) {
     _searchQuery = query;
     notifyListeners();
   }
 
-  double get totalOutstandingDue {
-    return filteredCustomers.fold(0, (sum, c) => sum + c.outstandingDue);
-  }
-
-  void addCustomer({
+  Future<bool> createCustomer({
     required String name,
     required String email,
     required String phone,
     required String type,
+    required String status,
+    required String source,
     required double outstandingDue,
+    String? profileImage,
     String? locationId,
     String? locationName,
-  }) {
-    _customers.add(
-      AdminCustomerModel(
-        name: name,
-        email: email,
-        phone: phone,
-        type: type,
-        ordersCount: 0,
-        totalSpend: 0.0,
-        outstandingDue: outstandingDue,
-        locationId: locationId,
-        locationName: locationName,
-      ),
-    );
-    notifyListeners();
-  }
+    String? address,
+  }) async {
+    setBusy(true);
+    try {
+      final newCustomer = await _customerService.createCustomer({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'type': type,
+        'status': status,
+        'source': source,
+        'outstandingDue': outstandingDue,
+        'profileImage': profileImage ?? '',
+        'locationId': locationId,
+        'locationName': locationName,
+        'address': address ?? '',
+      });
 
-  void updateCustomer(
-    AdminCustomerModel oldCustomer, {
-    required String name,
-    required String email,
-    required String phone,
-    required String type,
-    required double outstandingDue,
-    String? locationId,
-    String? locationName,
-  }) {
-    final index = _customers.indexOf(oldCustomer);
-    if (index != -1) {
-      _customers[index] = oldCustomer.copyWith(
-        name: name,
-        email: email,
-        phone: phone,
-        type: type,
-        outstandingDue: outstandingDue,
-        locationId: locationId,
-        locationName: locationName,
-      );
+      _customers.removeWhere((c) => c.id == newCustomer.id);
+      _customers.insert(0, newCustomer);
       notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to create customer: $e';
+      notifyListeners();
+      return false;
+    } finally {
+      setBusy(false);
     }
   }
 
-  void assignCustomerLocation(
-      AdminCustomerModel customer, LocationModel? location) {
-    final index = _customers.indexOf(customer);
-    if (index != -1) {
-      _customers[index] = customer.copyWith(
-        locationId: location?.id,
-        locationName: location?.name,
-      );
+  Future<bool> updateCustomer(
+    String id, {
+    required String name,
+    required String email,
+    required String phone,
+    required String type,
+    required String status,
+    required String source,
+    required double outstandingDue,
+    String? profileImage,
+    String? locationId,
+    String? locationName,
+    String? address,
+  }) async {
+    setBusy(true);
+    try {
+      final updated = await _customerService.updateCustomer(id, {
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'type': type,
+        'status': status,
+        'source': source,
+        'outstandingDue': outstandingDue,
+        'profileImage': profileImage,
+        'locationId': locationId,
+        'locationName': locationName,
+        'address': address,
+      });
+
+      final index = _customers.indexWhere((c) => c.id == id);
+      if (index != -1) {
+        _customers[index] = updated;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to update customer: $e';
+      notifyListeners();
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  Future<bool> updateCustomerStatus(AdminCustomerModel customer, String newStatus) async {
+    try {
+      final updated = await _customerService.updateCustomerStatus(customer.id, newStatus);
+      final index = _customers.indexWhere((c) => c.id == customer.id);
+      if (index != -1) {
+        _customers[index] = updated;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to update status: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> deleteCustomer(String id) async {
+    setBusy(true);
+    try {
+      final success = await _customerService.deleteCustomer(id);
+      if (success) {
+        _customers.removeWhere((c) => c.id == id);
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      _errorMessage = 'Failed to delete customer: $e';
+      notifyListeners();
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  Future<void> assignCustomerLocation(
+      AdminCustomerModel customer, LocationModel? location) async {
+    try {
+      final updated = await _customerService.updateCustomer(customer.id, {
+        'locationId': location?.id,
+        'locationName': location?.name,
+      });
+      final index = _customers.indexWhere((c) => c.id == customer.id);
+      if (index != -1) {
+        _customers[index] = updated;
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = 'Failed to update hub assignment: $e';
       notifyListeners();
     }
   }

@@ -203,10 +203,22 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                           controller: viewModel.emailController,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          style: TextStyle(
+                            color: AdminColors.textPrimary,
+                            fontSize: 14,
+                          ),
+                          cursorColor: AdminColors.primaryGreen,
                           decoration: InputDecoration(
                             hintText: 'e.g. name@voltspare.com',
-                            prefixIcon: const Icon(Icons.mail_outline_rounded,
-                                size: 18),
+                            hintStyle: TextStyle(
+                              color: AdminColors.textLight,
+                              fontSize: 13,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.mail_outline_rounded,
+                              size: 18,
+                              color: AdminColors.textSecondary,
+                            ),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             contentPadding: const EdgeInsets.symmetric(
@@ -261,16 +273,29 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                           obscureText: !viewModel.isPasswordVisible,
                           textInputAction: TextInputAction.done,
                           onFieldSubmitted: (_) => viewModel.login(),
+                          style: TextStyle(
+                            color: AdminColors.textPrimary,
+                            fontSize: 14,
+                          ),
+                          cursorColor: AdminColors.primaryGreen,
                           decoration: InputDecoration(
                             hintText: '••••••••',
-                            prefixIcon: const Icon(Icons.lock_outline_rounded,
-                                size: 18),
+                            hintStyle: TextStyle(
+                              color: AdminColors.textLight,
+                              fontSize: 13,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline_rounded,
+                              size: 18,
+                              color: AdminColors.textSecondary,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 viewModel.isPasswordVisible
                                     ? Icons.visibility_off_outlined
                                     : Icons.visibility_outlined,
                                 size: 18,
+                                color: AdminColors.textSecondary,
                               ),
                               onPressed: viewModel.togglePasswordVisibility,
                             ),
@@ -346,6 +371,17 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                                       fontSize: 14,
                                     ),
                                   ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Center(
+                          child: Text(
+                            'VoltSpare Administrative Console • Terms & Conditions and Privacy Policy apply.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AdminColors.textSecondary,
+                            ),
                           ),
                         ),
                       ],

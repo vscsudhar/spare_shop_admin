@@ -7,6 +7,7 @@ import 'package:spare_shop_admin/core/theme/theme_service.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_shell.dart';
 import 'package:spare_shop_admin/ui/widgets/admin/admin_common_widgets.dart';
+import 'package:spare_shop_admin/ui/common/legal_content.dart';
 import 'package:stacked/stacked.dart';
 
 import 'admin_settings_viewmodel.dart';
@@ -30,6 +31,7 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
       'Inventory',
       'Appearance',
       'Security',
+      'Legal & Policies',
     ];
 
     return AdminShell(
@@ -397,6 +399,8 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
                 obscure: true),
           ],
         );
+      case 'Legal & Policies':
+        return _buildLegalPoliciesSection(context, viewModel, isWide);
       default:
         return const SizedBox();
     }
@@ -798,6 +802,11 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
       },
       contentPadding: EdgeInsets.zero,
     );
+  }
+
+  Widget _buildLegalPoliciesSection(
+      BuildContext context, AdminSettingsViewModel viewModel, bool isWide) {
+    return _LegalPoliciesViewer(isWide: isWide);
   }
 
   @override
@@ -1355,7 +1364,6 @@ class _InteractiveAdminMapPickerState extends State<InteractiveAdminMapPicker>
                 onPressed: _zoomOut,
                 child: const Icon(Icons.remove_rounded, size: 20),
               ),
-              const SizedBox(height: 6),
               FloatingActionButton.small(
                 heroTag: 'admin_recenter',
                 backgroundColor: AdminColors.primaryGreen,
@@ -1371,3 +1379,343 @@ class _InteractiveAdminMapPickerState extends State<InteractiveAdminMapPicker>
     );
   }
 }
+
+class _LegalPoliciesViewer extends StatefulWidget {
+  final bool isWide;
+  const _LegalPoliciesViewer({required this.isWide});
+
+  @override
+  State<_LegalPoliciesViewer> createState() => _LegalPoliciesViewerState();
+}
+
+class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
+  int _activeTab = 0; // 0: Terms, 1: Privacy
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final termsList = VoltSpareTermsAndConditions.sections.where((s) {
+      if (_searchQuery.isEmpty) return true;
+      final q = _searchQuery.toLowerCase();
+      return s.title.toLowerCase().contains(q) ||
+          s.summary.toLowerCase().contains(q) ||
+          s.bulletPoints.any((b) => b.toLowerCase().contains(q));
+    }).toList();
+
+    final privacyList = VoltSparePrivacyPolicy.sections.where((s) {
+      if (_searchQuery.isEmpty) return true;
+      final q = _searchQuery.toLowerCase();
+      return s.title.toLowerCase().contains(q) ||
+          s.summary.toLowerCase().contains(q) ||
+          s.bulletPoints.any((b) => b.toLowerCase().contains(q));
+    }).toList();
+
+    final activeSections = _activeTab == 0 ? termsList : privacyList;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Compliance Overview Banner
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF0F172A),
+                const Color(0xFF1E293B),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AdminColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AdminColors.primaryGreen.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(Icons.verified_user_rounded,
+                        color: AdminColors.primaryGreen, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'VoltSpare Statutory Legal Framework',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Compliant with Consumer Protection (E-Commerce) Rules 2020 & Digital Personal Data Protection Act 2023 (DPDPA)',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _statutoryChip('Consumer Protection Act 2019', Icons.gavel_rounded),
+                  _statutoryChip('E-Commerce Rules 2020', Icons.shopping_bag_outlined),
+                  _statutoryChip('DPDPA 2023 Notice & Consent', Icons.shield_outlined),
+                  _statutoryChip('Hub Radius Serviceability', Icons.location_on_outlined),
+                  _statutoryChip('Effective: ${LegalConfig.effectiveDate}', Icons.event_available_outlined),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.support_agent_rounded,
+                        color: Colors.white70, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Grievance Redressal: ${LegalConfig.grievanceOfficerName} • ${LegalConfig.grievanceEmail} • ${LegalConfig.supportPhone}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Policy Switcher Tabs + Search Box
+        Row(
+          children: [
+            ChoiceChip(
+              label: Text('Terms & Conditions (${VoltSpareTermsAndConditions.sections.length})'),
+              selected: _activeTab == 0,
+              onSelected: (selected) {
+                if (selected) setState(() => _activeTab = 0);
+              },
+            ),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: Text('Privacy Policy (${VoltSparePrivacyPolicy.sections.length})'),
+              selected: _activeTab == 1,
+              onSelected: (selected) {
+                if (selected) setState(() => _activeTab = 1);
+              },
+            ),
+            const Spacer(),
+            SizedBox(
+              width: widget.isWide ? 280 : 180,
+              child: TextField(
+                onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                style: TextStyle(color: AdminColors.textPrimary, fontSize: 12),
+                decoration: InputDecoration(
+                  hintText: 'Search legal clauses...',
+                  hintStyle: TextStyle(color: AdminColors.textSecondary, fontSize: 12),
+                  prefixIcon: const Icon(Icons.search, size: 16),
+                  isDense: true,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Preamble Text Box
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AdminColors.isDarkTheme
+                ? Colors.white.withValues(alpha: 0.03)
+                : Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AdminColors.border),
+          ),
+          child: Text(
+            _activeTab == 0
+                ? VoltSpareTermsAndConditions.preamble
+                : VoltSparePrivacyPolicy.preamble,
+            style: TextStyle(
+              fontSize: 12,
+              color: AdminColors.textSecondary,
+              height: 1.4,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Section Cards
+        if (activeSections.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32.0),
+            child: Center(
+              child: Text(
+                'No legal sections matched "$_searchQuery"',
+                style: TextStyle(color: AdminColors.textSecondary, fontSize: 13),
+              ),
+            ),
+          )
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: activeSections.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final sec = activeSections[index];
+              return _buildLegalSectionCard(sec);
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _statutoryChip(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: AdminColors.accentLime, size: 12),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegalSectionCard(LegalSection sec) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AdminColors.panelBackground,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AdminColors.border),
+      ),
+      child: ExpansionTile(
+        key: PageStorageKey(sec.id),
+        initiallyExpanded: true,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+        childrenPadding:
+            const EdgeInsets.only(left: 14, right: 14, bottom: 14),
+        title: Text(
+          sec.title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+            color: AdminColors.textPrimary,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 2.0),
+          child: Text(
+            sec.summary,
+            style: TextStyle(
+              fontSize: 11,
+              color: AdminColors.primaryGreen,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        children: [
+          const Divider(height: 12),
+          ...sec.bulletPoints.map((bp) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0, right: 8.0),
+                      child: Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: AdminColors.primaryGreen,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        bp,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AdminColors.textPrimary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+          if (sec.detailedText != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AdminColors.primaryGreen.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                    color: AdminColors.primaryGreen.withValues(alpha: 0.2)),
+              ),
+              child: Text(
+                sec.detailedText!,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AdminColors.textSecondary,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+

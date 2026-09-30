@@ -213,23 +213,34 @@ class AdminInvoiceDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F9F59),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Icon(Icons.bolt, color: Colors.white, size: 18),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      b.name.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
-                        letterSpacing: -0.5,
+                    Image.asset(
+                      'assets/images/logo_full.png',
+                      height: 38,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF0F9F59),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Icon(Icons.bolt, color: Colors.white, size: 18),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            b.name.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF0F172A),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -261,6 +261,10 @@ class AdminRareRequestChatView
                                     controller: viewModel.textController,
                                     onSubmitted: (text) =>
                                         viewModel.sendMessage(text),
+                                    style: TextStyle(
+                                        color: AdminColors.textPrimary,
+                                        fontSize: 13),
+                                    cursorColor: AdminColors.primaryGreen,
                                     decoration: InputDecoration(
                                       hintText:
                                           'Type your message to customer...',

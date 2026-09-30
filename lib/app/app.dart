@@ -63,6 +63,7 @@ import 'package:spare_shop_admin/core/services/delivery_charge_service.dart';
 import 'package:spare_shop_admin/core/services/category_service.dart';
 import 'package:spare_shop_admin/ui/views/admin_categories/admin_categories_view.dart';
 import 'package:spare_shop_admin/core/services/invoice_service.dart';
+import 'package:spare_shop_admin/core/services/admin_customer_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -133,6 +134,7 @@ import 'package:spare_shop_admin/core/services/invoice_service.dart';
     LazySingleton(classType: DeliveryChargeService),
     LazySingleton(classType: SuggestionService),
     LazySingleton(classType: InvoiceService),
+    LazySingleton(classType: AdminCustomerService),
     // @stacked-service
   ],
   bottomsheets: [

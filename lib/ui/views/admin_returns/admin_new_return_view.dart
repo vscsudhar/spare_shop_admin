@@ -553,6 +553,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                 width: 220,
                 child: DropdownButtonFormField<String>(
                   initialValue: form.returnReason,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: const InputDecoration(
                       labelText: 'Return Reason *',
                       contentPadding:
@@ -569,6 +570,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                 width: 220,
                 child: DropdownButtonFormField<String>(
                   initialValue: form.condition,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: const InputDecoration(
                       labelText: 'Item Condition *',
                       contentPadding:
@@ -586,6 +588,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                 width: 250,
                 child: DropdownButtonFormField<String>(
                   initialValue: form.inventoryDisposition,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: const InputDecoration(
                       labelText: 'Inventory Action *',
                       contentPadding:
@@ -617,6 +620,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                   width: 180,
                   child: DropdownButtonFormField<String>(
                     initialValue: form.refundMethod,
+                    dropdownColor: AdminColors.panelBackground,
                     decoration: const InputDecoration(
                         labelText: 'Refund Method',
                         contentPadding:
@@ -698,6 +702,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                 width: 220,
                 child: DropdownButtonFormField<String>(
                   initialValue: form.damageType,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: const InputDecoration(
                       labelText: 'Damage Classification *',
                       contentPadding:
@@ -715,6 +720,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                 width: 220,
                 child: DropdownButtonFormField<String>(
                   initialValue: form.damageDiscoveredAt,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: const InputDecoration(
                       labelText: 'Discovered At *',
                       contentPadding:
@@ -734,6 +740,7 @@ class AdminNewReturnView extends StackedView<AdminNewReturnViewModel> {
                 width: 240,
                 child: DropdownButtonFormField<String>(
                   initialValue: form.damageResolution,
+                  dropdownColor: AdminColors.panelBackground,
                   decoration: const InputDecoration(
                       labelText: 'Damage Resolution *',
                       contentPadding:

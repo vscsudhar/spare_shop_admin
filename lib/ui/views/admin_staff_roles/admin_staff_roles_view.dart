@@ -194,6 +194,7 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               value: viewModel.selectedLocationFilter,
+                              dropdownColor: AdminColors.panelBackground,
                               icon: const Icon(Icons.keyboard_arrow_down,
                                   size: 18),
                               style: TextStyle(
@@ -608,6 +609,7 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                               ? DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     value: member.status,
+                                    dropdownColor: AdminColors.panelBackground,
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -1118,6 +1120,7 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         initialValue: selectedRole,
+                        dropdownColor: AdminColors.panelBackground,
                         decoration: const InputDecoration(
                           labelText: 'Assigned Role *',
                           prefixIcon: Icon(Icons.badge_outlined, size: 20),
@@ -1131,10 +1134,10 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                                 Text(r.roleName),
                                 const SizedBox(width: 6),
                                 if (r.isLocationScoped)
-                                  const Text(
+                                  Text(
                                     '(Location Scoped)',
                                     style: TextStyle(
-                                        fontSize: 11, color: Colors.grey),
+                                        fontSize: 11, color: AdminColors.textSecondary),
                                   ),
                               ],
                             ),
@@ -1150,6 +1153,7 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                       if (viewModel.canChangeLocation)
                         DropdownButtonFormField<String?>(
                           initialValue: selectedLocationId,
+                          dropdownColor: AdminColors.panelBackground,
                           decoration: const InputDecoration(
                             labelText: 'Assigned Branch / Location Hub *',
                             prefixIcon:
@@ -1417,6 +1421,7 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                                 .any((r) => r.roleName == selectedRole)
                             ? selectedRole
                             : viewModel.roles.first.roleName,
+                        dropdownColor: AdminColors.panelBackground,
                         decoration: const InputDecoration(
                           labelText: 'Assigned Role',
                           prefixIcon: Icon(Icons.badge_outlined, size: 20),
@@ -1438,6 +1443,7 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                       if (viewModel.canChangeLocation)
                         DropdownButtonFormField<String?>(
                           initialValue: selectedLocationId,
+                          dropdownColor: AdminColors.panelBackground,
                           decoration: const InputDecoration(
                             labelText: 'Assigned Branch / Location Hub',
                             prefixIcon:

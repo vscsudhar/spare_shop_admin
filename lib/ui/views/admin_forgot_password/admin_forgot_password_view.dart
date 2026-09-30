@@ -300,9 +300,22 @@ class AdminForgotPasswordView
           controller: viewModel.emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
+          style: TextStyle(
+            color: AdminColors.textPrimary,
+            fontSize: 14,
+          ),
+          cursorColor: AdminColors.primaryGreen,
           decoration: InputDecoration(
             hintText: 'e.g. rohan.d@voltspare.com',
-            prefixIcon: const Icon(Icons.mail_outline_rounded, size: 18),
+            hintStyle: TextStyle(
+              color: AdminColors.textLight,
+              fontSize: 13,
+            ),
+            prefixIcon: Icon(
+              Icons.mail_outline_rounded,
+              size: 18,
+              color: AdminColors.textSecondary,
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -325,9 +338,22 @@ class AdminForgotPasswordView
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => viewModel.verifyIdentity(),
+          style: TextStyle(
+            color: AdminColors.textPrimary,
+            fontSize: 14,
+          ),
+          cursorColor: AdminColors.primaryGreen,
           decoration: InputDecoration(
             hintText: 'e.g. +91 98887 66554 or 9888766554',
-            prefixIcon: const Icon(Icons.phone_android_rounded, size: 18),
+            hintStyle: TextStyle(
+              color: AdminColors.textLight,
+              fontSize: 13,
+            ),
+            prefixIcon: Icon(
+              Icons.phone_android_rounded,
+              size: 18,
+              color: AdminColors.textSecondary,
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -528,15 +554,20 @@ class AdminForgotPasswordView
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
           maxLength: 4,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             letterSpacing: 12,
+            color: AdminColors.textPrimary,
           ),
+          cursorColor: AdminColors.primaryGreen,
           decoration: InputDecoration(
             counterText: '',
             hintText: '••••',
-            hintStyle: const TextStyle(letterSpacing: 12, color: Colors.grey),
+            hintStyle: TextStyle(
+              letterSpacing: 12,
+              color: AdminColors.textLight,
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -615,15 +646,29 @@ class AdminForgotPasswordView
           controller: viewModel.newPasswordController,
           obscureText: !viewModel.isNewPasswordVisible,
           textInputAction: TextInputAction.next,
+          style: TextStyle(
+            color: AdminColors.textPrimary,
+            fontSize: 14,
+          ),
+          cursorColor: AdminColors.primaryGreen,
           decoration: InputDecoration(
             hintText: 'Enter new password',
-            prefixIcon: const Icon(Icons.lock_outline_rounded, size: 18),
+            hintStyle: TextStyle(
+              color: AdminColors.textLight,
+              fontSize: 13,
+            ),
+            prefixIcon: Icon(
+              Icons.lock_outline_rounded,
+              size: 18,
+              color: AdminColors.textSecondary,
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 viewModel.isNewPasswordVisible
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 size: 18,
+                color: AdminColors.textSecondary,
               ),
               onPressed: viewModel.toggleNewPasswordVisibility,
             ),
@@ -649,15 +694,29 @@ class AdminForgotPasswordView
           obscureText: !viewModel.isConfirmPasswordVisible,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => viewModel.resetPassword(),
+          style: TextStyle(
+            color: AdminColors.textPrimary,
+            fontSize: 14,
+          ),
+          cursorColor: AdminColors.primaryGreen,
           decoration: InputDecoration(
             hintText: 'Re-enter new password',
-            prefixIcon: const Icon(Icons.lock_reset_rounded, size: 18),
+            hintStyle: TextStyle(
+              color: AdminColors.textLight,
+              fontSize: 13,
+            ),
+            prefixIcon: Icon(
+              Icons.lock_reset_rounded,
+              size: 18,
+              color: AdminColors.textSecondary,
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 viewModel.isConfirmPasswordVisible
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 size: 18,
+                color: AdminColors.textSecondary,
               ),
               onPressed: viewModel.toggleConfirmPasswordVisibility,
             ),

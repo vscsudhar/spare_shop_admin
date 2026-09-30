@@ -333,6 +333,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: selectedSupplierId,
+                      dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Supplier',
                         border: OutlineInputBorder(),
@@ -352,6 +353,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: selectedProductId,
+                      dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Product',
                         border: OutlineInputBorder(),
@@ -372,6 +374,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                     // Destination Hub Dropdown
                     DropdownButtonFormField<String>(
                       initialValue: selectedLocationId,
+                      dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Destination Hub / Warehouse',
                         border: OutlineInputBorder(),
@@ -571,6 +574,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: selectedSupplierId,
+                      dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Supplier',
                         border: OutlineInputBorder(),
@@ -590,6 +594,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: selectedProductId,
+                      dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Product',
                         border: OutlineInputBorder(),
@@ -610,6 +615,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
                     // Destination Hub Dropdown
                     DropdownButtonFormField<String>(
                       initialValue: selectedLocationId,
+                      dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Destination Hub / Warehouse',
                         border: OutlineInputBorder(),
@@ -942,6 +948,7 @@ class AdminPurchasesView extends StackedView<AdminPurchasesViewModel> {
               title: Text('Change PO Status: ${po.poNumber}'),
               content: DropdownButtonFormField<String>(
                 initialValue: selectedStatus,
+                dropdownColor: AdminColors.panelBackground,
                 decoration: const InputDecoration(
                   labelText: 'Status',
                   border: OutlineInputBorder(),
