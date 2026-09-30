@@ -726,6 +726,7 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
               onPressed: () async {
                 Navigator.pop(context);
                 final invoice = await viewModel.completeSale();
+                if (!context.mounted) return;
                 if (invoice != null) {
                   _showInvoiceReceiptModal(context, viewModel, invoice);
                 } else {
@@ -783,13 +784,17 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.electric_bolt_rounded,
-                        color: Colors.green, size: 24),
-                    SizedBox(width: 8),
-                    Text('VoltSpare Receipt',
+                    Image.asset(
+                      'assets/images/logo_icon.png',
+                      height: 24,
+                      width: 24,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('VoltSpare Receipt',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                   ],

@@ -3,44 +3,14 @@ import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/app/app.router.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/auth_service.dart';
-import 'package:spare_shop_admin/core/services/staff_service.dart';
 import 'package:stacked/stacked.dart';
 
 class AdminLoginViewModel extends BaseViewModel with NavigationMixin {
   final _authService = locator<AuthService>();
-  final _staffService = locator<StaffService>();
 
   final formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController(text: 'owner@voltspare.com');
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  AdminLoginViewModel() {
-    _initCredentials();
-    emailController.addListener(_onEmailChanged);
-  }
-
-  Future<void> _initCredentials() async {
-    await _staffService.getStaffMembers();
-    _loadSavedPassword();
-  }
-
-  void _loadSavedPassword() {
-    final email = emailController.text.trim();
-    final savedPass = _staffService.getPasswordForEmail(email);
-    if (savedPass != null && savedPass.isNotEmpty) {
-      passwordController.text = savedPass;
-      notifyListeners();
-    }
-  }
-
-  void _onEmailChanged() {
-    final email = emailController.text.trim();
-    final savedPass = _staffService.getPasswordForEmail(email);
-    if (savedPass != null && savedPass.isNotEmpty) {
-      passwordController.text = savedPass;
-      notifyListeners();
-    }
-  }
 
   bool _isPasswordVisible = false;
   bool get isPasswordVisible => _isPasswordVisible;

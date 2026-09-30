@@ -2,6 +2,7 @@ import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/services/api_client.dart';
+import 'package:spare_shop_admin/ui/common/app_strings.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 
 /// Representation of a product line item in a professional GST Tax Invoice
@@ -60,19 +61,19 @@ class InvoiceBusinessInfo {
   final String website;
 
   const InvoiceBusinessInfo({
-    this.name = 'VoltSpare Automotive',
-    this.legalName = 'VoltSpare Automotive Technologies Pvt. Ltd.',
-    this.addressLine1 = '12, MG Road, Landmark Block',
-    this.addressLine2 = 'Indiranagar Commercial Zone',
-    this.city = 'Bangalore',
-    this.state = 'Karnataka',
-    this.stateCode = '29',
-    this.pincode = '560001',
-    this.phone = '+91 99000 88000',
-    this.email = 'billing@voltspare.com',
-    this.gstin = '29AAAAA0000A1Z1',
-    this.pan = 'AAAAA0000A',
-    this.website = 'www.voltspare.com',
+    this.name = VoltSpareBusinessConfig.storeName,
+    this.legalName = VoltSpareBusinessConfig.legalEntityName,
+    this.addressLine1 = VoltSpareBusinessConfig.defaultAddressLine1,
+    this.addressLine2 = VoltSpareBusinessConfig.defaultAddressLine2,
+    this.city = VoltSpareBusinessConfig.defaultCity,
+    this.state = VoltSpareBusinessConfig.defaultState,
+    this.stateCode = VoltSpareBusinessConfig.defaultStateCode,
+    this.pincode = VoltSpareBusinessConfig.defaultPincode,
+    this.phone = VoltSpareBusinessConfig.supportPhone,
+    this.email = VoltSpareBusinessConfig.billingEmail,
+    this.gstin = VoltSpareBusinessConfig.defaultGstin,
+    this.pan = VoltSpareBusinessConfig.defaultPan,
+    this.website = VoltSpareBusinessConfig.website,
   });
 }
 
@@ -159,11 +160,7 @@ class InvoiceModel {
     required this.customer,
     required this.items,
     required this.summary,
-    this.terms = const [
-      'Goods once sold are covered under VoltSpare 7-day verified RMA warranty.',
-      'All disputes are subject to Bangalore jurisdiction only.',
-      'This is a computer-generated tax invoice and requires no physical signature under IT Act 2000.',
-    ],
+    this.terms = VoltSpareBusinessConfig.defaultInvoiceTerms,
   });
 }
 
@@ -189,19 +186,19 @@ class InvoiceService {
       final data = response.data['data'] ?? {};
       final g = data['general'] ?? {};
       _cachedBusinessInfo = InvoiceBusinessInfo(
-        name: (g['appName'] ?? 'VoltSpare Automotive').toString(),
-        legalName: (g['legalName'] ?? g['appName'] ?? 'VoltSpare Automotive Technologies Pvt. Ltd.').toString(),
-        addressLine1: (g['addressLine1'] ?? g['address'] ?? '12, MG Road, Landmark Block').toString(),
+        name: (g['appName'] ?? VoltSpareBusinessConfig.storeName).toString(),
+        legalName: (g['legalName'] ?? g['appName'] ?? VoltSpareBusinessConfig.legalEntityName).toString(),
+        addressLine1: (g['addressLine1'] ?? g['address'] ?? VoltSpareBusinessConfig.defaultAddressLine1).toString(),
         addressLine2: (g['addressLine2'] ?? '').toString(),
-        city: (g['city'] ?? 'Bangalore').toString(),
-        state: (g['state'] ?? 'Karnataka').toString(),
-        stateCode: (g['stateCode'] ?? getStateCode(g['state'] ?? 'Karnataka')).toString(),
-        pincode: (g['postalCode'] ?? g['pincode'] ?? '560001').toString(),
-        phone: (g['supportPhone'] ?? '+91 99000 88000').toString(),
-        email: (g['supportEmail'] ?? 'billing@voltspare.com').toString(),
-        gstin: (g['gstin'] ?? g['gstNumber'] ?? '29AAAAA0000A1Z1').toString(),
-        pan: (g['pan'] ?? 'AAAAA0000A').toString(),
-        website: (g['website'] ?? 'www.voltspare.com').toString(),
+        city: (g['city'] ?? VoltSpareBusinessConfig.defaultCity).toString(),
+        state: (g['state'] ?? VoltSpareBusinessConfig.defaultState).toString(),
+        stateCode: (g['stateCode'] ?? getStateCode(g['state'] ?? VoltSpareBusinessConfig.defaultState)).toString(),
+        pincode: (g['postalCode'] ?? g['pincode'] ?? VoltSpareBusinessConfig.defaultPincode).toString(),
+        phone: (g['supportPhone'] ?? VoltSpareBusinessConfig.supportPhone).toString(),
+        email: (g['supportEmail'] ?? VoltSpareBusinessConfig.billingEmail).toString(),
+        gstin: (g['gstin'] ?? g['gstNumber'] ?? VoltSpareBusinessConfig.defaultGstin).toString(),
+        pan: (g['pan'] ?? VoltSpareBusinessConfig.defaultPan).toString(),
+        website: (g['website'] ?? VoltSpareBusinessConfig.website).toString(),
       );
       return _cachedBusinessInfo!;
     } catch (_) {
@@ -631,19 +628,19 @@ class InvoiceService {
 
     final rawBusiness = json['business'] as Map<String, dynamic>? ?? {};
     final business = InvoiceBusinessInfo(
-      name: (rawBusiness['name'] ?? 'VoltSpare Automotive').toString(),
-      legalName: (rawBusiness['legalName'] ?? 'VoltSpare Automotive Technologies Pvt. Ltd.').toString(),
-      addressLine1: (rawBusiness['addressLine1'] ?? '12, MG Road, Landmark Block').toString(),
-      addressLine2: (rawBusiness['addressLine2'] ?? 'Indiranagar Commercial Zone').toString(),
-      city: (rawBusiness['city'] ?? 'Bangalore').toString(),
-      state: (rawBusiness['state'] ?? 'Karnataka').toString(),
-      stateCode: (rawBusiness['stateCode'] ?? '29').toString(),
-      pincode: (rawBusiness['postalCode'] ?? rawBusiness['pincode'] ?? '560001').toString(),
-      phone: (rawBusiness['phone'] ?? '+91 99000 88000').toString(),
-      email: (rawBusiness['email'] ?? 'billing@voltspare.com').toString(),
-      gstin: (rawBusiness['gstin'] ?? '29AAAAA0000A1Z1').toString(),
-      pan: (rawBusiness['pan'] ?? 'AAAAA0000A').toString(),
-      website: (rawBusiness['website'] ?? 'www.voltspare.com').toString(),
+      name: (rawBusiness['name'] ?? VoltSpareBusinessConfig.storeName).toString(),
+      legalName: (rawBusiness['legalName'] ?? VoltSpareBusinessConfig.legalEntityName).toString(),
+      addressLine1: (rawBusiness['addressLine1'] ?? VoltSpareBusinessConfig.defaultAddressLine1).toString(),
+      addressLine2: (rawBusiness['addressLine2'] ?? VoltSpareBusinessConfig.defaultAddressLine2).toString(),
+      city: (rawBusiness['city'] ?? VoltSpareBusinessConfig.defaultCity).toString(),
+      state: (rawBusiness['state'] ?? VoltSpareBusinessConfig.defaultState).toString(),
+      stateCode: (rawBusiness['stateCode'] ?? VoltSpareBusinessConfig.defaultStateCode).toString(),
+      pincode: (rawBusiness['postalCode'] ?? rawBusiness['pincode'] ?? VoltSpareBusinessConfig.defaultPincode).toString(),
+      phone: (rawBusiness['phone'] ?? VoltSpareBusinessConfig.supportPhone).toString(),
+      email: (rawBusiness['email'] ?? VoltSpareBusinessConfig.billingEmail).toString(),
+      gstin: (rawBusiness['gstin'] ?? VoltSpareBusinessConfig.defaultGstin).toString(),
+      pan: (rawBusiness['pan'] ?? VoltSpareBusinessConfig.defaultPan).toString(),
+      website: (rawBusiness['website'] ?? VoltSpareBusinessConfig.website).toString(),
     );
 
     final rawCustomer = json['customer'] as Map<String, dynamic>? ?? {};
@@ -723,11 +720,7 @@ class InvoiceService {
     final rawTerms = json['terms'] as List<dynamic>?;
     final List<String> termsList = rawTerms != null
         ? rawTerms.map((t) => t.toString()).toList()
-        : const [
-            'Goods once sold are covered under VoltSpare 7-day verified RMA warranty.',
-            'All disputes are subject to Bangalore jurisdiction only.',
-            'This is a computer-generated tax invoice and requires no physical signature under IT Act 2000.',
-          ];
+        : VoltSpareBusinessConfig.defaultInvoiceTerms;
 
     return InvoiceModel(
       invoiceNumber: (json['invoiceNumber'] ?? 'INV-UNKNOWN').toString(),

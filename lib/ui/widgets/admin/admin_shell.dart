@@ -92,9 +92,13 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                   iconTheme: const IconThemeData(color: Colors.white),
                   title: Row(
                     children: [
-                      Icon(Icons.electric_bolt_rounded,
-                          color: AdminColors.accentLime, size: 22),
-                      const SizedBox(width: 6),
+                      Image.asset(
+                        'assets/images/logo_icon.png',
+                        height: 24,
+                        width: 24,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 8),
                       Flexible(
                         child: Text(
                           title,
@@ -436,17 +440,40 @@ class AdminShell extends StatelessWidget with NavigationMixin {
           children: [
             Container(
               height: 70,
-              padding: const EdgeInsets.all(AdminSpacing.m),
+              padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.m),
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  Icon(Icons.electric_bolt_rounded,
-                      color: AdminColors.accentLime, size: 28),
-                  const SizedBox(width: 8),
-                  Text(
-                    'VoltSpare Console',
-                    style: AdminTextStyles.header
-                        .copyWith(color: Colors.white, fontSize: 16),
+                  Image.asset(
+                    'assets/images/logo_icon.png',
+                    height: 36,
+                    width: 36,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'VoltSpare',
+                        style: AdminTextStyles.header.copyWith(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Text(
+                        'Admin Console',
+                        style: TextStyle(
+                          color: AdminColors.accentLime,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

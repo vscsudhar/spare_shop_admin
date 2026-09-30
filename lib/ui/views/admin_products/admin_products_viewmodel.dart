@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
+import 'package:spare_shop_admin/core/services/api_exception.dart';
 import 'package:spare_shop_admin/core/services/product_service.dart';
 import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,7 +44,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
         notifyListeners();
       }
     } catch (e) {
-      print('Error picking product image: $e');
+      debugPrint('Error picking product image: $e');
     }
   }
 
@@ -144,8 +145,8 @@ class AdminProductsViewModel extends FutureViewModel<void>
     }
   }
 
-  Future<void> loadBrands() async {
-    if (_brands.isNotEmpty) return;
+  Future<void> loadBrands({bool forceRefresh = false}) async {
+    if (_brands.isNotEmpty && !forceRefresh) return;
     _loadingBrands = true;
     _brandLoadError = null;
     notifyListeners();
@@ -161,9 +162,11 @@ class AdminProductsViewModel extends FutureViewModel<void>
     }
   }
 
-  Future<List<VehicleModel>> loadModelsForBrand(String brandId) async {
+  Future<List<VehicleModel>> loadModelsForBrand(String brandId,
+      {bool forceRefresh = false}) async {
     if (brandId.isEmpty) return [];
-    if (_modelsByBrand.containsKey(brandId) &&
+    if (!forceRefresh &&
+        _modelsByBrand.containsKey(brandId) &&
         _modelsByBrand[brandId]!.isNotEmpty) {
       return _modelsByBrand[brandId]!;
     }
@@ -184,6 +187,161 @@ class AdminProductsViewModel extends FutureViewModel<void>
     } finally {
       _loadingModelsByBrand[brandId] = false;
       notifyListeners();
+    }
+  }
+
+  Future<VehicleBrandModel?> createBrand({required String name}) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) return null;
+
+    try {
+      final newBrand = await _productService.createVehicleBrand({
+        'name': trimmedName,
+      });
+      await loadBrands(forceRefresh: true);
+      final matched = _brands.firstWhere(
+        (b) =>
+            b.id == newBrand.id ||
+            b.name.toLowerCase() == trimmedName.toLowerCase(),
+        orElse: () => newBrand,
+      );
+      return matched;
+    } catch (e) {
+      debugPrint('Error creating brand: $e');
+      String errMsg = 'Failed to create brand.';
+      if (e is ApiException) {
+        errMsg = e.message;
+      } else if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        if (data is Map && data.containsKey('message')) {
+          errMsg = data['message'].toString();
+        }
+      }
+      _dialogService.showDialog(
+        title: 'Error Creating Brand',
+        description: errMsg,
+      );
+      return null;
+    }
+  }
+
+  Future<VehicleBrandModel?> updateBrand({
+    required String id,
+    required String name,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) return null;
+
+    try {
+      final updated = await _productService.updateVehicleBrand(id, {
+        'name': trimmedName,
+      });
+      await loadBrands(forceRefresh: true);
+      return updated;
+    } catch (e) {
+      debugPrint('Error updating brand: $e');
+      String errMsg = 'Failed to update brand.';
+      if (e is ApiException) {
+        errMsg = e.message;
+      } else if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        if (data is Map && data.containsKey('message')) {
+          errMsg = data['message'].toString();
+        }
+      }
+      _dialogService.showDialog(
+        title: 'Error Updating Brand',
+        description: errMsg,
+      );
+      return null;
+    }
+  }
+
+  Future<VehicleModel?> createModel({
+    required String name,
+    required String brandId,
+    String? year,
+    String? type,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty || brandId.trim().isEmpty) return null;
+
+    try {
+      final payload = <String, dynamic>{
+        'name': trimmedName,
+        'brand': brandId,
+        'brandId': brandId,
+        if (year != null && year.trim().isNotEmpty) 'year': year.trim(),
+        if (type != null && type.trim().isNotEmpty) 'type': type.trim(),
+      };
+      final newModel = await _productService.createVehicleModel(payload);
+      final refreshedList =
+          await loadModelsForBrand(brandId, forceRefresh: true);
+      final matched = refreshedList.firstWhere(
+        (m) =>
+            m.id == newModel.id ||
+            m.name.toLowerCase() == trimmedName.toLowerCase(),
+        orElse: () => newModel,
+      );
+      return matched;
+    } catch (e) {
+      debugPrint('Error creating vehicle model: $e');
+      String errMsg = 'Failed to create vehicle model.';
+      if (e is ApiException) {
+        errMsg = e.message;
+      } else if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        if (data is Map && data.containsKey('message')) {
+          errMsg = data['message'].toString();
+        }
+      }
+      _dialogService.showDialog(
+        title: 'Error Creating Model',
+        description: errMsg,
+      );
+      return null;
+    }
+  }
+
+  Future<VehicleModel?> updateModel({
+    required String id,
+    required String name,
+    required String brandId,
+    String? year,
+    String? type,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) return null;
+
+    try {
+      final payload = <String, dynamic>{
+        'name': trimmedName,
+        if (brandId.isNotEmpty) 'brand': brandId,
+        if (brandId.isNotEmpty) 'brandId': brandId,
+        if (year != null && year.trim().isNotEmpty) 'year': year.trim(),
+        if (type != null && type.trim().isNotEmpty) 'type': type.trim(),
+      };
+      final updated = await _productService.updateVehicleModel(id, payload);
+      if (brandId.isNotEmpty) {
+        await loadModelsForBrand(brandId, forceRefresh: true);
+      }
+      return updated;
+    } catch (e) {
+      debugPrint('Error updating vehicle model: $e');
+      String errMsg = 'Failed to update vehicle model.';
+      if (e is ApiException) {
+        errMsg = e.message;
+      } else if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        if (data is Map && data.containsKey('message')) {
+          errMsg = data['message'].toString();
+        }
+      }
+      _dialogService.showDialog(
+        title: 'Error Updating Model',
+        description: errMsg,
+      );
+      return null;
     }
   }
 
@@ -244,7 +402,9 @@ class AdminProductsViewModel extends FutureViewModel<void>
       debugPrint('Error updating product details: $e');
       String errMsg = 'Failed to update product details.';
       try {
-        if (e is DioException && e.response?.data != null) {
+        if (e is ApiException) {
+          errMsg = e.message;
+        } else if (e is DioException && e.response?.data != null) {
           final data = e.response!.data;
           if (data is Map && data.containsKey('message')) {
             errMsg = data['message'].toString();
@@ -320,7 +480,9 @@ class AdminProductsViewModel extends FutureViewModel<void>
       debugPrint('Error creating product: $e');
       String errMsg = 'Failed to create product.';
       try {
-        if (e is DioException && e.response?.data != null) {
+        if (e is ApiException) {
+          errMsg = e.message;
+        } else if (e is DioException && e.response?.data != null) {
           final data = e.response!.data;
           if (data is Map && data.containsKey('message')) {
             errMsg = data['message'].toString();

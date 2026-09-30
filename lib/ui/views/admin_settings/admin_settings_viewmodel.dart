@@ -4,6 +4,7 @@ import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/api_client.dart';
 import 'package:spare_shop_admin/core/services/invoice_service.dart';
 import 'package:spare_shop_admin/core/theme/theme_service.dart';
+import 'package:spare_shop_admin/ui/common/app_strings.dart';
 import 'package:stacked/stacked.dart';
 
 class AdminSettingsViewModel extends FutureViewModel<void>
@@ -17,28 +18,37 @@ class AdminSettingsViewModel extends FutureViewModel<void>
 
   // General Settings - Business & Tax Information
   final storeNameController =
-      TextEditingController(text: 'VoltSpare Headquarters');
-  final legalNameController = TextEditingController(
-      text: 'VoltSpare Automotive Technologies Pvt. Ltd.');
-  final phoneController = TextEditingController(text: '+91 99000 88000');
-  final emailController = TextEditingController(text: 'billing@voltspare.com');
-  final gstNumberController = TextEditingController(text: '29AAAAA0000A1Z1');
-  final panController = TextEditingController(text: 'AAAAA0000A');
-  final websiteController = TextEditingController(text: 'www.voltspare.com');
+      TextEditingController(text: VoltSpareBusinessConfig.storeName);
+  final legalNameController =
+      TextEditingController(text: VoltSpareBusinessConfig.legalEntityName);
+  final phoneController =
+      TextEditingController(text: VoltSpareBusinessConfig.supportPhone);
+  final emailController =
+      TextEditingController(text: VoltSpareBusinessConfig.billingEmail);
+  final gstNumberController =
+      TextEditingController(text: VoltSpareBusinessConfig.defaultGstin);
+  final panController =
+      TextEditingController(text: VoltSpareBusinessConfig.defaultPan);
+  final websiteController =
+      TextEditingController(text: VoltSpareBusinessConfig.website);
 
   // General Settings - Address & Map Coordinates
   final addressLine1Controller =
-      TextEditingController(text: '12, MG Road, Landmark Block');
+      TextEditingController(text: VoltSpareBusinessConfig.defaultAddressLine1);
   final addressLine2Controller =
-      TextEditingController(text: 'Indiranagar Commercial Zone');
-  final cityController = TextEditingController(text: 'Bangalore');
-  final stateController = TextEditingController(text: 'Karnataka');
-  final stateCodeController = TextEditingController(text: '29');
-  final pincodeController = TextEditingController(text: '560001');
+      TextEditingController(text: VoltSpareBusinessConfig.defaultAddressLine2);
+  final cityController =
+      TextEditingController(text: VoltSpareBusinessConfig.defaultCity);
+  final stateController =
+      TextEditingController(text: VoltSpareBusinessConfig.defaultState);
+  final stateCodeController =
+      TextEditingController(text: VoltSpareBusinessConfig.defaultStateCode);
+  final pincodeController =
+      TextEditingController(text: VoltSpareBusinessConfig.defaultPincode);
 
   // OpenStreetMap Coordinates
-  double latitude = 12.9716;
-  double longitude = 77.5946;
+  double latitude = VoltSpareBusinessConfig.defaultLatitude;
+  double longitude = VoltSpareBusinessConfig.defaultLongitude;
   bool isMapMoved = false;
 
   // Billing Settings
@@ -120,35 +130,44 @@ class AdminSettingsViewModel extends FutureViewModel<void>
 
       final general = data['general'] ?? {};
       storeNameController.text =
-          (general['appName'] ?? 'VoltSpare Headquarters').toString();
+          (general['appName'] ?? VoltSpareBusinessConfig.storeName).toString();
       legalNameController.text = (general['legalName'] ??
               general['appName'] ??
-              'VoltSpare Automotive Technologies Pvt. Ltd.')
+              VoltSpareBusinessConfig.legalEntityName)
           .toString();
       phoneController.text =
-          (general['supportPhone'] ?? '+91 99000 88000').toString();
-      emailController.text =
-          (general['supportEmail'] ?? 'billing@voltspare.com').toString();
-      gstNumberController.text =
-          (general['gstin'] ?? general['gstNumber'] ?? '29AAAAA0000A1Z1')
+          (general['supportPhone'] ?? VoltSpareBusinessConfig.supportPhone)
               .toString();
-      panController.text = (general['pan'] ?? 'AAAAA0000A').toString();
+      emailController.text =
+          (general['supportEmail'] ?? VoltSpareBusinessConfig.billingEmail)
+              .toString();
+      gstNumberController.text = (general['gstin'] ??
+              general['gstNumber'] ??
+              VoltSpareBusinessConfig.defaultGstin)
+          .toString();
+      panController.text =
+          (general['pan'] ?? VoltSpareBusinessConfig.defaultPan).toString();
       websiteController.text =
-          (general['website'] ?? 'www.voltspare.com').toString();
+          (general['website'] ?? VoltSpareBusinessConfig.website).toString();
 
       addressLine1Controller.text = (general['addressLine1'] ??
               general['address'] ??
-              '12, MG Road, Landmark Block')
+              VoltSpareBusinessConfig.defaultAddressLine1)
           .toString();
-      addressLine2Controller.text =
-          (general['addressLine2'] ?? 'Indiranagar Commercial Zone').toString();
-      cityController.text = (general['city'] ?? 'Bangalore').toString();
-      stateController.text = (general['state'] ?? 'Karnataka').toString();
+      addressLine2Controller.text = (general['addressLine2'] ??
+              VoltSpareBusinessConfig.defaultAddressLine2)
+          .toString();
+      cityController.text =
+          (general['city'] ?? VoltSpareBusinessConfig.defaultCity).toString();
+      stateController.text =
+          (general['state'] ?? VoltSpareBusinessConfig.defaultState).toString();
       stateCodeController.text = (general['stateCode'] ??
               InvoiceService.getStateCode(stateController.text))
           .toString();
-      pincodeController.text =
-          (general['postalCode'] ?? general['pincode'] ?? '560001').toString();
+      pincodeController.text = (general['postalCode'] ??
+              general['pincode'] ??
+              VoltSpareBusinessConfig.defaultPincode)
+          .toString();
 
       if (general['latitude'] != null) {
         final latNum = double.tryParse(general['latitude'].toString());
@@ -290,23 +309,22 @@ class AdminSettingsViewModel extends FutureViewModel<void>
   }
 
   void resetSettings() {
-    storeNameController.text = 'VoltSpare Headquarters';
-    legalNameController.text =
-        'VoltSpare Automotive Technologies Pvt. Ltd.';
-    phoneController.text = '+91 99000 88000';
-    emailController.text = 'billing@voltspare.com';
-    gstNumberController.text = '29AAAAA0000A1Z1';
-    panController.text = 'AAAAA0000A';
-    websiteController.text = 'www.voltspare.com';
+    storeNameController.text = VoltSpareBusinessConfig.storeName;
+    legalNameController.text = VoltSpareBusinessConfig.legalEntityName;
+    phoneController.text = VoltSpareBusinessConfig.supportPhone;
+    emailController.text = VoltSpareBusinessConfig.billingEmail;
+    gstNumberController.text = VoltSpareBusinessConfig.defaultGstin;
+    panController.text = VoltSpareBusinessConfig.defaultPan;
+    websiteController.text = VoltSpareBusinessConfig.website;
 
-    addressLine1Controller.text = '12, MG Road, Landmark Block';
-    addressLine2Controller.text = 'Indiranagar Commercial Zone';
-    cityController.text = 'Bangalore';
-    stateController.text = 'Karnataka';
-    stateCodeController.text = '29';
-    pincodeController.text = '560001';
-    latitude = 12.9716;
-    longitude = 77.5946;
+    addressLine1Controller.text = VoltSpareBusinessConfig.defaultAddressLine1;
+    addressLine2Controller.text = VoltSpareBusinessConfig.defaultAddressLine2;
+    cityController.text = VoltSpareBusinessConfig.defaultCity;
+    stateController.text = VoltSpareBusinessConfig.defaultState;
+    stateCodeController.text = VoltSpareBusinessConfig.defaultStateCode;
+    pincodeController.text = VoltSpareBusinessConfig.defaultPincode;
+    latitude = VoltSpareBusinessConfig.defaultLatitude;
+    longitude = VoltSpareBusinessConfig.defaultLongitude;
     isMapMoved = false;
 
     invoicePrefixController.text = 'VS-POS-';

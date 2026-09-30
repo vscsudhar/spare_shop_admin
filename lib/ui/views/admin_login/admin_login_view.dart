@@ -43,28 +43,35 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AdminColors.primaryGreen
-                                  .withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.electric_bolt_rounded,
-                              color: AdminColors.accentLime,
-                              size: 40,
-                            ),
+                          Image.asset(
+                            'assets/images/logo_icon.png',
+                            height: 64,
+                            width: 64,
+                            fit: BoxFit.contain,
                           ),
                           const SizedBox(width: 16),
-                          const Text(
-                            'VoltSpare',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'VoltSpare',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              Text(
+                                'SPARE PARTS | EV & PETROL',
+                                style: TextStyle(
+                                  color: AdminColors.accentLime,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -87,37 +94,6 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                           height: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 48),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white10,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'DEFAULT CONSOLE CREDENTIALS:',
-                              style: TextStyle(
-                                color: AdminColors.accentLime,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '👑 Owner (Global HQ):\nEmail: owner@voltspare.com\nPassword: OwnerPassword123!\n\n📍 Staff (Madukkarai Hub):\nEmail: rohan.d@voltspare.com\nPassword: Staff12345!\n\n✨ Any updated or newly created staff credentials from "Staff & Roles" can also be used to log in directly.',
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.9),
-                                fontSize: 12,
-                                height: 1.4,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
                     ],
                   ),
                 ),
@@ -152,21 +128,12 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (!isWide) ...[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.electric_bolt_rounded,
-                                  color: AdminColors.primaryGreen, size: 28),
-                              const SizedBox(width: 8),
-                              Text(
-                                'VoltSpare',
-                                style: TextStyle(
-                                  color: AdminColors.textPrimary,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          Center(
+                            child: Image.asset(
+                              'assets/images/logo_full.png',
+                              height: 48,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                           const SizedBox(height: 24),
                         ],
@@ -381,39 +348,6 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                                   ),
                           ),
                         ),
-                        if (!isWide) ...[
-                          const SizedBox(height: 32),
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AdminColors.background,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AdminColors.border),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'DEFAULT CONSOLE CREDENTIALS:',
-                                  style: TextStyle(
-                                    color: AdminColors.primaryGreen,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  '👑 Owner: owner@voltspare.com (OwnerPassword123!)\n📍 Staff: rohan.d@voltspare.com (Staff12345!)\n✨ Any staff member created or updated in Staff & Roles can also log in directly.',
-                                  style: TextStyle(
-                                    color: AdminColors.textSecondary,
-                                    fontSize: 12,
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),

@@ -83,6 +83,26 @@ class ProductService {
         .toList();
   }
 
+  Future<VehicleBrandModel> createVehicleBrand(
+      Map<String, dynamic> payload) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.vehicleBrands,
+      data: payload,
+    );
+    final data = response.data['data'] ?? response.data ?? {};
+    return VehicleBrandModelExtension.fromJson(data);
+  }
+
+  Future<VehicleBrandModel> updateVehicleBrand(
+      String id, Map<String, dynamic> payload) async {
+    final response = await _apiClient.patch(
+      '${ApiEndpoints.vehicleBrands}/$id',
+      data: payload,
+    );
+    final data = response.data['data'] ?? response.data ?? {};
+    return VehicleBrandModelExtension.fromJson(data);
+  }
+
   Future<List<VehicleModel>> getVehicleModels({String? brandId}) async {
     final Map<String, dynamic> query = {};
     if (brandId != null && brandId.isNotEmpty) {
@@ -94,6 +114,26 @@ class ProductService {
     );
     final List<dynamic> list = response.data['data'] ?? [];
     return list.map((item) => VehicleModelExtension.fromJson(item)).toList();
+  }
+
+  Future<VehicleModel> createVehicleModel(
+      Map<String, dynamic> payload) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.vehicleModels,
+      data: payload,
+    );
+    final data = response.data['data'] ?? response.data ?? {};
+    return VehicleModelExtension.fromJson(data);
+  }
+
+  Future<VehicleModel> updateVehicleModel(
+      String id, Map<String, dynamic> payload) async {
+    final response = await _apiClient.patch(
+      '${ApiEndpoints.vehicleModels}/$id',
+      data: payload,
+    );
+    final data = response.data['data'] ?? response.data ?? {};
+    return VehicleModelExtension.fromJson(data);
   }
 
   Future<ProductModel> createProduct(Map<String, dynamic> payload) async {

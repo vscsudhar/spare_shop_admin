@@ -1204,6 +1204,426 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
     );
   }
 
+  static const String _addNewBrandValue = '__ADD_NEW_BRAND__';
+  static const String _addNewModelValue = '__ADD_NEW_MODEL__';
+
+  Future<VehicleBrandModel?> _showCreateBrandDialog(
+    BuildContext context,
+    AdminProductsViewModel viewModel,
+  ) async {
+    final nameController = TextEditingController();
+    String? localError;
+    bool isSubmitting = false;
+
+    return showDialog<VehicleBrandModel>(
+      context: context,
+      barrierDismissible: !isSubmitting,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminRadius.card),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AdminColors.primaryGreen.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.directions_bike_outlined,
+                      color: AdminColors.primaryGreen,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Add New Vehicle Brand'),
+                ],
+              ),
+              content: SizedBox(
+                width: 420,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      'Enter the vehicle brand name to add it to the catalog.',
+                      style: TextStyle(fontSize: 13, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      autofocus: true,
+                      enabled: !isSubmitting,
+                      decoration: InputDecoration(
+                        labelText: 'Brand Name *',
+                        hintText: 'e.g., Ather, Ola, TVS, Honda, Bajaj',
+                        border: const OutlineInputBorder(),
+                        errorText: localError,
+                        prefixIcon: const Icon(
+                            Icons.branding_watermark_outlined,
+                            size: 20),
+                      ),
+                      onChanged: (_) {
+                        if (localError != null) {
+                          setDialogState(() {
+                            localError = null;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () => Navigator.pop(dialogContext, null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          final trimmed = nameController.text.trim();
+                          if (trimmed.isEmpty) {
+                            setDialogState(() {
+                              localError = 'Brand name cannot be empty.';
+                            });
+                            return;
+                          }
+
+                          // Check if brand already exists locally
+                          final existing = viewModel.brands.where(
+                            (b) =>
+                                b.name.toLowerCase() == trimmed.toLowerCase(),
+                          );
+                          if (existing.isNotEmpty) {
+                            Navigator.pop(dialogContext, existing.first);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Brand "$trimmed" already exists and was selected.'),
+                                backgroundColor: AdminColors.primaryGreen,
+                              ),
+                            );
+                            return;
+                          }
+
+                          setDialogState(() {
+                            isSubmitting = true;
+                            localError = null;
+                          });
+
+                          final created =
+                              await viewModel.createBrand(name: trimmed);
+                          if (!dialogContext.mounted) return;
+
+                          if (created != null) {
+                            Navigator.pop(dialogContext, created);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Brand "$trimmed" created successfully!'),
+                                backgroundColor: AdminColors.primaryGreen,
+                              ),
+                            );
+                          } else {
+                            setDialogState(() {
+                              isSubmitting = false;
+                              localError =
+                                  'Failed to create brand. Please check the name.';
+                            });
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AdminColors.primaryGreen,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Create Brand'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<VehicleModel?> _showCreateModelDialog(
+    BuildContext context,
+    AdminProductsViewModel viewModel, {
+    required String brandId,
+    required String brandName,
+  }) async {
+    final nameController = TextEditingController();
+    final yearController = TextEditingController();
+    String selectedType = 'EV';
+    String? localError;
+    bool isSubmitting = false;
+
+    return showDialog<VehicleModel>(
+      context: context,
+      barrierDismissible: !isSubmitting,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminRadius.card),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AdminColors.primaryGreen.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.two_wheeler_outlined,
+                      color: AdminColors.primaryGreen,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Add New Vehicle Model'),
+                ],
+              ),
+              content: SizedBox(
+                width: 460,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color:
+                              AdminColors.primaryGreen.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: AdminColors.primaryGreen
+                                  .withValues(alpha: 0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.directions_car,
+                                size: 18, color: AdminColors.primaryGreen),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Brand: $brandName',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AdminColors.primaryGreen,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: nameController,
+                        autofocus: true,
+                        enabled: !isSubmitting,
+                        decoration: InputDecoration(
+                          labelText: 'Model Name *',
+                          hintText: 'e.g., S1 Pro, 450X, iQube, Activa 6G',
+                          border: const OutlineInputBorder(),
+                          errorText: localError,
+                          prefixIcon: const Icon(
+                              Icons.electric_scooter_outlined,
+                              size: 20),
+                        ),
+                        onChanged: (_) {
+                          if (localError != null) {
+                            setDialogState(() {
+                              localError = null;
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: yearController,
+                        enabled: !isSubmitting,
+                        decoration: const InputDecoration(
+                          labelText: 'Model Year / Generation (Optional)',
+                          hintText: 'e.g., 2024, Gen 2, 2021-2023',
+                          border: OutlineInputBorder(),
+                          prefixIcon:
+                              Icon(Icons.calendar_today_outlined, size: 20),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      const Text(
+                        'Vehicle Type',
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          ChoiceChip(
+                            label: const Text('EV'),
+                            selected: selectedType == 'EV',
+                            onSelected: isSubmitting
+                                ? null
+                                : (sel) {
+                                    if (sel) {
+                                      setDialogState(
+                                          () => selectedType = 'EV');
+                                    }
+                                  },
+                          ),
+                          const SizedBox(width: 8),
+                          ChoiceChip(
+                            label: const Text('Petrol'),
+                            selected: selectedType == 'Petrol',
+                            onSelected: isSubmitting
+                                ? null
+                                : (sel) {
+                                    if (sel) {
+                                      setDialogState(
+                                          () => selectedType = 'Petrol');
+                                    }
+                                  },
+                          ),
+                          const SizedBox(width: 8),
+                          ChoiceChip(
+                            label: const Text('Universal'),
+                            selected: selectedType == 'Universal',
+                            onSelected: isSubmitting
+                                ? null
+                                : (sel) {
+                                    if (sel) {
+                                      setDialogState(
+                                          () => selectedType = 'Universal');
+                                    }
+                                  },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () => Navigator.pop(dialogContext, null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          final trimmed = nameController.text.trim();
+                          if (trimmed.isEmpty) {
+                            setDialogState(() {
+                              localError = 'Model name cannot be empty.';
+                            });
+                            return;
+                          }
+
+                          if (brandId.trim().isEmpty) {
+                            setDialogState(() {
+                              localError = 'Selected brand is mandatory.';
+                            });
+                            return;
+                          }
+
+                          // Check if model already exists for this brand
+                          final existingModels =
+                              viewModel.modelsByBrand[brandId] ?? [];
+                          final existing = existingModels.where(
+                            (m) =>
+                                m.name.toLowerCase() == trimmed.toLowerCase(),
+                          );
+                          if (existing.isNotEmpty) {
+                            Navigator.pop(dialogContext, existing.first);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Model "$trimmed" already exists for $brandName and was selected.'),
+                                backgroundColor: AdminColors.primaryGreen,
+                              ),
+                            );
+                            return;
+                          }
+
+                          setDialogState(() {
+                            isSubmitting = true;
+                            localError = null;
+                          });
+
+                          final created = await viewModel.createModel(
+                            name: trimmed,
+                            brandId: brandId,
+                            year: yearController.text.trim(),
+                            type: selectedType,
+                          );
+                          if (!dialogContext.mounted) return;
+
+                          if (created != null) {
+                            Navigator.pop(dialogContext, created);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Model "$trimmed" created successfully for $brandName!'),
+                                backgroundColor: AdminColors.primaryGreen,
+                              ),
+                            );
+                          } else {
+                            setDialogState(() {
+                              isSubmitting = false;
+                              localError =
+                                  'Failed to create model. Please check the name.';
+                            });
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AdminColors.primaryGreen,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Create Model'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildCompatibilitySelector({
     required BuildContext context,
     required AdminProductsViewModel model,
@@ -1287,7 +1707,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                       ),
                     ),
                     TextButton(
-                      onPressed: model.loadBrands,
+                      onPressed: () => model.loadBrands(forceRefresh: true),
                       child: const Text('Retry'),
                     ),
                   ],
@@ -1334,63 +1754,104 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Brand Dropdown (From DB)
+                          // Brand Dropdown (From DB + Add New Brand)
                           Expanded(
-                            child: DropdownButtonFormField<String>(
-                              isExpanded: true,
-                              initialValue: model.brands.any((b) =>
-                                      b.id == compatibilityRows[i]['brandId'])
-                                  ? compatibilityRows[i]['brandId']
-                                  : null,
-                              decoration: InputDecoration(
-                                labelText: 'Brand *',
-                                border: const OutlineInputBorder(),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 8),
-                                suffixIcon: model.loadingBrands
-                                    ? const SizedBox(
-                                        width: 14,
-                                        height: 14,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(12),
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 2),
+                            child: Builder(builder: (context) {
+                              final currentBrandId =
+                                  compatibilityRows[i]['brandId'];
+                              final isBrandInList = model.brands
+                                  .any((b) => b.id == currentBrandId);
+
+                              return DropdownButtonFormField<String>(
+                                key: ValueKey('brand_${i}_$currentBrandId'),
+                                isExpanded: true,
+                                initialValue:
+                                    isBrandInList ? currentBrandId : null,
+                                decoration: InputDecoration(
+                                  labelText: 'Brand *',
+                                  border: const OutlineInputBorder(),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                  suffixIcon: model.loadingBrands
+                                      ? const SizedBox(
+                                          width: 14,
+                                          height: 14,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(12),
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2),
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                                hint: Text(
+                                  model.loadingBrands
+                                      ? 'Loading Brands...'
+                                      : (model.brands.isEmpty
+                                          ? 'Select Brand'
+                                          : 'Select Brand'),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                items: [
+                                  ...model.brands.map((b) {
+                                    return DropdownMenuItem<String>(
+                                      value: b.id,
+                                      child: Text(
+                                        b.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    );
+                                  }),
+                                  DropdownMenuItem<String>(
+                                    value: _addNewBrandValue,
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.add_circle_outline,
+                                            size: 16,
+                                            color: AdminColors.primaryGreen),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '+ Add New Brand',
+                                          style: TextStyle(
+                                            color: AdminColors.primaryGreen,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      )
-                                    : null,
-                              ),
-                              hint: Text(
-                                model.loadingBrands
-                                    ? 'Loading Brands...'
-                                    : (model.brands.isEmpty
-                                        ? 'No Brands Found'
-                                        : 'Select Brand'),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              items: model.brands.map((b) {
-                                return DropdownMenuItem(
-                                  value: b.id,
-                                  child: Text(
-                                    b.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                      ],
+                                    ),
                                   ),
-                                );
-                              }).toList(),
-                              onChanged: (brandId) {
-                                if (brandId != null) {
-                                  compatibilityRows[i]['brandId'] = brandId;
-                                  compatibilityRows[i]['modelId'] =
-                                      null; // Clear model on brand change!
-                                  model.loadModelsForBrand(brandId);
-                                  onRowsChanged();
-                                }
-                              },
-                            ),
+                                ],
+                                onChanged: (selectedVal) async {
+                                  if (selectedVal == _addNewBrandValue) {
+                                    final newBrand =
+                                        await _showCreateBrandDialog(
+                                            context, model);
+                                    if (newBrand != null) {
+                                      compatibilityRows[i]['brandId'] =
+                                          newBrand.id;
+                                      compatibilityRows[i]['modelId'] = null;
+                                      model.loadModelsForBrand(newBrand.id,
+                                          forceRefresh: true);
+                                      onRowsChanged();
+                                    } else {
+                                      onRowsChanged();
+                                    }
+                                  } else if (selectedVal != null) {
+                                    compatibilityRows[i]['brandId'] =
+                                        selectedVal;
+                                    compatibilityRows[i]['modelId'] =
+                                        null; // Clear model on brand change!
+                                    model.loadModelsForBrand(selectedVal);
+                                    onRowsChanged();
+                                  }
+                                },
+                              );
+                            }),
                           ),
                           const SizedBox(width: 8),
 
-                          // Model Dropdown (From DB, filtered by Brand)
+                          // Model Dropdown (From DB, filtered by Brand + Add New Model)
                           Expanded(
                             child: Builder(builder: (context) {
                               final currentBrandId =
@@ -1404,13 +1865,15 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   : [];
                               final String? currentModelId =
                                   compatibilityRows[i]['modelId'];
+                              final isModelInList = brandModels
+                                  .any((m) => m.id == currentModelId);
 
                               return DropdownButtonFormField<String>(
+                                key: ValueKey(
+                                    'model_${i}_${currentBrandId}_$currentModelId'),
                                 isExpanded: true,
-                                initialValue: brandModels
-                                        .any((m) => m.id == currentModelId)
-                                    ? currentModelId
-                                    : null,
+                                initialValue:
+                                    isModelInList ? currentModelId : null,
                                 decoration: InputDecoration(
                                   labelText: 'Model *',
                                   border: const OutlineInputBorder(),
@@ -1434,31 +1897,74 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                       : (isLoadingModels
                                           ? 'Loading Models...'
                                           : (brandModels.isEmpty
-                                              ? 'No Models Available'
+                                              ? 'No Models (Add below)'
                                               : 'Select Model')),
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                items: hasBrand &&
-                                        !isLoadingModels &&
-                                        brandModels.isNotEmpty
-                                    ? brandModels.map((m) {
-                                        return DropdownMenuItem(
-                                          value: m.id,
-                                          child: Text(
-                                            m.displayName,
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
+                                items: hasBrand && !isLoadingModels
+                                    ? [
+                                        ...brandModels.map((m) {
+                                          return DropdownMenuItem<String>(
+                                            value: m.id,
+                                            child: Text(
+                                              m.displayName,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          );
+                                        }),
+                                        DropdownMenuItem<String>(
+                                          value: _addNewModelValue,
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.add_circle_outline,
+                                                  size: 16,
+                                                  color: AdminColors
+                                                      .primaryGreen),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                '+ Add New Model',
+                                                style: TextStyle(
+                                                  color: AdminColors
+                                                      .primaryGreen,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                      }).toList()
+                                        ),
+                                      ]
                                     : null,
-                                onChanged: hasBrand &&
-                                        !isLoadingModels &&
-                                        brandModels.isNotEmpty
-                                    ? (modelId) {
-                                        compatibilityRows[i]['modelId'] =
-                                            modelId;
-                                        onRowsChanged();
+                                onChanged: hasBrand && !isLoadingModels
+                                    ? (selectedVal) async {
+                                        if (selectedVal == _addNewModelValue) {
+                                          final selectedBrand =
+                                              model.brands.firstWhere(
+                                            (b) => b.id == currentBrandId,
+                                            orElse: () => VehicleBrandModel(
+                                              id: currentBrandId,
+                                              name: 'Selected Brand',
+                                            ),
+                                          );
+                                          final newModel =
+                                              await _showCreateModelDialog(
+                                            context,
+                                            model,
+                                            brandId: currentBrandId,
+                                            brandName: selectedBrand.name,
+                                          );
+                                          if (newModel != null) {
+                                            compatibilityRows[i]['modelId'] =
+                                                newModel.id;
+                                            onRowsChanged();
+                                          } else {
+                                            onRowsChanged();
+                                          }
+                                        } else if (selectedVal != null) {
+                                          compatibilityRows[i]['modelId'] =
+                                              selectedVal;
+                                          onRowsChanged();
+                                        }
                                       }
                                     : null,
                               );

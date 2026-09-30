@@ -21,8 +21,8 @@ class HomeViewModel extends BaseViewModel {
   void showDialog() {
     _dialogService.showCustomDialog(
       variant: DialogType.infoAlert,
-      title: 'Stacked Rocks!',
-      description: 'Give stacked $_counter stars on Github',
+      title: 'VoltSpare Admin',
+      description: 'Connected to VoltSpare inventory and management system.',
     );
   }
 
