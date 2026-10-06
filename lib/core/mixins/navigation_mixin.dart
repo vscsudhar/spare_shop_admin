@@ -65,6 +65,10 @@ mixin NavigationMixin {
     return navigationService.navigateTo(Routes.adminProductsView);
   }
 
+  Future<dynamic>? goToAdminBulkProductSell() {
+    return navigationService.navigateTo(Routes.adminBulkProductSellView);
+  }
+
   Future<dynamic>? goToAdminInventory() {
     return navigationService.navigateTo(Routes.adminInventoryView);
   }

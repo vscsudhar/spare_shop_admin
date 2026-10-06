@@ -243,6 +243,7 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
     String? locationId,
     String? locationName,
     String? address,
+    String? gstNumber,
   }) async {
     setBusy(true);
     try {
@@ -258,6 +259,7 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
         'locationId': locationId,
         'locationName': locationName,
         'address': address ?? '',
+        'gstNumber': gstNumber ?? '',
       });
 
       _customers.removeWhere((c) => c.id == newCustomer.id);
@@ -286,6 +288,7 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
     String? locationId,
     String? locationName,
     String? address,
+    String? gstNumber,
   }) async {
     setBusy(true);
     try {
@@ -301,6 +304,7 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
         'locationId': locationId,
         'locationName': locationName,
         'address': address,
+        'gstNumber': gstNumber,
       });
 
       final index = _customers.indexWhere((c) => c.id == id);

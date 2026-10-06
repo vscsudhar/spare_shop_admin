@@ -489,6 +489,21 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                                   customer.email.isNotEmpty ? customer.email : 'No email provided',
                                   style: TextStyle(fontSize: 11, color: AdminColors.textLight),
                                 ),
+                                if (customer.gstNumber.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blueAccent.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(3),
+                                      border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.3)),
+                                    ),
+                                    child: Text(
+                                      'GST: ${customer.gstNumber}',
+                                      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                                    ),
+                                  ),
+                                ],
                                 if (customer.createdAt != null) ...[
                                   const SizedBox(height: 2),
                                   Text(
@@ -1016,6 +1031,7 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                         const SizedBox(height: 8),
                         _buildDetailRow(Icons.phone, 'Phone Number', customer.phone),
                         _buildDetailRow(Icons.email, 'Email Address', customer.email.isNotEmpty ? customer.email : 'N/A'),
+                        _buildDetailRow(Icons.receipt_long, 'GSTIN / Tax ID', customer.gstNumber.isNotEmpty ? customer.gstNumber : 'Not Provided'),
                         _buildDetailRow(Icons.location_city, 'Serving Hub', customer.locationName != null ? '${customer.locationName} Hub' : 'Unassigned (HQ)'),
                         _buildDetailRow(Icons.home, 'Address', customer.address.isNotEmpty ? customer.address : 'No address provided'),
 
@@ -1179,6 +1195,7 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
     final nameController = TextEditingController(text: customer?.name ?? '');
     final emailController = TextEditingController(text: customer?.email ?? '');
     final phoneController = TextEditingController(text: customer?.phone ?? '');
+    final gstController = TextEditingController(text: customer?.gstNumber ?? '');
     final imageController = TextEditingController(text: customer?.profileImage ?? '');
     final addressController = TextEditingController(text: customer?.address ?? '');
     final dueController = TextEditingController(
@@ -1305,6 +1322,19 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 12),
+
+                        // GST Number / Tax ID (For B2B / Bulk invoicing)
+                        TextFormField(
+                          controller: gstController,
+                          textCapitalization: TextCapitalization.characters,
+                          decoration: const InputDecoration(
+                            labelText: 'GSTIN / B2B Tax Identification Number',
+                            hintText: 'e.g. 33AAAAA0000A1Z5',
+                            prefixIcon: Icon(Icons.receipt_long_outlined, size: 18),
+                          ),
+                          style: TextStyle(color: AdminColors.textPrimary),
                         ),
                         const SizedBox(height: 12),
 
@@ -1467,6 +1497,7 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                           locationId: selectedLocationId,
                           locationName: locName,
                           address: addressController.text.trim(),
+                          gstNumber: gstController.text.trim().toUpperCase(),
                         );
                       } else {
                         success = await viewModel.updateCustomer(
@@ -1482,6 +1513,7 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                           locationId: selectedLocationId,
                           locationName: locName,
                           address: addressController.text.trim(),
+                          gstNumber: gstController.text.trim().toUpperCase(),
                         );
                       }
 

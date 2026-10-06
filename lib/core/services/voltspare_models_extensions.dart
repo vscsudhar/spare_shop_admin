@@ -116,6 +116,8 @@ extension ProductModelExtension on ProductModel {
     final pricePaise = json['sellingPrice'] ?? 0;
     final mrpPaise = json['mrp'] ?? pricePaise;
     final purchasePricePaise = json['purchasePrice'] ?? 0;
+    final leastSellingPrice1Paise = json['leastSellingPrice1'] ?? 0;
+    final leastSellingPrice2Paise = json['leastSellingPrice2'] ?? 0;
     final taxPercentageVal = (json['taxPercentage'] ?? 18.0).toDouble();
 
     final imageList = json['images'] as List<dynamic>? ?? [];
@@ -242,6 +244,8 @@ extension ProductModelExtension on ProductModel {
       name: json['name'] ?? '',
       price: pricePaise / 100.0,
       originalPrice: mrpPaise / 100.0,
+      leastSellingPrice1: (leastSellingPrice1Paise is num ? leastSellingPrice1Paise : 0) / 100.0,
+      leastSellingPrice2: (leastSellingPrice2Paise is num ? leastSellingPrice2Paise : 0) / 100.0,
       rating: (json['rating'] ?? 4.5).toDouble(),
       description: json['description'] ?? '',
       categoryId: categoryId,

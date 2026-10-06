@@ -18,6 +18,7 @@ enum AdminNavigationItem {
   suggestions,
   categories,
   products,
+  bulkProductSell,
   inventory,
   purchases,
   suppliers,
@@ -553,6 +554,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                       AdminNavigationItem.categories),
                   _sidebarItem(context, Icons.build_rounded, 'Products',
                       AdminNavigationItem.products),
+                  _sidebarItem(context, Icons.sell_rounded, 'Bulk Product Sell',
+                      AdminNavigationItem.bulkProductSell),
                   _sidebarItem(context, Icons.inventory_2_rounded, 'Inventory',
                       AdminNavigationItem.inventory),
                   _sidebarItem(context, Icons.receipt_long_rounded, 'Purchases',
@@ -777,6 +780,9 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         break;
       case AdminNavigationItem.products:
         goToAdminProducts();
+        break;
+      case AdminNavigationItem.bulkProductSell:
+        goToAdminBulkProductSell();
         break;
       case AdminNavigationItem.inventory:
         goToAdminInventory();

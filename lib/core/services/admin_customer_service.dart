@@ -67,6 +67,7 @@ class AdminCustomerModel {
   final String? locationId;
   final String? locationName;
   final String address;
+  final String gstNumber;
   final List<CustomerVehicleModel> vehicles;
   final DateTime? createdAt;
   final DateTime? lastLoginAt;
@@ -86,6 +87,7 @@ class AdminCustomerModel {
     this.locationId,
     this.locationName,
     this.address = '',
+    this.gstNumber = '',
     this.vehicles = const [],
     this.createdAt,
     this.lastLoginAt,
@@ -214,6 +216,10 @@ class AdminCustomerModel {
       locationId: json['locationId']?.toString(),
       locationName: json['locationName']?.toString() ?? json['hubName']?.toString(),
       address: json['address']?.toString() ?? json['city']?.toString() ?? '',
+      gstNumber: json['gstNumber']?.toString() ??
+          json['gst']?.toString() ??
+          json['gstin']?.toString() ??
+          '',
       vehicles: parsedVehicles,
       createdAt: parsedCreatedAt,
       lastLoginAt: parsedLastLogin,
@@ -237,6 +243,7 @@ class AdminCustomerModel {
       'locationId': locationId,
       'locationName': locationName,
       'address': address,
+      'gstNumber': gstNumber,
       'vehicles': vehicles.map((v) => v.toJson()).toList(),
       'createdAt': createdAt?.toIso8601String(),
       'lastLoginAt': lastLoginAt?.toIso8601String(),
@@ -258,6 +265,7 @@ class AdminCustomerModel {
     String? locationId,
     String? locationName,
     String? address,
+    String? gstNumber,
     List<CustomerVehicleModel>? vehicles,
     DateTime? createdAt,
     DateTime? lastLoginAt,
@@ -277,6 +285,7 @@ class AdminCustomerModel {
       locationId: locationId ?? this.locationId,
       locationName: locationName ?? this.locationName,
       address: address ?? this.address,
+      gstNumber: gstNumber ?? this.gstNumber,
       vehicles: vehicles ?? this.vehicles,
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
@@ -604,6 +613,7 @@ class AdminCustomerService {
         locationId: data.containsKey('locationId') ? data['locationId']?.toString() : current.locationId,
         locationName: data.containsKey('locationName') ? data['locationName']?.toString() : current.locationName,
         address: data['address']?.toString() ?? current.address,
+        gstNumber: data['gstNumber']?.toString() ?? current.gstNumber,
       );
       cached[index] = updated;
       await _saveCachedCustomers(cached);
@@ -697,6 +707,7 @@ class AdminCustomerService {
       locationId: data['locationId']?.toString(),
       locationName: data['locationName']?.toString(),
       address: data['address']?.toString() ?? '',
+      gstNumber: data['gstNumber']?.toString() ?? '',
       createdAt: DateTime.now(),
       lastLoginAt: DateTime.now(),
       vehicles: [],

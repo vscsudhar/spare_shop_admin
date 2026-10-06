@@ -10,18 +10,22 @@
 import 'package:stacked_services/src/bottom_sheet/bottom_sheet_service.dart';
 import 'package:stacked_services/src/dialog/dialog_service.dart';
 import 'package:stacked_services/src/navigation/navigation_service.dart';
+import 'package:stacked_services/src/snackbar/snackbar_service.dart';
 import 'package:stacked_shared/stacked_shared.dart';
 
 import '../core/services/address_service.dart';
+import '../core/services/admin_customer_service.dart';
 import '../core/services/admin_dashboard_service.dart';
 import '../core/services/admin_purchase_service.dart';
 import '../core/services/admin_supplier_service.dart';
 import '../core/services/admin_support_ticket_service.dart';
 import '../core/services/api_client.dart';
 import '../core/services/auth_service.dart';
+import '../core/services/bulk_quotation_service.dart';
 import '../core/services/cart_service.dart';
 import '../core/services/category_service.dart';
 import '../core/services/delivery_charge_service.dart';
+import '../core/services/invoice_service.dart';
 import '../core/services/location_service.dart';
 import '../core/services/network_info_service.dart';
 import '../core/services/order_service.dart';
@@ -35,8 +39,6 @@ import '../core/services/suggestion_service.dart';
 import '../core/services/token_service.dart';
 import '../core/services/upload_service.dart';
 import '../core/services/wishlist_service.dart';
-import '../core/services/invoice_service.dart';
-import '../core/services/admin_customer_service.dart';
 import '../core/theme/theme_service.dart';
 
 final locator = StackedLocator.instance;
@@ -50,6 +52,7 @@ Future<void> setupLocator(
 // Register dependencies
   locator.registerLazySingleton(() => BottomSheetService());
   locator.registerLazySingleton(() => DialogService());
+  locator.registerLazySingleton(() => SnackbarService());
   locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => ThemeService());
   locator.registerLazySingleton(() => RareRequestMockService());
@@ -77,4 +80,5 @@ Future<void> setupLocator(
   locator.registerLazySingleton(() => SuggestionService());
   locator.registerLazySingleton(() => InvoiceService());
   locator.registerLazySingleton(() => AdminCustomerService());
+  locator.registerLazySingleton(() => BulkQuotationService());
 }

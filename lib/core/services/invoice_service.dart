@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:html' as html;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/foundation.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/services/api_client.dart';
@@ -173,6 +175,25 @@ class InvoiceService {
 
   // Cached business settings from backend general settings
   static InvoiceBusinessInfo? _cachedBusinessInfo;
+
+  // Cached base64 data URI of the logo for standalone HTML/PDF rendering
+  static String? _cachedLogoBase64;
+
+  /// Load and cache the full brand logo as a self-contained base64 data URI
+  static Future<String> getLogoDataUri() async {
+    if (_cachedLogoBase64 != null && _cachedLogoBase64!.isNotEmpty) {
+      return _cachedLogoBase64!;
+    }
+    try {
+      final byteData = await rootBundle.load('assets/images/logo_full.png');
+      final bytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+      _cachedLogoBase64 = 'data:image/png;base64,${base64Encode(bytes)}';
+      return _cachedLogoBase64!;
+    } catch (e) {
+      debugPrint('Error loading logo asset for invoice: $e');
+      return '';
+    }
+  }
 
   InvoiceService({ApiClient? apiClient})
       : _apiClient = apiClient ?? locator<ApiClient>();
@@ -764,7 +785,8 @@ class InvoiceService {
   /// Print the invoice using a seamless hidden iframe (avoids popup blockers and keeps styles intact)
   Future<void> printInvoice(InvoiceModel invoice) async {
     try {
-      final htmlContent = _generateInvoiceHtml(invoice);
+      final logoUri = await getLogoDataUri();
+      final htmlContent = _generateInvoiceHtml(invoice, logoDataUri: logoUri);
       final blob = html.Blob([htmlContent], 'text/html;charset=utf-8');
       final blobUrl = html.Url.createObjectUrlFromBlob(blob);
 
@@ -801,9 +823,10 @@ class InvoiceService {
   }
 
   /// Download the stand-alone self-contained HTML invoice file directly to user device
-  void downloadInvoiceFile(InvoiceModel invoice) {
+  Future<void> downloadInvoiceFile(InvoiceModel invoice) async {
     try {
-      final htmlContent = _generateInvoiceHtml(invoice);
+      final logoUri = await getLogoDataUri();
+      final htmlContent = _generateInvoiceHtml(invoice, logoDataUri: logoUri);
       final blob = html.Blob([htmlContent], 'text/html;charset=utf-8');
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.AnchorElement(href: url)
@@ -821,9 +844,10 @@ class InvoiceService {
   }
 
   /// Open full-page invoice in a new browser tab with print dialog
-  void openInvoiceInNewTab(InvoiceModel invoice) {
+  Future<void> openInvoiceInNewTab(InvoiceModel invoice) async {
     try {
-      final htmlContent = _generateInvoiceHtml(invoice);
+      final logoUri = await getLogoDataUri();
+      final htmlContent = _generateInvoiceHtml(invoice, logoDataUri: logoUri);
       final blob = html.Blob([htmlContent], 'text/html;charset=utf-8');
       final blobUrl = html.Url.createObjectUrlFromBlob(blob);
       html.window.open(blobUrl, '_blank');
@@ -838,7 +862,12 @@ class InvoiceService {
   }
 
   /// Generate high-precision, clean, print-friendly A4 GST HTML Invoice
-  String _generateInvoiceHtml(InvoiceModel invoice) {
+  String _generateInvoiceHtml(InvoiceModel invoice, {String? logoDataUri}) {
+    final logoSrc = (logoDataUri != null && logoDataUri.isNotEmpty)
+        ? logoDataUri
+        : (_cachedLogoBase64 != null && _cachedLogoBase64!.isNotEmpty)
+            ? _cachedLogoBase64!
+            : 'assets/images/logo_full.png';
     final business = invoice.business;
     final customer = invoice.customer;
     final summary = invoice.summary;
@@ -1174,7 +1203,7 @@ class InvoiceService {
     <div class="header-bar">
       <div class="brand-section">
         <div class="logo-wrapper">
-          <img class="brand-logo" src="assets/images/logo_full.png" alt="VoltSpare" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <img class="brand-logo" src="$logoSrc" alt="VoltSpare" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div class="logo-fallback" style="display: none; align-items: center; gap: 8px;">
             <div style="background: #0f172a; color: #10b981; border-radius: 6px; padding: 4px 8px; font-weight: bold; font-size: 16px;">&#9889;</div>
             <h1>${business.name}</h1>

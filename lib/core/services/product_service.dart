@@ -150,4 +150,11 @@ class ProductService {
     final data = response.data['data'] ?? {};
     return ProductModelExtension.fromJson(data);
   }
+
+  Future<void> bulkUpdatePrices(List<Map<String, dynamic>> items) async {
+    await _apiClient.patch(
+      '${ApiEndpoints.products}/bulk/prices',
+      data: {'products': items},
+    );
+  }
 }

@@ -126,6 +126,8 @@ class ProductModel {
   final String name;
   final double price;
   final double? originalPrice;
+  final double leastSellingPrice1;
+  final double leastSellingPrice2;
   final double rating;
   final String description;
   final String categoryId;
@@ -147,6 +149,8 @@ class ProductModel {
     required this.name,
     required this.price,
     this.originalPrice,
+    this.leastSellingPrice1 = 0.0,
+    this.leastSellingPrice2 = 0.0,
     required this.rating,
     required this.description,
     required this.categoryId,
@@ -168,6 +172,20 @@ class ProductModel {
   double get actualSellingPrice {
     if (taxPercentage <= 0) return price;
     final base = price / (1.0 + (taxPercentage / 100.0));
+    return double.parse(base.toStringAsFixed(2));
+  }
+
+  /// Base Least Selling Price 1 without tax
+  double get actualLeastSellingPrice1 {
+    if (taxPercentage <= 0) return leastSellingPrice1;
+    final base = leastSellingPrice1 / (1.0 + (taxPercentage / 100.0));
+    return double.parse(base.toStringAsFixed(2));
+  }
+
+  /// Base Least Selling Price 2 without tax
+  double get actualLeastSellingPrice2 {
+    if (taxPercentage <= 0) return leastSellingPrice2;
+    final base = leastSellingPrice2 / (1.0 + (taxPercentage / 100.0));
     return double.parse(base.toStringAsFixed(2));
   }
 
@@ -199,6 +217,8 @@ class ProductModel {
     String? name,
     double? price,
     double? originalPrice,
+    double? leastSellingPrice1,
+    double? leastSellingPrice2,
     double? rating,
     String? description,
     String? categoryId,
@@ -220,6 +240,8 @@ class ProductModel {
       name: name ?? this.name,
       price: price ?? this.price,
       originalPrice: originalPrice ?? this.originalPrice,
+      leastSellingPrice1: leastSellingPrice1 ?? this.leastSellingPrice1,
+      leastSellingPrice2: leastSellingPrice2 ?? this.leastSellingPrice2,
       rating: rating ?? this.rating,
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,

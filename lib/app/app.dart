@@ -64,6 +64,8 @@ import 'package:spare_shop_admin/core/services/category_service.dart';
 import 'package:spare_shop_admin/ui/views/admin_categories/admin_categories_view.dart';
 import 'package:spare_shop_admin/core/services/invoice_service.dart';
 import 'package:spare_shop_admin/core/services/admin_customer_service.dart';
+import 'package:spare_shop_admin/ui/views/admin_bulk_product_sell/admin_bulk_product_sell_view.dart';
+import 'package:spare_shop_admin/core/services/bulk_quotation_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -75,6 +77,7 @@ import 'package:spare_shop_admin/core/services/admin_customer_service.dart';
     MaterialRoute(page: AdminOrderDetailView),
     MaterialRoute(page: AdminCategoriesView),
     MaterialRoute(page: AdminProductsView),
+    MaterialRoute(page: AdminBulkProductSellView),
     MaterialRoute(page: AdminInventoryView),
     MaterialRoute(page: AdminPurchasesView),
     MaterialRoute(page: AdminCustomersView),
@@ -108,6 +111,7 @@ import 'package:spare_shop_admin/core/services/admin_customer_service.dart';
   dependencies: [
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: DialogService),
+    LazySingleton(classType: SnackbarService),
     LazySingleton(classType: NavigationService),
     LazySingleton(classType: ThemeService),
     LazySingleton(classType: RareRequestMockService),
@@ -135,6 +139,7 @@ import 'package:spare_shop_admin/core/services/admin_customer_service.dart';
     LazySingleton(classType: SuggestionService),
     LazySingleton(classType: InvoiceService),
     LazySingleton(classType: AdminCustomerService),
+    LazySingleton(classType: BulkQuotationService),
     // @stacked-service
   ],
   bottomsheets: [

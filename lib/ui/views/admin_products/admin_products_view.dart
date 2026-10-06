@@ -166,6 +166,14 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
             .toStringAsFixed(2));
     final purchasePriceController =
         TextEditingController(text: product.purchasePrice.toStringAsFixed(2));
+    final leastSellingPrice1Controller = TextEditingController(
+        text: product.leastSellingPrice1 > 0
+            ? product.leastSellingPrice1.toStringAsFixed(2)
+            : '');
+    final leastSellingPrice2Controller = TextEditingController(
+        text: product.leastSellingPrice2 > 0
+            ? product.leastSellingPrice2.toStringAsFixed(2)
+            : '');
     final stockCountController =
         TextEditingController(text: product.stockCount.toString());
 
@@ -374,6 +382,34 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Purchase Price (₹) *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: leastSellingPrice1Controller,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Least Selling Price 1 (₹)',
+                                    hintText: 'e.g. Bulk Tier 1',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextField(
+                                  controller: leastSellingPrice2Controller,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Least Selling Price 2 (₹)',
+                                    hintText: 'e.g. Bulk Tier 2',
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
@@ -674,6 +710,10 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 categoryId: selectedCatId,
                                 name: nameController.text.trim(),
                                 sellingPrice: sellPrice,
+                                leastSellingPrice1:
+                                    double.tryParse(leastSellingPrice1Controller.text) ?? 0.0,
+                                leastSellingPrice2:
+                                    double.tryParse(leastSellingPrice2Controller.text) ?? 0.0,
                                 mrp: mrpVal,
                                 purchasePrice: buyPrice,
                                 taxPercentage: taxVal,
@@ -718,6 +758,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
     final sellingPriceController = TextEditingController();
     final mrpController = TextEditingController();
     final purchasePriceController = TextEditingController();
+    final leastSellingPrice1Controller = TextEditingController();
+    final leastSellingPrice2Controller = TextEditingController();
     final stockCountController = TextEditingController(text: '10');
     final partController = TextEditingController();
 
@@ -917,6 +959,34 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Purchase Price (₹) *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: leastSellingPrice1Controller,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Least Selling Price 1 (₹)',
+                                    hintText: 'e.g. Bulk Tier 1',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextField(
+                                  controller: leastSellingPrice2Controller,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Least Selling Price 2 (₹)',
+                                    hintText: 'e.g. Bulk Tier 2',
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
@@ -1180,6 +1250,10 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               await model.addProduct(
                                 name: nameController.text.trim(),
                                 price: price,
+                                leastSellingPrice1:
+                                    double.tryParse(leastSellingPrice1Controller.text) ?? 0.0,
+                                leastSellingPrice2:
+                                    double.tryParse(leastSellingPrice2Controller.text) ?? 0.0,
                                 mrp: mrpVal,
                                 categoryId: categoryId,
                                 partNumber: sku,
