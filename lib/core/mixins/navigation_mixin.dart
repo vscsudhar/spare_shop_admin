@@ -97,6 +97,10 @@ mixin NavigationMixin {
     return navigationService.navigateTo(Routes.adminSuggestionsView);
   }
 
+  Future<dynamic>? goToAdminEnquiries() {
+    return navigationService.navigateTo(Routes.adminEnquiriesView);
+  }
+
   Future<dynamic>? goToAdminSupportTickets() {
     return navigationService.navigateTo(Routes.adminSupportTicketsView);
   }

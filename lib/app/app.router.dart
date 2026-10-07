@@ -6,10 +6,10 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:flutter/material.dart' as _i38;
+import 'package:flutter/material.dart' as _i39;
 import 'package:flutter/material.dart';
-import 'package:spare_shop_admin/ui/common/location_models.dart' as _i40;
-import 'package:spare_shop_admin/ui/common/voltspare_models.dart' as _i39;
+import 'package:spare_shop_admin/ui/common/location_models.dart' as _i41;
+import 'package:spare_shop_admin/ui/common/voltspare_models.dart' as _i40;
 import 'package:spare_shop_admin/ui/views/admin_approved_request/admin_approved_request_view.dart'
     as _i19;
 import 'package:spare_shop_admin/ui/views/admin_billing/admin_billing_view.dart'
@@ -25,11 +25,13 @@ import 'package:spare_shop_admin/ui/views/admin_create_quotation/admin_create_qu
 import 'package:spare_shop_admin/ui/views/admin_customers/admin_customers_view.dart'
     as _i12;
 import 'package:spare_shop_admin/ui/views/admin_damaged_products/admin_damaged_products_view.dart'
-    as _i36;
+    as _i37;
 import 'package:spare_shop_admin/ui/views/admin_dashboard/admin_dashboard_view.dart'
     as _i4;
 import 'package:spare_shop_admin/ui/views/admin_delivery_charges/admin_delivery_charges_view.dart'
-    as _i37;
+    as _i38;
+import 'package:spare_shop_admin/ui/views/admin_enquiries/admin_enquiries_view.dart'
+    as _i32;
 import 'package:spare_shop_admin/ui/views/admin_forgot_password/admin_forgot_password_view.dart'
     as _i22;
 import 'package:spare_shop_admin/ui/views/admin_inventory/admin_inventory_view.dart'
@@ -57,11 +59,11 @@ import 'package:spare_shop_admin/ui/views/admin_rare_requests/admin_rare_request
 import 'package:spare_shop_admin/ui/views/admin_reports/admin_reports_view.dart'
     as _i14;
 import 'package:spare_shop_admin/ui/views/admin_returns/admin_new_return_view.dart'
-    as _i34;
-import 'package:spare_shop_admin/ui/views/admin_returns/admin_return_detail_view.dart'
     as _i35;
+import 'package:spare_shop_admin/ui/views/admin_returns/admin_return_detail_view.dart'
+    as _i36;
 import 'package:spare_shop_admin/ui/views/admin_returns/admin_returns_list_view.dart'
-    as _i33;
+    as _i34;
 import 'package:spare_shop_admin/ui/views/admin_settings/admin_settings_view.dart'
     as _i29;
 import 'package:spare_shop_admin/ui/views/admin_staff_roles/admin_staff_roles_view.dart'
@@ -77,11 +79,11 @@ import 'package:spare_shop_admin/ui/views/admin_suppliers/admin_suppliers_view.d
 import 'package:spare_shop_admin/ui/views/admin_support_tickets/admin_support_tickets_view.dart'
     as _i30;
 import 'package:spare_shop_admin/ui/views/admin_ticket_chat/admin_ticket_chat_view.dart'
-    as _i32;
+    as _i33;
 import 'package:spare_shop_admin/ui/views/home/home_view.dart' as _i3;
 import 'package:spare_shop_admin/ui/views/startup/startup_view.dart' as _i2;
 import 'package:stacked/stacked.dart' as _i1;
-import 'package:stacked_services/stacked_services.dart' as _i41;
+import 'package:stacked_services/stacked_services.dart' as _i42;
 
 class Routes {
   static const startupView = '/';
@@ -144,6 +146,8 @@ class Routes {
 
   static const adminSuggestionsView = '/admin-suggestions-view';
 
+  static const adminEnquiriesView = '/admin-enquiries-view';
+
   static const adminTicketChatView = '/admin-ticket-chat-view';
 
   static const adminReturnsListView = '/admin-returns-list-view';
@@ -187,6 +191,7 @@ class Routes {
     adminSettingsView,
     adminSupportTicketsView,
     adminSuggestionsView,
+    adminEnquiriesView,
     adminTicketChatView,
     adminReturnsListView,
     adminNewReturnView,
@@ -319,28 +324,32 @@ class StackedRouter extends _i1.RouterBase {
       page: _i31.AdminSuggestionsView,
     ),
     _i1.RouteDef(
+      Routes.adminEnquiriesView,
+      page: _i32.AdminEnquiriesView,
+    ),
+    _i1.RouteDef(
       Routes.adminTicketChatView,
-      page: _i32.AdminTicketChatView,
+      page: _i33.AdminTicketChatView,
     ),
     _i1.RouteDef(
       Routes.adminReturnsListView,
-      page: _i33.AdminReturnsListView,
+      page: _i34.AdminReturnsListView,
     ),
     _i1.RouteDef(
       Routes.adminNewReturnView,
-      page: _i34.AdminNewReturnView,
+      page: _i35.AdminNewReturnView,
     ),
     _i1.RouteDef(
       Routes.adminReturnDetailView,
-      page: _i35.AdminReturnDetailView,
+      page: _i36.AdminReturnDetailView,
     ),
     _i1.RouteDef(
       Routes.adminDamagedProductsView,
-      page: _i36.AdminDamagedProductsView,
+      page: _i37.AdminDamagedProductsView,
     ),
     _i1.RouteDef(
       Routes.adminDeliveryChargesView,
-      page: _i37.AdminDeliveryChargesView,
+      page: _i38.AdminDeliveryChargesView,
     ),
   ];
 
@@ -349,7 +358,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<StartupViewArguments>(
         orElse: () => const StartupViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i2.StartupView(key: args.key),
         settings: data,
       );
@@ -358,7 +367,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<HomeViewArguments>(
         orElse: () => const HomeViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i3.HomeView(key: args.key),
         settings: data,
       );
@@ -367,7 +376,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminDashboardViewArguments>(
         orElse: () => const AdminDashboardViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i4.AdminDashboardView(key: args.key),
         settings: data,
       );
@@ -376,7 +385,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminOrdersViewArguments>(
         orElse: () => const AdminOrdersViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i5.AdminOrdersView(key: args.key),
         settings: data,
       );
@@ -385,7 +394,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminOrderDetailViewArguments>(
         orElse: () => const AdminOrderDetailViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) =>
             _i6.AdminOrderDetailView(key: args.key, order: args.order),
         settings: data,
@@ -395,7 +404,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminCategoriesViewArguments>(
         orElse: () => const AdminCategoriesViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i7.AdminCategoriesView(key: args.key),
         settings: data,
       );
@@ -404,7 +413,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminProductsViewArguments>(
         orElse: () => const AdminProductsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i8.AdminProductsView(key: args.key),
         settings: data,
       );
@@ -413,7 +422,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminBulkProductSellViewArguments>(
         orElse: () => const AdminBulkProductSellViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i9.AdminBulkProductSellView(key: args.key),
         settings: data,
       );
@@ -422,7 +431,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminInventoryViewArguments>(
         orElse: () => const AdminInventoryViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i10.AdminInventoryView(key: args.key),
         settings: data,
       );
@@ -431,7 +440,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminPurchasesViewArguments>(
         orElse: () => const AdminPurchasesViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i11.AdminPurchasesView(key: args.key),
         settings: data,
       );
@@ -440,7 +449,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminCustomersViewArguments>(
         orElse: () => const AdminCustomersViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i12.AdminCustomersView(key: args.key),
         settings: data,
       );
@@ -449,7 +458,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminBillingViewArguments>(
         orElse: () => const AdminBillingViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i13.AdminBillingView(key: args.key),
         settings: data,
       );
@@ -458,7 +467,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminReportsViewArguments>(
         orElse: () => const AdminReportsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i14.AdminReportsView(key: args.key),
         settings: data,
       );
@@ -467,7 +476,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminStaffRolesViewArguments>(
         orElse: () => const AdminStaffRolesViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i15.AdminStaffRolesView(key: args.key),
         settings: data,
       );
@@ -476,7 +485,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminRareRequestsViewArguments>(
         orElse: () => const AdminRareRequestsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i16.AdminRareRequestsView(key: args.key),
         settings: data,
       );
@@ -485,7 +494,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminRareRequestChatViewArguments>(
         orElse: () => const AdminRareRequestChatViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i17.AdminRareRequestChatView(
             key: args.key, requestId: args.requestId),
         settings: data,
@@ -494,7 +503,7 @@ class StackedRouter extends _i1.RouterBase {
     _i18.AdminCreateQuotationView: (data) {
       final args =
           data.getArgs<AdminCreateQuotationViewArguments>(nullOk: false);
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i18.AdminCreateQuotationView(
             key: args.key, requestId: args.requestId),
         settings: data,
@@ -503,7 +512,7 @@ class StackedRouter extends _i1.RouterBase {
     _i19.AdminApprovedRequestView: (data) {
       final args =
           data.getArgs<AdminApprovedRequestViewArguments>(nullOk: false);
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i19.AdminApprovedRequestView(
             key: args.key, requestId: args.requestId),
         settings: data,
@@ -512,7 +521,7 @@ class StackedRouter extends _i1.RouterBase {
     _i20.AdminCancelledRequestView: (data) {
       final args =
           data.getArgs<AdminCancelledRequestViewArguments>(nullOk: false);
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i20.AdminCancelledRequestView(
             key: args.key, requestId: args.requestId),
         settings: data,
@@ -522,7 +531,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminLoginViewArguments>(
         orElse: () => const AdminLoginViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i21.AdminLoginView(key: args.key),
         settings: data,
       );
@@ -531,7 +540,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminForgotPasswordViewArguments>(
         orElse: () => const AdminForgotPasswordViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i22.AdminForgotPasswordView(key: args.key),
         settings: data,
       );
@@ -540,7 +549,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminSuppliersViewArguments>(
         orElse: () => const AdminSuppliersViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i23.AdminSuppliersView(key: args.key),
         settings: data,
       );
@@ -548,7 +557,7 @@ class StackedRouter extends _i1.RouterBase {
     _i24.AdminSupplierDetailView: (data) {
       final args =
           data.getArgs<AdminSupplierDetailViewArguments>(nullOk: false);
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i24.AdminSupplierDetailView(
             key: args.key, supplierId: args.supplierId),
         settings: data,
@@ -558,7 +567,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminSupplierFormViewArguments>(
         orElse: () => const AdminSupplierFormViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i25.AdminSupplierFormView(
             key: args.key, supplierId: args.supplierId),
         settings: data,
@@ -568,7 +577,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminLocationsViewArguments>(
         orElse: () => const AdminLocationsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i26.AdminLocationsView(key: args.key),
         settings: data,
       );
@@ -577,7 +586,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminLocationFormViewArguments>(
         orElse: () => const AdminLocationFormViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i27.AdminLocationFormView(
             key: args.key, locationId: args.locationId),
         settings: data,
@@ -587,7 +596,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminLocationInventoryViewArguments>(
         orElse: () => const AdminLocationInventoryViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i28.AdminLocationInventoryView(
             key: args.key,
             locationId: args.locationId,
@@ -599,7 +608,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminSettingsViewArguments>(
         orElse: () => const AdminSettingsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i29.AdminSettingsView(key: args.key),
         settings: data,
       );
@@ -608,7 +617,7 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminSupportTicketsViewArguments>(
         orElse: () => const AdminSupportTicketsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i30.AdminSupportTicketsView(key: args.key),
         settings: data,
       );
@@ -617,63 +626,72 @@ class StackedRouter extends _i1.RouterBase {
       final args = data.getArgs<AdminSuggestionsViewArguments>(
         orElse: () => const AdminSuggestionsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) => _i31.AdminSuggestionsView(key: args.key),
         settings: data,
       );
     },
-    _i32.AdminTicketChatView: (data) {
+    _i32.AdminEnquiriesView: (data) {
+      final args = data.getArgs<AdminEnquiriesViewArguments>(
+        orElse: () => const AdminEnquiriesViewArguments(),
+      );
+      return _i39.MaterialPageRoute<dynamic>(
+        builder: (context) => _i32.AdminEnquiriesView(key: args.key),
+        settings: data,
+      );
+    },
+    _i33.AdminTicketChatView: (data) {
       final args = data.getArgs<AdminTicketChatViewArguments>(
         orElse: () => const AdminTicketChatViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) =>
-            _i32.AdminTicketChatView(key: args.key, ticketId: args.ticketId),
+            _i33.AdminTicketChatView(key: args.key, ticketId: args.ticketId),
         settings: data,
       );
     },
-    _i33.AdminReturnsListView: (data) {
+    _i34.AdminReturnsListView: (data) {
       final args = data.getArgs<AdminReturnsListViewArguments>(
         orElse: () => const AdminReturnsListViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
-        builder: (context) => _i33.AdminReturnsListView(key: args.key),
+      return _i39.MaterialPageRoute<dynamic>(
+        builder: (context) => _i34.AdminReturnsListView(key: args.key),
         settings: data,
       );
     },
-    _i34.AdminNewReturnView: (data) {
+    _i35.AdminNewReturnView: (data) {
       final args = data.getArgs<AdminNewReturnViewArguments>(
         orElse: () => const AdminNewReturnViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
-        builder: (context) => _i34.AdminNewReturnView(
+      return _i39.MaterialPageRoute<dynamic>(
+        builder: (context) => _i35.AdminNewReturnView(
             key: args.key, prefillBill: args.prefillBill),
         settings: data,
       );
     },
-    _i35.AdminReturnDetailView: (data) {
+    _i36.AdminReturnDetailView: (data) {
       final args = data.getArgs<AdminReturnDetailViewArguments>(nullOk: false);
-      return _i38.MaterialPageRoute<dynamic>(
+      return _i39.MaterialPageRoute<dynamic>(
         builder: (context) =>
-            _i35.AdminReturnDetailView(key: args.key, caseId: args.caseId),
+            _i36.AdminReturnDetailView(key: args.key, caseId: args.caseId),
         settings: data,
       );
     },
-    _i36.AdminDamagedProductsView: (data) {
+    _i37.AdminDamagedProductsView: (data) {
       final args = data.getArgs<AdminDamagedProductsViewArguments>(
         orElse: () => const AdminDamagedProductsViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
-        builder: (context) => _i36.AdminDamagedProductsView(key: args.key),
+      return _i39.MaterialPageRoute<dynamic>(
+        builder: (context) => _i37.AdminDamagedProductsView(key: args.key),
         settings: data,
       );
     },
-    _i37.AdminDeliveryChargesView: (data) {
+    _i38.AdminDeliveryChargesView: (data) {
       final args = data.getArgs<AdminDeliveryChargesViewArguments>(
         orElse: () => const AdminDeliveryChargesViewArguments(),
       );
-      return _i38.MaterialPageRoute<dynamic>(
-        builder: (context) => _i37.AdminDeliveryChargesView(key: args.key),
+      return _i39.MaterialPageRoute<dynamic>(
+        builder: (context) => _i38.AdminDeliveryChargesView(key: args.key),
         settings: data,
       );
     },
@@ -689,7 +707,7 @@ class StackedRouter extends _i1.RouterBase {
 class StartupViewArguments {
   const StartupViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -711,7 +729,7 @@ class StartupViewArguments {
 class HomeViewArguments {
   const HomeViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -733,7 +751,7 @@ class HomeViewArguments {
 class AdminDashboardViewArguments {
   const AdminDashboardViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -755,7 +773,7 @@ class AdminDashboardViewArguments {
 class AdminOrdersViewArguments {
   const AdminOrdersViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -780,9 +798,9 @@ class AdminOrderDetailViewArguments {
     this.order,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
-  final _i39.OrderModel? order;
+  final _i40.OrderModel? order;
 
   @override
   String toString() {
@@ -804,7 +822,7 @@ class AdminOrderDetailViewArguments {
 class AdminCategoriesViewArguments {
   const AdminCategoriesViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -826,7 +844,7 @@ class AdminCategoriesViewArguments {
 class AdminProductsViewArguments {
   const AdminProductsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -848,7 +866,7 @@ class AdminProductsViewArguments {
 class AdminBulkProductSellViewArguments {
   const AdminBulkProductSellViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -870,7 +888,7 @@ class AdminBulkProductSellViewArguments {
 class AdminInventoryViewArguments {
   const AdminInventoryViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -892,7 +910,7 @@ class AdminInventoryViewArguments {
 class AdminPurchasesViewArguments {
   const AdminPurchasesViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -914,7 +932,7 @@ class AdminPurchasesViewArguments {
 class AdminCustomersViewArguments {
   const AdminCustomersViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -936,7 +954,7 @@ class AdminCustomersViewArguments {
 class AdminBillingViewArguments {
   const AdminBillingViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -958,7 +976,7 @@ class AdminBillingViewArguments {
 class AdminReportsViewArguments {
   const AdminReportsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -980,7 +998,7 @@ class AdminReportsViewArguments {
 class AdminStaffRolesViewArguments {
   const AdminStaffRolesViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1002,7 +1020,7 @@ class AdminStaffRolesViewArguments {
 class AdminRareRequestsViewArguments {
   const AdminRareRequestsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1027,7 +1045,7 @@ class AdminRareRequestChatViewArguments {
     this.requestId = '',
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String requestId;
 
@@ -1054,7 +1072,7 @@ class AdminCreateQuotationViewArguments {
     required this.requestId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String requestId;
 
@@ -1081,7 +1099,7 @@ class AdminApprovedRequestViewArguments {
     required this.requestId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String requestId;
 
@@ -1108,7 +1126,7 @@ class AdminCancelledRequestViewArguments {
     required this.requestId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String requestId;
 
@@ -1132,7 +1150,7 @@ class AdminCancelledRequestViewArguments {
 class AdminLoginViewArguments {
   const AdminLoginViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1154,7 +1172,7 @@ class AdminLoginViewArguments {
 class AdminForgotPasswordViewArguments {
   const AdminForgotPasswordViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1176,7 +1194,7 @@ class AdminForgotPasswordViewArguments {
 class AdminSuppliersViewArguments {
   const AdminSuppliersViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1201,7 +1219,7 @@ class AdminSupplierDetailViewArguments {
     required this.supplierId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String supplierId;
 
@@ -1228,7 +1246,7 @@ class AdminSupplierFormViewArguments {
     this.supplierId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String? supplierId;
 
@@ -1252,7 +1270,7 @@ class AdminSupplierFormViewArguments {
 class AdminLocationsViewArguments {
   const AdminLocationsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1277,7 +1295,7 @@ class AdminLocationFormViewArguments {
     this.locationId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String? locationId;
 
@@ -1305,11 +1323,11 @@ class AdminLocationInventoryViewArguments {
     this.location,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String? locationId;
 
-  final _i40.LocationModel? location;
+  final _i41.LocationModel? location;
 
   @override
   String toString() {
@@ -1333,7 +1351,7 @@ class AdminLocationInventoryViewArguments {
 class AdminSettingsViewArguments {
   const AdminSettingsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1355,7 +1373,7 @@ class AdminSettingsViewArguments {
 class AdminSupportTicketsViewArguments {
   const AdminSupportTicketsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1377,7 +1395,7 @@ class AdminSupportTicketsViewArguments {
 class AdminSuggestionsViewArguments {
   const AdminSuggestionsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1396,13 +1414,35 @@ class AdminSuggestionsViewArguments {
   }
 }
 
+class AdminEnquiriesViewArguments {
+  const AdminEnquiriesViewArguments({this.key});
+
+  final _i39.Key? key;
+
+  @override
+  String toString() {
+    return '{"key": "$key"}';
+  }
+
+  @override
+  bool operator ==(covariant AdminEnquiriesViewArguments other) {
+    if (identical(this, other)) return true;
+    return other.key == key;
+  }
+
+  @override
+  int get hashCode {
+    return key.hashCode;
+  }
+}
+
 class AdminTicketChatViewArguments {
   const AdminTicketChatViewArguments({
     this.key,
     this.ticketId = '',
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String ticketId;
 
@@ -1426,7 +1466,7 @@ class AdminTicketChatViewArguments {
 class AdminReturnsListViewArguments {
   const AdminReturnsListViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1451,7 +1491,7 @@ class AdminNewReturnViewArguments {
     this.prefillBill,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String? prefillBill;
 
@@ -1478,7 +1518,7 @@ class AdminReturnDetailViewArguments {
     required this.caseId,
   });
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   final String caseId;
 
@@ -1502,7 +1542,7 @@ class AdminReturnDetailViewArguments {
 class AdminDamagedProductsViewArguments {
   const AdminDamagedProductsViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1524,7 +1564,7 @@ class AdminDamagedProductsViewArguments {
 class AdminDeliveryChargesViewArguments {
   const AdminDeliveryChargesViewArguments({this.key});
 
-  final _i38.Key? key;
+  final _i39.Key? key;
 
   @override
   String toString() {
@@ -1543,9 +1583,9 @@ class AdminDeliveryChargesViewArguments {
   }
 }
 
-extension NavigatorStateExtension on _i41.NavigationService {
+extension NavigatorStateExtension on _i42.NavigationService {
   Future<dynamic> navigateToStartupView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1561,7 +1601,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToHomeView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1577,7 +1617,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminDashboardView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1593,7 +1633,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminOrdersView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1609,8 +1649,8 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminOrderDetailView({
-    _i38.Key? key,
-    _i39.OrderModel? order,
+    _i39.Key? key,
+    _i40.OrderModel? order,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1626,7 +1666,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminCategoriesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1642,7 +1682,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminProductsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1658,7 +1698,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminBulkProductSellView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1674,7 +1714,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminInventoryView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1690,7 +1730,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminPurchasesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1706,7 +1746,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminCustomersView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1722,7 +1762,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminBillingView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1738,7 +1778,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminReportsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1754,7 +1794,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminStaffRolesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1770,7 +1810,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminRareRequestsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1786,7 +1826,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminRareRequestChatView({
-    _i38.Key? key,
+    _i39.Key? key,
     String requestId = '',
     int? routerId,
     bool preventDuplicates = true,
@@ -1804,7 +1844,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminCreateQuotationView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String requestId,
     int? routerId,
     bool preventDuplicates = true,
@@ -1822,7 +1862,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminApprovedRequestView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String requestId,
     int? routerId,
     bool preventDuplicates = true,
@@ -1840,7 +1880,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminCancelledRequestView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String requestId,
     int? routerId,
     bool preventDuplicates = true,
@@ -1858,7 +1898,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminLoginView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1874,7 +1914,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminForgotPasswordView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1890,7 +1930,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminSuppliersView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1906,7 +1946,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminSupplierDetailView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String supplierId,
     int? routerId,
     bool preventDuplicates = true,
@@ -1924,7 +1964,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminSupplierFormView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? supplierId,
     int? routerId,
     bool preventDuplicates = true,
@@ -1942,7 +1982,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminLocationsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1958,7 +1998,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminLocationFormView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? locationId,
     int? routerId,
     bool preventDuplicates = true,
@@ -1976,9 +2016,9 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminLocationInventoryView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? locationId,
-    _i40.LocationModel? location,
+    _i41.LocationModel? location,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -1995,7 +2035,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminSettingsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2011,7 +2051,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminSupportTicketsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2027,7 +2067,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminSuggestionsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2042,8 +2082,24 @@ extension NavigatorStateExtension on _i41.NavigationService {
         transition: transition);
   }
 
+  Future<dynamic> navigateToAdminEnquiriesView({
+    _i39.Key? key,
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  }) async {
+    return navigateTo<dynamic>(Routes.adminEnquiriesView,
+        arguments: AdminEnquiriesViewArguments(key: key),
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
   Future<dynamic> navigateToAdminTicketChatView({
-    _i38.Key? key,
+    _i39.Key? key,
     String ticketId = '',
     int? routerId,
     bool preventDuplicates = true,
@@ -2060,7 +2116,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminReturnsListView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2076,7 +2132,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminNewReturnView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? prefillBill,
     int? routerId,
     bool preventDuplicates = true,
@@ -2094,7 +2150,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminReturnDetailView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String caseId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2111,7 +2167,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminDamagedProductsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2127,7 +2183,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> navigateToAdminDeliveryChargesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2143,7 +2199,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithStartupView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2159,7 +2215,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithHomeView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2175,7 +2231,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminDashboardView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2191,7 +2247,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminOrdersView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2207,8 +2263,8 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminOrderDetailView({
-    _i38.Key? key,
-    _i39.OrderModel? order,
+    _i39.Key? key,
+    _i40.OrderModel? order,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2224,7 +2280,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminCategoriesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2240,7 +2296,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminProductsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2256,7 +2312,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminBulkProductSellView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2272,7 +2328,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminInventoryView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2288,7 +2344,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminPurchasesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2304,7 +2360,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminCustomersView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2320,7 +2376,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminBillingView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2336,7 +2392,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminReportsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2352,7 +2408,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminStaffRolesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2368,7 +2424,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminRareRequestsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2384,7 +2440,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminRareRequestChatView({
-    _i38.Key? key,
+    _i39.Key? key,
     String requestId = '',
     int? routerId,
     bool preventDuplicates = true,
@@ -2402,7 +2458,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminCreateQuotationView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String requestId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2420,7 +2476,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminApprovedRequestView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String requestId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2438,7 +2494,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminCancelledRequestView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String requestId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2456,7 +2512,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminLoginView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2472,7 +2528,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminForgotPasswordView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2488,7 +2544,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminSuppliersView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2504,7 +2560,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminSupplierDetailView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String supplierId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2522,7 +2578,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminSupplierFormView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? supplierId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2540,7 +2596,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminLocationsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2556,7 +2612,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminLocationFormView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? locationId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2574,9 +2630,9 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminLocationInventoryView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? locationId,
-    _i40.LocationModel? location,
+    _i41.LocationModel? location,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2593,7 +2649,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminSettingsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2609,7 +2665,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminSupportTicketsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2625,7 +2681,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminSuggestionsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2640,8 +2696,24 @@ extension NavigatorStateExtension on _i41.NavigationService {
         transition: transition);
   }
 
+  Future<dynamic> replaceWithAdminEnquiriesView({
+    _i39.Key? key,
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  }) async {
+    return replaceWith<dynamic>(Routes.adminEnquiriesView,
+        arguments: AdminEnquiriesViewArguments(key: key),
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
   Future<dynamic> replaceWithAdminTicketChatView({
-    _i38.Key? key,
+    _i39.Key? key,
     String ticketId = '',
     int? routerId,
     bool preventDuplicates = true,
@@ -2658,7 +2730,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminReturnsListView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2674,7 +2746,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminNewReturnView({
-    _i38.Key? key,
+    _i39.Key? key,
     String? prefillBill,
     int? routerId,
     bool preventDuplicates = true,
@@ -2692,7 +2764,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminReturnDetailView({
-    _i38.Key? key,
+    _i39.Key? key,
     required String caseId,
     int? routerId,
     bool preventDuplicates = true,
@@ -2709,7 +2781,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminDamagedProductsView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
@@ -2725,7 +2797,7 @@ extension NavigatorStateExtension on _i41.NavigationService {
   }
 
   Future<dynamic> replaceWithAdminDeliveryChargesView({
-    _i38.Key? key,
+    _i39.Key? key,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,

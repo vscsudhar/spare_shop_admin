@@ -16,6 +16,7 @@ enum AdminNavigationItem {
   rareRequests,
   supportTickets,
   suggestions,
+  enquiries,
   categories,
   products,
   bulkProductSell,
@@ -550,6 +551,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                       'Support Tickets', AdminNavigationItem.supportTickets),
                   _sidebarItem(context, Icons.lightbulb_outline_rounded,
                       'Suggestions', AdminNavigationItem.suggestions),
+                  _sidebarItem(context, Icons.question_answer_rounded,
+                      'Website Enquiries', AdminNavigationItem.enquiries),
                   _sidebarItem(context, Icons.category_rounded, 'Categories',
                       AdminNavigationItem.categories),
                   _sidebarItem(context, Icons.build_rounded, 'Products',
@@ -774,6 +777,9 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         break;
       case AdminNavigationItem.suggestions:
         goToAdminSuggestions();
+        break;
+      case AdminNavigationItem.enquiries:
+        goToAdminEnquiries();
         break;
       case AdminNavigationItem.categories:
         goToAdminCategories();
