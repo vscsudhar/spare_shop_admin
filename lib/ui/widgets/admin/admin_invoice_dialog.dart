@@ -51,7 +51,8 @@ class AdminInvoiceDialog extends StatelessWidget {
             // Scrollable A4 Document View
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: Center(
                   child: Container(
                     width: 820,
@@ -120,12 +121,14 @@ class AdminInvoiceDialog extends StatelessWidget {
             decoration: BoxDecoration(
               color: AdminColors.primaryGreen.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.4)),
+              border: Border.all(
+                  color: AdminColors.primaryGreen.withValues(alpha: 0.4)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.receipt_long, color: AdminColors.primaryGreen, size: 16),
+                Icon(Icons.receipt_long,
+                    color: AdminColors.primaryGreen, size: 16),
                 const SizedBox(width: 6),
                 Text(
                   invoice.invoiceNumber,
@@ -146,7 +149,8 @@ class AdminInvoiceDialog extends StatelessWidget {
               Clipboard.setData(ClipboardData(text: invoice.invoiceNumber));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Copied ${invoice.invoiceNumber} to clipboard!'),
+                  content:
+                      Text('Copied ${invoice.invoiceNumber} to clipboard!'),
                   backgroundColor: AdminColors.primaryGreen,
                   duration: const Duration(seconds: 2),
                 ),
@@ -162,7 +166,8 @@ class AdminInvoiceDialog extends StatelessWidget {
               backgroundColor: AdminColors.primaryGreen,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
           ),
           const SizedBox(width: 8),
@@ -174,12 +179,14 @@ class AdminInvoiceDialog extends StatelessWidget {
               foregroundColor: Colors.white,
               side: const BorderSide(color: Colors.white24),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
           ),
           const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.open_in_new, color: Colors.white70, size: 18),
+            icon:
+                const Icon(Icons.open_in_new, color: Colors.white70, size: 18),
             tooltip: 'Open Full Page in New Tab',
             onPressed: () => service.openInvoiceInNewTab(invoice),
           ),
@@ -228,7 +235,8 @@ class AdminInvoiceDialog extends StatelessWidget {
                               color: const Color(0xFF0F9F59),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Icon(Icons.bolt, color: Colors.white, size: 18),
+                            child: const Icon(Icons.bolt,
+                                color: Colors.white, size: 18),
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -260,8 +268,9 @@ class AdminInvoiceDialog extends StatelessWidget {
                     final cityState = [b.city, b.state]
                         .where((s) => s.trim().isNotEmpty)
                         .join(', ');
-                    final pin =
-                        b.pincode.trim().isNotEmpty ? ' - ${b.pincode.trim()}' : '';
+                    final pin = b.pincode.trim().isNotEmpty
+                        ? ' - ${b.pincode.trim()}'
+                        : '';
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -280,7 +289,8 @@ class AdminInvoiceDialog extends StatelessWidget {
                 const SizedBox(height: 4),
                 RichText(
                   text: TextSpan(
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF334155)),
+                    style:
+                        const TextStyle(fontSize: 11, color: Color(0xFF334155)),
                     children: [
                       const TextSpan(
                           text: 'GSTIN: ',
@@ -294,7 +304,8 @@ class AdminInvoiceDialog extends StatelessWidget {
                   ),
                 ),
                 Text('Email: ${b.email} | Phone: ${b.phone}',
-                    style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+                    style: const TextStyle(
+                        fontSize: 10, color: Color(0xFF64748B))),
               ],
             ),
           ),
@@ -304,7 +315,8 @@ class AdminInvoiceDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0F172A),
                   borderRadius: BorderRadius.circular(4),
@@ -325,8 +337,8 @@ class AdminInvoiceDialog extends StatelessWidget {
               _metaKeyValue('Order No:', invoice.orderNumber, isBold: true),
               _metaKeyValue('Order Date:', orderDateStr),
               _metaKeyValue('Payment Mode:', invoice.paymentMethod),
-              _metaKeyValue(
-                  'Place of Supply:', '${invoice.customer.state} (${invoice.customer.stateCode})'),
+              _metaKeyValue('Place of Supply:',
+                  '${invoice.customer.state} (${invoice.customer.stateCode})'),
             ],
           ),
         ],
@@ -341,8 +353,7 @@ class AdminInvoiceDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(key,
-              style: const TextStyle(
-                  fontSize: 11, color: Color(0xFF64748B))),
+              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
           const SizedBox(width: 8),
           Text(
             val,
@@ -392,7 +403,8 @@ class AdminInvoiceDialog extends StatelessWidget {
                         color: Color(0xFF0F172A))),
                 const SizedBox(height: 4),
                 Text(c.address,
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF334155))),
+                    style: const TextStyle(
+                        fontSize: 11, color: Color(0xFF334155))),
                 if (c.city.isNotEmpty)
                   Text('${c.city}, ${c.state} (Code: ${c.stateCode})',
                       style: const TextStyle(
@@ -518,7 +530,8 @@ class AdminInvoiceDialog extends StatelessWidget {
               children: [
                 _td('${item.sNo}', align: TextAlign.center),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -639,7 +652,8 @@ class AdminInvoiceDialog extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'GST Paid Tax Invoice verified under CGST / SGST / IGST Act 2017.',
-                        style: TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+                        style:
+                            TextStyle(fontSize: 10, color: Color(0xFF64748B)),
                       ),
                     ),
                   ],
@@ -665,8 +679,8 @@ class AdminInvoiceDialog extends StatelessWidget {
                 _summaryLine('Taxable Subtotal',
                     '₹${s.taxableAmount.toStringAsFixed(2)}'),
                 if (s.isIntraState) ...[
-                  _summaryLine(
-                      'Central Tax (CGST)', '₹${s.totalCgst.toStringAsFixed(2)}'),
+                  _summaryLine('Central Tax (CGST)',
+                      '₹${s.totalCgst.toStringAsFixed(2)}'),
                   _summaryLine(
                       'State Tax (SGST)', '₹${s.totalSgst.toStringAsFixed(2)}'),
                 ] else ...[
@@ -677,10 +691,11 @@ class AdminInvoiceDialog extends StatelessWidget {
                   _summaryLine('Delivery / Freight',
                       '₹${s.deliveryCharges.toStringAsFixed(2)}'),
                 if (s.totalDiscount > 0)
-                  _summaryLine('Discount',
-                      '-₹${s.totalDiscount.toStringAsFixed(2)}',
+                  _summaryLine(
+                      'Discount', '-₹${s.totalDiscount.toStringAsFixed(2)}',
                       textColor: Colors.red),
-                const Divider(color: Color(0xFF0F172A), thickness: 1.5, height: 16),
+                const Divider(
+                    color: Color(0xFF0F172A), thickness: 1.5, height: 16),
                 _summaryLine(
                   'Grand Total',
                   '₹${s.grandTotal.toStringAsFixed(2)}',
@@ -706,12 +721,17 @@ class AdminInvoiceDialog extends StatelessWidget {
               style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                  color: isBold ? const Color(0xFF0F172A) : const Color(0xFF64748B))),
+                  color: isBold
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFF64748B))),
           Text(value,
               style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-                  color: textColor ?? (isBold ? const Color(0xFF0F172A) : const Color(0xFF1E293B)))),
+                  color: textColor ??
+                      (isBold
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFF1E293B)))),
         ],
       ),
     );

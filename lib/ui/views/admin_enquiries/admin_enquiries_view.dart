@@ -294,7 +294,8 @@ class AdminEnquiriesView extends StackedView<AdminEnquiriesViewModel> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(item.statusIcon, size: 12, color: statusColor),
+                              Icon(item.statusIcon,
+                                  size: 12, color: statusColor),
                               const SizedBox(width: 4),
                               Text(
                                 item.statusDisplay.toUpperCase(),

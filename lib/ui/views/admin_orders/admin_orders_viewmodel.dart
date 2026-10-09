@@ -78,13 +78,59 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
         matchesChannel = order.isPosOrder;
       }
 
-      return matchesSearch && matchesStatus && matchesLocation && matchesChannel;
+      return matchesSearch &&
+          matchesStatus &&
+          matchesLocation &&
+          matchesChannel;
     }).toList();
   }
 
-  // Count getters
-  int get appOrdersCount => _allOrders.where((o) => o.isAppOrder).length;
-  int get posOrdersCount => _allOrders.where((o) => o.isPosOrder).length;
+  bool _matchesLocation(OrderModel order) {
+    if (_selectedLocationFilter == 'unassigned') {
+      return order.locationId == null || order.locationId!.isEmpty;
+    } else if (_selectedLocationFilter != 'all') {
+      return (order.locationId == _selectedLocationFilter) ||
+          (order.locationName != null &&
+              order.locationName!.isNotEmpty &&
+              _locations.any((l) =>
+                  l.id == _selectedLocationFilter &&
+                  l.name.toLowerCase() == order.locationName!.toLowerCase()));
+    }
+    return true;
+  }
+
+  // Status & channel count getters with notification counts
+  int countByStatus(OrderStatus? status) {
+    if (_selectedLocationFilter == '__none__') return 0;
+    return _allOrders.where((order) {
+      if (status != null && order.status != status) return false;
+      if (!_matchesLocation(order)) return false;
+
+      if (_selectedChannelFilter == 'app') {
+        if (!order.isAppOrder) return false;
+      } else if (_selectedChannelFilter == 'pos') {
+        if (!order.isPosOrder) return false;
+      }
+
+      return true;
+    }).length;
+  }
+
+  int get allOrdersCount => countByStatus(null);
+  int get processingOrdersCount => countByStatus(OrderStatus.processing);
+  int get shippedOrdersCount => countByStatus(OrderStatus.shipped);
+  int get deliveredOrdersCount => countByStatus(OrderStatus.delivered);
+  int get cancelledOrdersCount => countByStatus(OrderStatus.cancelled);
+
+  int get appOrdersCount {
+    if (_selectedLocationFilter == '__none__') return 0;
+    return _allOrders.where((o) => o.isAppOrder && _matchesLocation(o)).length;
+  }
+
+  int get posOrdersCount {
+    if (_selectedLocationFilter == '__none__') return 0;
+    return _allOrders.where((o) => o.isPosOrder && _matchesLocation(o)).length;
+  }
 
   // Count unassigned orders
   int get unassignedOrdersCount => _allOrders
@@ -98,6 +144,12 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
     TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
     TokenService.locationNotifier.addListener(_onLocationNotifierChanged);
 
+    OrderService.newOrderNotifier.removeListener(_onNewOrderReceived);
+    OrderService.newOrderNotifier.addListener(_onNewOrderReceived);
+
+    OrderService.orderRefreshNotifier.removeListener(_onOrderRefresh);
+    OrderService.orderRefreshNotifier.addListener(_onOrderRefresh);
+
     if (_initialized) return;
     _initialized = true;
     await loadOrders();
@@ -110,9 +162,30 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
     loadOrders();
   }
 
+  void _onOrderRefresh() {
+    loadOrders();
+  }
+
+  void _onNewOrderReceived() {
+    final newOrder = OrderService.newOrderNotifier.value;
+    if (newOrder != null) {
+      final existingIndex = _allOrders.indexWhere((o) => o.id == newOrder.id);
+      if (existingIndex == -1) {
+        final resolved =
+            HubMatchingHelper.resolveOrderLocation(newOrder, _locations);
+        _allOrders.insert(0, resolved);
+        rebuildUi();
+      } else {
+        loadOrders();
+      }
+    }
+  }
+
   @override
   void dispose() {
     TokenService.locationNotifier.removeListener(_onLocationNotifierChanged);
+    OrderService.newOrderNotifier.removeListener(_onNewOrderReceived);
+    OrderService.orderRefreshNotifier.removeListener(_onOrderRefresh);
     super.dispose();
   }
 
@@ -177,6 +250,8 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
         }
       }
 
+      OrderService.processingCountNotifier.value =
+          _allOrders.where((o) => o.status == OrderStatus.processing).length;
       rebuildUi();
     } catch (e) {
       debugPrint('Error loading admin orders: $e');
@@ -186,6 +261,8 @@ class AdminOrdersViewModel extends FutureViewModel<void> with NavigationMixin {
           _allOrders[i] =
               HubMatchingHelper.resolveOrderLocation(_allOrders[i], _locations);
         }
+        OrderService.processingCountNotifier.value =
+            _allOrders.where((o) => o.status == OrderStatus.processing).length;
       }
     } finally {
       setBusy(false);

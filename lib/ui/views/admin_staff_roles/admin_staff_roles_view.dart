@@ -1137,7 +1137,8 @@ class AdminStaffRolesView extends StackedView<AdminStaffRolesViewModel> {
                                   Text(
                                     '(Location Scoped)',
                                     style: TextStyle(
-                                        fontSize: 11, color: AdminColors.textSecondary),
+                                        fontSize: 11,
+                                        color: AdminColors.textSecondary),
                                   ),
                               ],
                             ),

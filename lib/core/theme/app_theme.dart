@@ -123,8 +123,7 @@ class AppTheme {
         errorStyle: const TextStyle(color: AppColors.cancelled, fontSize: 12),
       ),
       dropdownMenuTheme: const DropdownMenuThemeData(
-        textStyle:
-            TextStyle(color: AppColors.textPrimaryLight, fontSize: 13),
+        textStyle: TextStyle(color: AppColors.textPrimaryLight, fontSize: 13),
         menuStyle: MenuStyle(
           backgroundColor:
               WidgetStatePropertyAll(AppColors.panelBackgroundLight),
@@ -286,8 +285,7 @@ class AppTheme {
         errorStyle: const TextStyle(color: AppColors.cancelled, fontSize: 12),
       ),
       dropdownMenuTheme: const DropdownMenuThemeData(
-        textStyle:
-            TextStyle(color: AppColors.textPrimaryDark, fontSize: 13),
+        textStyle: TextStyle(color: AppColors.textPrimaryDark, fontSize: 13),
         menuStyle: MenuStyle(
           backgroundColor:
               WidgetStatePropertyAll(AppColors.panelBackgroundDark),

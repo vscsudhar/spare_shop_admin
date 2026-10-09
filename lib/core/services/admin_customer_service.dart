@@ -29,8 +29,11 @@ class CustomerVehicleModel {
       brand: json['brand']?.toString() ?? 'EV Vehicle',
       model: json['model']?.toString() ?? 'Standard',
       variant: json['variant']?.toString(),
-      year: json['year'] is int ? json['year'] : int.tryParse(json['year']?.toString() ?? ''),
-      registrationNumber: json['registrationNumber']?.toString() ?? json['regNumber']?.toString(),
+      year: json['year'] is int
+          ? json['year']
+          : int.tryParse(json['year']?.toString() ?? ''),
+      registrationNumber: json['registrationNumber']?.toString() ??
+          json['regNumber']?.toString(),
     );
   }
 
@@ -47,7 +50,9 @@ class CustomerVehicleModel {
 
   String get displayName {
     final y = year != null ? ' ($year)' : '';
-    final reg = registrationNumber != null && registrationNumber!.isNotEmpty ? ' • $registrationNumber' : '';
+    final reg = registrationNumber != null && registrationNumber!.isNotEmpty
+        ? ' • $registrationNumber'
+        : '';
     return '$brand $model$y$reg';
   }
 }
@@ -58,7 +63,8 @@ class AdminCustomerModel {
   final String email;
   final String phone;
   final String profileImage;
-  final String type; // 'Retail Customer', 'Workshop Owner', 'Fleet Owner', 'Wholesaler'
+  final String
+      type; // 'Retail Customer', 'Workshop Owner', 'Fleet Owner', 'Wholesaler'
   final String status; // 'Active', 'Suspended', 'Disabled'
   final String source; // 'Mobile App' or 'Store POS' / 'In-Store'
   final int ordersCount;
@@ -100,18 +106,23 @@ class AdminCustomerModel {
 
   bool get isStoreUser => !isMobileUser;
 
-  String get sourceDisplayName => isMobileUser ? 'Mobile App User' : 'Store / POS User';
+  String get sourceDisplayName =>
+      isMobileUser ? 'Mobile App User' : 'Store / POS User';
 
   factory AdminCustomerModel.fromJson(Map<String, dynamic> json) {
     List<CustomerVehicleModel> parsedVehicles = [];
     if (json['vehicles'] is List) {
       parsedVehicles = (json['vehicles'] as List)
-          .map((v) => v is Map<String, dynamic> ? CustomerVehicleModel.fromJson(v) : null)
+          .map((v) => v is Map<String, dynamic>
+              ? CustomerVehicleModel.fromJson(v)
+              : null)
           .whereType<CustomerVehicleModel>()
           .toList();
     } else if (json['garage'] is List) {
       parsedVehicles = (json['garage'] as List)
-          .map((v) => v is Map<String, dynamic> ? CustomerVehicleModel.fromJson(v) : null)
+          .map((v) => v is Map<String, dynamic>
+              ? CustomerVehicleModel.fromJson(v)
+              : null)
           .whereType<CustomerVehicleModel>()
           .toList();
     }
@@ -149,9 +160,12 @@ class AdminCustomerModel {
     } else if (json['orders'] is List) {
       parsedOrdersCount = (json['orders'] as List).length;
     } else if (json['stats'] is Map && json['stats']['ordersCount'] != null) {
-      parsedOrdersCount = int.tryParse(json['stats']['ordersCount'].toString()) ?? 0;
-    } else if (json['metrics'] is Map && json['metrics']['ordersCount'] != null) {
-      parsedOrdersCount = int.tryParse(json['metrics']['ordersCount'].toString()) ?? 0;
+      parsedOrdersCount =
+          int.tryParse(json['stats']['ordersCount'].toString()) ?? 0;
+    } else if (json['metrics'] is Map &&
+        json['metrics']['ordersCount'] != null) {
+      parsedOrdersCount =
+          int.tryParse(json['metrics']['ordersCount'].toString()) ?? 0;
     }
 
     // Comprehensive parsing for total spend
@@ -186,7 +200,11 @@ class AdminCustomerModel {
 
     if (rawSource != null && rawSource.isNotEmpty) {
       final s = rawSource.toLowerCase();
-      if (s.contains('store') || s.contains('pos') || s.contains('walk') || s.contains('offline') || s.contains('counter')) {
+      if (s.contains('store') ||
+          s.contains('pos') ||
+          s.contains('walk') ||
+          s.contains('offline') ||
+          s.contains('counter')) {
         parsedSource = 'Store / POS';
       } else {
         parsedSource = 'Mobile App';
@@ -214,7 +232,8 @@ class AdminCustomerModel {
           ? (json['outstandingDue'] as num).toDouble()
           : double.tryParse(json['outstandingDue']?.toString() ?? '0.0') ?? 0.0,
       locationId: json['locationId']?.toString(),
-      locationName: json['locationName']?.toString() ?? json['hubName']?.toString(),
+      locationName:
+          json['locationName']?.toString() ?? json['hubName']?.toString(),
       address: json['address']?.toString() ?? json['city']?.toString() ?? '',
       gstNumber: json['gstNumber']?.toString() ??
           json['gst']?.toString() ??
@@ -295,7 +314,8 @@ class AdminCustomerModel {
   String get initials {
     final parts = name.trim().split(' ');
     if (parts.isEmpty || parts[0].isEmpty) return 'VS';
-    if (parts.length == 1) return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    if (parts.length == 1)
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 }
@@ -313,7 +333,8 @@ class AdminCustomerService {
       name: 'Ravi Kumar',
       email: 'ravi.kumar@gmail.com',
       phone: '+91 98765 43210',
-      profileImage: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
       type: 'Workshop Owner',
       status: 'Active',
       source: 'Mobile App',
@@ -326,8 +347,18 @@ class AdminCustomerService {
       createdAt: DateTime.now().subtract(const Duration(days: 120)),
       lastLoginAt: DateTime.now().subtract(const Duration(hours: 2)),
       vehicles: [
-        CustomerVehicleModel(id: 'v1', brand: 'Ather', model: '450X Gen 3', year: 2023, registrationNumber: 'TN 37 CY 4921'),
-        CustomerVehicleModel(id: 'v2', brand: 'Ola Electric', model: 'S1 Pro Gen 2', year: 2024, registrationNumber: 'TN 38 BE 1092'),
+        CustomerVehicleModel(
+            id: 'v1',
+            brand: 'Ather',
+            model: '450X Gen 3',
+            year: 2023,
+            registrationNumber: 'TN 37 CY 4921'),
+        CustomerVehicleModel(
+            id: 'v2',
+            brand: 'Ola Electric',
+            model: 'S1 Pro Gen 2',
+            year: 2024,
+            registrationNumber: 'TN 38 BE 1092'),
       ],
     ),
     AdminCustomerModel(
@@ -335,7 +366,8 @@ class AdminCustomerService {
       name: 'Anjali Sharma',
       email: 'anjali.sharma@live.com',
       phone: '+91 98123 45678',
-      profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
       type: 'Retail Customer',
       status: 'Active',
       source: 'Mobile App',
@@ -348,7 +380,12 @@ class AdminCustomerService {
       createdAt: DateTime.now().subtract(const Duration(days: 75)),
       lastLoginAt: DateTime.now().subtract(const Duration(days: 1)),
       vehicles: [
-        CustomerVehicleModel(id: 'v3', brand: 'TVS', model: 'iQube S', year: 2023, registrationNumber: 'TN 66 AB 8841'),
+        CustomerVehicleModel(
+            id: 'v3',
+            brand: 'TVS',
+            model: 'iQube S',
+            year: 2023,
+            registrationNumber: 'TN 66 AB 8841'),
       ],
     ),
     AdminCustomerModel(
@@ -356,7 +393,8 @@ class AdminCustomerService {
       name: 'Suresh EV Services',
       email: 'contact@sureshev.com',
       phone: '+91 94440 12345',
-      profileImage: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',
       type: 'Workshop Owner',
       status: 'Active',
       source: 'Store / POS',
@@ -369,8 +407,18 @@ class AdminCustomerService {
       createdAt: DateTime.now().subtract(const Duration(days: 210)),
       lastLoginAt: DateTime.now().subtract(const Duration(minutes: 45)),
       vehicles: [
-        CustomerVehicleModel(id: 'v4', brand: 'Bajaj', model: 'Chetak Premium', year: 2023, registrationNumber: 'TN 37 EA 9081'),
-        CustomerVehicleModel(id: 'v5', brand: 'Hero Electric', model: 'Optima CX', year: 2022, registrationNumber: 'TN 38 CD 4410'),
+        CustomerVehicleModel(
+            id: 'v4',
+            brand: 'Bajaj',
+            model: 'Chetak Premium',
+            year: 2023,
+            registrationNumber: 'TN 37 EA 9081'),
+        CustomerVehicleModel(
+            id: 'v5',
+            brand: 'Hero Electric',
+            model: 'Optima CX',
+            year: 2022,
+            registrationNumber: 'TN 38 CD 4410'),
       ],
     ),
     AdminCustomerModel(
@@ -378,7 +426,8 @@ class AdminCustomerService {
       name: 'Pooja Sundaram',
       email: 'pooja.sundaram@gmail.com',
       phone: '+91 98840 99881',
-      profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
       type: 'Retail Customer',
       status: 'Active',
       source: 'Mobile App',
@@ -391,7 +440,12 @@ class AdminCustomerService {
       createdAt: DateTime.now().subtract(const Duration(days: 40)),
       lastLoginAt: DateTime.now().subtract(const Duration(days: 3)),
       vehicles: [
-        CustomerVehicleModel(id: 'v6', brand: 'Ather', model: '450S', year: 2024, registrationNumber: 'TN 37 FF 1120'),
+        CustomerVehicleModel(
+            id: 'v6',
+            brand: 'Ather',
+            model: '450S',
+            year: 2024,
+            registrationNumber: 'TN 37 FF 1120'),
       ],
     ),
     AdminCustomerModel(
@@ -399,7 +453,8 @@ class AdminCustomerService {
       name: 'Karthik Fleet Solutions',
       email: 'ops@karthikfleet.in',
       phone: '+91 97910 55432',
-      profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
       type: 'Fleet Owner',
       status: 'Active',
       source: 'Store / POS',
@@ -412,8 +467,18 @@ class AdminCustomerService {
       createdAt: DateTime.now().subtract(const Duration(days: 95)),
       lastLoginAt: DateTime.now().subtract(const Duration(hours: 5)),
       vehicles: [
-        CustomerVehicleModel(id: 'v7', brand: 'Ola Electric', model: 'S1 Air', year: 2023, registrationNumber: 'TN 37 KK 5512'),
-        CustomerVehicleModel(id: 'v8', brand: 'TVS', model: 'iQube ST', year: 2024, registrationNumber: 'TN 37 KK 5513'),
+        CustomerVehicleModel(
+            id: 'v7',
+            brand: 'Ola Electric',
+            model: 'S1 Air',
+            year: 2023,
+            registrationNumber: 'TN 37 KK 5512'),
+        CustomerVehicleModel(
+            id: 'v8',
+            brand: 'TVS',
+            model: 'iQube ST',
+            year: 2024,
+            registrationNumber: 'TN 37 KK 5513'),
       ],
     ),
     AdminCustomerModel(
@@ -421,7 +486,8 @@ class AdminCustomerService {
       name: 'Manoj Kumar',
       email: 'manoj.k@outlook.com',
       phone: '+91 95001 22334',
-      profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
       type: 'Retail Customer',
       status: 'Suspended',
       source: 'Mobile App',
@@ -440,7 +506,8 @@ class AdminCustomerService {
       name: 'Saravanan Store Walk-in',
       email: 'saravanan.store@gmail.com',
       phone: '+91 94882 11223',
-      profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80',
+      profileImage:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80',
       type: 'Workshop Owner',
       status: 'Active',
       source: 'Store / POS',
@@ -494,12 +561,16 @@ class AdminCustomerService {
         }
 
         if (items.isNotEmpty) {
-          result = items.map((json) => AdminCustomerModel.fromJson(json as Map<String, dynamic>)).toList();
+          result = items
+              .map((json) =>
+                  AdminCustomerModel.fromJson(json as Map<String, dynamic>))
+              .toList();
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('AdminCustomerService.getCustomers API error (falling back to cache/local): $e');
+        print(
+            'AdminCustomerService.getCustomers API error (falling back to cache/local): $e');
       }
     }
 
@@ -513,13 +584,17 @@ class AdminCustomerService {
       final allOrders = await orderService.adminGetAllOrders();
       if (allOrders.isNotEmpty) {
         result = result.map((customer) {
-          final customerPhoneClean = customer.phone.replaceAll(RegExp(r'\D'), '');
+          final customerPhoneClean =
+              customer.phone.replaceAll(RegExp(r'\D'), '');
           final matchedOrders = allOrders.where((order) {
-            final orderPhoneClean = order.address.phone.replaceAll(RegExp(r'\D'), '');
+            final orderPhoneClean =
+                order.address.phone.replaceAll(RegExp(r'\D'), '');
             final phoneMatches = customerPhoneClean.isNotEmpty &&
                 orderPhoneClean.isNotEmpty &&
-                (customerPhoneClean.contains(orderPhoneClean) || orderPhoneClean.contains(customerPhoneClean));
-            final nameMatches = order.address.name.trim().toLowerCase() == customer.name.trim().toLowerCase();
+                (customerPhoneClean.contains(orderPhoneClean) ||
+                    orderPhoneClean.contains(customerPhoneClean));
+            final nameMatches = order.address.name.trim().toLowerCase() ==
+                customer.name.trim().toLowerCase();
             return phoneMatches || nameMatches;
           }).toList();
 
@@ -530,12 +605,17 @@ class AdminCustomerService {
             // Determine primary source
             final posOrders = matchedOrders.where((o) => o.isPosOrder).length;
             final appOrders = matchedOrders.length - posOrders;
-            final detectedSource = posOrders > appOrders ? 'Store / POS' : 'Mobile App';
+            final detectedSource =
+                posOrders > appOrders ? 'Store / POS' : 'Mobile App';
 
             return customer.copyWith(
-              ordersCount: customer.ordersCount > orderCount ? customer.ordersCount : orderCount,
-              totalSpend: customer.totalSpend > spend ? customer.totalSpend : spend,
-              source: customer.source.isNotEmpty ? customer.source : detectedSource,
+              ordersCount: customer.ordersCount > orderCount
+                  ? customer.ordersCount
+                  : orderCount,
+              totalSpend:
+                  customer.totalSpend > spend ? customer.totalSpend : spend,
+              source:
+                  customer.source.isNotEmpty ? customer.source : detectedSource,
             );
           }
           return customer;
@@ -556,7 +636,9 @@ class AdminCustomerService {
       final response = await _apiClient.get('${ApiEndpoints.customers}/$id');
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data['data'];
-        final item = data is Map<String, dynamic> && data['customer'] != null ? data['customer'] : data;
+        final item = data is Map<String, dynamic> && data['customer'] != null
+            ? data['customer']
+            : data;
         return AdminCustomerModel.fromJson(item as Map<String, dynamic>);
       }
     } catch (e) {
@@ -572,13 +654,18 @@ class AdminCustomerService {
     );
   }
 
-  Future<AdminCustomerModel> updateCustomer(String id, Map<String, dynamic> data) async {
+  Future<AdminCustomerModel> updateCustomer(
+      String id, Map<String, dynamic> data) async {
     AdminCustomerModel? updated;
     try {
-      final response = await _apiClient.put('${ApiEndpoints.customers}/$id', data: data);
+      final response =
+          await _apiClient.put('${ApiEndpoints.customers}/$id', data: data);
       if (response.statusCode == 200 && response.data != null) {
         final resData = response.data['data'];
-        final item = resData is Map<String, dynamic> && resData['customer'] != null ? resData['customer'] : resData;
+        final item =
+            resData is Map<String, dynamic> && resData['customer'] != null
+                ? resData['customer']
+                : resData;
         if (item is Map<String, dynamic>) {
           updated = AdminCustomerModel.fromJson(item);
         }
@@ -602,16 +689,23 @@ class AdminCustomerService {
         status: data['status']?.toString() ?? current.status,
         source: data['source']?.toString() ?? current.source,
         ordersCount: data['ordersCount'] != null
-            ? (int.tryParse(data['ordersCount'].toString()) ?? current.ordersCount)
+            ? (int.tryParse(data['ordersCount'].toString()) ??
+                current.ordersCount)
             : current.ordersCount,
         totalSpend: data['totalSpend'] != null
-            ? (double.tryParse(data['totalSpend'].toString()) ?? current.totalSpend)
+            ? (double.tryParse(data['totalSpend'].toString()) ??
+                current.totalSpend)
             : current.totalSpend,
         outstandingDue: data['outstandingDue'] != null
-            ? (double.tryParse(data['outstandingDue'].toString()) ?? current.outstandingDue)
+            ? (double.tryParse(data['outstandingDue'].toString()) ??
+                current.outstandingDue)
             : current.outstandingDue,
-        locationId: data.containsKey('locationId') ? data['locationId']?.toString() : current.locationId,
-        locationName: data.containsKey('locationName') ? data['locationName']?.toString() : current.locationName,
+        locationId: data.containsKey('locationId')
+            ? data['locationId']?.toString()
+            : current.locationId,
+        locationName: data.containsKey('locationName')
+            ? data['locationName']?.toString()
+            : current.locationName,
         address: data['address']?.toString() ?? current.address,
         gstNumber: data['gstNumber']?.toString() ?? current.gstNumber,
       );
@@ -623,7 +717,8 @@ class AdminCustomerService {
     return updated ?? _defaultCustomers.first;
   }
 
-  Future<AdminCustomerModel> updateCustomerStatus(String id, String status) async {
+  Future<AdminCustomerModel> updateCustomerStatus(
+      String id, String status) async {
     try {
       final response = await _apiClient.patch(
         '${ApiEndpoints.customers}/$id/status',
@@ -631,7 +726,10 @@ class AdminCustomerService {
       );
       if (response.statusCode == 200 && response.data != null) {
         final resData = response.data['data'];
-        final item = resData is Map<String, dynamic> && resData['customer'] != null ? resData['customer'] : resData;
+        final item =
+            resData is Map<String, dynamic> && resData['customer'] != null
+                ? resData['customer']
+                : resData;
         if (item is Map<String, dynamic>) {
           final updated = AdminCustomerModel.fromJson(item);
           final cached = await _loadCachedCustomers();
@@ -678,10 +776,15 @@ class AdminCustomerService {
   Future<AdminCustomerModel> createCustomer(Map<String, dynamic> data) async {
     AdminCustomerModel? created;
     try {
-      final response = await _apiClient.post(ApiEndpoints.customers, data: data);
-      if ((response.statusCode == 200 || response.statusCode == 201) && response.data != null) {
+      final response =
+          await _apiClient.post(ApiEndpoints.customers, data: data);
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          response.data != null) {
         final resData = response.data['data'];
-        final item = resData is Map<String, dynamic> && resData['customer'] != null ? resData['customer'] : resData;
+        final item =
+            resData is Map<String, dynamic> && resData['customer'] != null
+                ? resData['customer']
+                : resData;
         if (item is Map<String, dynamic>) {
           created = AdminCustomerModel.fromJson(item);
         }
@@ -702,8 +805,10 @@ class AdminCustomerService {
       status: data['status']?.toString() ?? 'Active',
       source: data['source']?.toString() ?? 'Mobile App',
       ordersCount: int.tryParse(data['ordersCount']?.toString() ?? '0') ?? 0,
-      totalSpend: double.tryParse(data['totalSpend']?.toString() ?? '0.0') ?? 0.0,
-      outstandingDue: double.tryParse(data['outstandingDue']?.toString() ?? '0.0') ?? 0.0,
+      totalSpend:
+          double.tryParse(data['totalSpend']?.toString() ?? '0.0') ?? 0.0,
+      outstandingDue:
+          double.tryParse(data['outstandingDue']?.toString() ?? '0.0') ?? 0.0,
       locationId: data['locationId']?.toString(),
       locationName: data['locationName']?.toString(),
       address: data['address']?.toString() ?? '',
@@ -725,7 +830,9 @@ class AdminCustomerService {
       final jsonStr = prefs.getString(_cacheKey);
       if (jsonStr != null && jsonStr.isNotEmpty) {
         final List<dynamic> decoded = jsonDecode(jsonStr);
-        return decoded.map((e) => AdminCustomerModel.fromJson(e as Map<String, dynamic>)).toList();
+        return decoded
+            .map((e) => AdminCustomerModel.fromJson(e as Map<String, dynamic>))
+            .toList();
       }
     } catch (e) {
       if (kDebugMode) {

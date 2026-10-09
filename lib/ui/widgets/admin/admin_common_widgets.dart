@@ -134,16 +134,31 @@ class AdminFilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  final int? count;
+  final Color? countColor;
+  final Color? countBackgroundColor;
 
   const AdminFilterChip({
     super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
+    this.count,
+    this.countColor,
+    this.countBackgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveCountColor =
+        countColor ?? (isSelected ? Colors.white : AdminColors.primaryGreen);
+    final effectiveCountBg = countBackgroundColor ??
+        (isSelected
+            ? Colors.white.withValues(alpha: 0.22)
+            : (countColor != null
+                ? countColor!.withValues(alpha: 0.15)
+                : AdminColors.primaryGreen.withValues(alpha: 0.15)));
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AdminRadius.chip),
@@ -157,13 +172,47 @@ class AdminFilterChip extends StatelessWidget {
             color: isSelected ? AdminColors.primaryGreen : AdminColors.border,
           ),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : AdminColors.textSecondary,
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : AdminColors.textSecondary,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            if (count != null) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                decoration: BoxDecoration(
+                  color: effectiveCountBg,
+                  borderRadius: BorderRadius.circular(10),
+                  border: isSelected
+                      ? Border.all(color: Colors.white24, width: 0.8)
+                      : Border.all(
+                          color: (countColor ?? AdminColors.border)
+                              .withValues(alpha: 0.35),
+                          width: 0.8,
+                        ),
+                ),
+                constraints: const BoxConstraints(minWidth: 19, minHeight: 16),
+                alignment: Alignment.center,
+                child: Text(
+                  count! > 999 ? '999+' : '$count',
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : effectiveCountColor,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

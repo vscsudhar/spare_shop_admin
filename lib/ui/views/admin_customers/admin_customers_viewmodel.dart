@@ -9,7 +9,8 @@ import 'package:stacked/stacked.dart';
 export 'package:spare_shop_admin/core/services/admin_customer_service.dart'
     show AdminCustomerModel, CustomerVehicleModel;
 
-class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin {
+class AdminCustomersViewModel extends FutureViewModel<void>
+    with NavigationMixin {
   final _customerService = locator<AdminCustomerService>();
   final _locationService = locator<LocationService>();
   final _tokenService = locator<TokenService>();
@@ -17,10 +18,12 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
-  String _selectedStatusFilter = 'all'; // 'all', 'Active', 'Suspended', 'Disabled'
+  String _selectedStatusFilter =
+      'all'; // 'all', 'Active', 'Suspended', 'Disabled'
   String get selectedStatusFilter => _selectedStatusFilter;
 
-  String _selectedTypeFilter = 'all'; // 'all', 'Retail Customer', 'Workshop Owner', 'Fleet Owner'
+  String _selectedTypeFilter =
+      'all'; // 'all', 'Retail Customer', 'Workshop Owner', 'Fleet Owner'
   String get selectedTypeFilter => _selectedTypeFilter;
 
   String _selectedChannelFilter = 'all'; // 'all', 'mobile', 'store'
@@ -60,8 +63,9 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
         final nameMatch = c.name.toLowerCase().contains(query);
         final phoneMatch = c.phone.contains(_searchQuery);
         final emailMatch = c.email.toLowerCase().contains(query);
-        final vehicleMatch = c.vehicles.any(
-            (v) => v.brand.toLowerCase().contains(query) || v.model.toLowerCase().contains(query));
+        final vehicleMatch = c.vehicles.any((v) =>
+            v.brand.toLowerCase().contains(query) ||
+            v.model.toLowerCase().contains(query));
         if (!nameMatch && !phoneMatch && !emailMatch && !vehicleMatch) {
           return false;
         }
@@ -113,12 +117,16 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
   }
 
   int get totalCustomersCount => _customers.length;
-  int get activeCustomersCount => _customers.where((c) => c.status.toLowerCase() == 'active').length;
-  int get suspendedCustomersCount => _customers.where((c) => c.status.toLowerCase() == 'suspended').length;
+  int get activeCustomersCount =>
+      _customers.where((c) => c.status.toLowerCase() == 'active').length;
+  int get suspendedCustomersCount =>
+      _customers.where((c) => c.status.toLowerCase() == 'suspended').length;
   int get mobileUsersCount => _customers.where((c) => c.isMobileUser).length;
   int get storeUsersCount => _customers.where((c) => c.isStoreUser).length;
-  int get workshopCustomersCount => _customers.where((c) => c.type.toLowerCase().contains('workshop')).length;
-  int get retailCustomersCount => _customers.where((c) => c.type.toLowerCase().contains('retail')).length;
+  int get workshopCustomersCount =>
+      _customers.where((c) => c.type.toLowerCase().contains('workshop')).length;
+  int get retailCustomersCount =>
+      _customers.where((c) => c.type.toLowerCase().contains('retail')).length;
 
   int get unassignedCustomersCount => _customers
       .where((c) =>
@@ -183,7 +191,9 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
 
     try {
       _customers = await _customerService.getCustomers(
-        locationId: _selectedLocationFilter == 'all' || _selectedLocationFilter == 'unassigned' || _selectedLocationFilter == '__none__'
+        locationId: _selectedLocationFilter == 'all' ||
+                _selectedLocationFilter == 'unassigned' ||
+                _selectedLocationFilter == '__none__'
             ? null
             : _selectedLocationFilter,
         status: _selectedStatusFilter == 'all' ? null : _selectedStatusFilter,
@@ -322,9 +332,11 @@ class AdminCustomersViewModel extends FutureViewModel<void> with NavigationMixin
     }
   }
 
-  Future<bool> updateCustomerStatus(AdminCustomerModel customer, String newStatus) async {
+  Future<bool> updateCustomerStatus(
+      AdminCustomerModel customer, String newStatus) async {
     try {
-      final updated = await _customerService.updateCustomerStatus(customer.id, newStatus);
+      final updated =
+          await _customerService.updateCustomerStatus(customer.id, newStatus);
       final index = _customers.indexWhere((c) => c.id == customer.id);
       if (index != -1) {
         _customers[index] = updated;

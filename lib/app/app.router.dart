@@ -30,6 +30,8 @@ import 'package:spare_shop_admin/ui/views/admin_dashboard/admin_dashboard_view.d
     as _i4;
 import 'package:spare_shop_admin/ui/views/admin_delivery_charges/admin_delivery_charges_view.dart'
     as _i38;
+import 'package:spare_shop_admin/ui/views/admin_delivery_management/admin_delivery_management_view.dart'
+    as _i43;
 import 'package:spare_shop_admin/ui/views/admin_enquiries/admin_enquiries_view.dart'
     as _i32;
 import 'package:spare_shop_admin/ui/views/admin_forgot_password/admin_forgot_password_view.dart'
@@ -95,6 +97,8 @@ class Routes {
   static const adminOrdersView = '/admin-orders-view';
 
   static const adminOrderDetailView = '/admin-order-detail-view';
+
+  static const adminDeliveryManagementView = '/admin-delivery-management-view';
 
   static const adminCategoriesView = '/admin-categories-view';
 
@@ -198,6 +202,7 @@ class Routes {
     adminReturnDetailView,
     adminDamagedProductsView,
     adminDeliveryChargesView,
+    adminDeliveryManagementView,
   };
 }
 
@@ -351,9 +356,19 @@ class StackedRouter extends _i1.RouterBase {
       Routes.adminDeliveryChargesView,
       page: _i38.AdminDeliveryChargesView,
     ),
+    _i1.RouteDef(
+      Routes.adminDeliveryManagementView,
+      page: _i43.AdminDeliveryManagementView,
+    ),
   ];
 
   final _pagesMap = <Type, _i1.StackedRouteFactory>{
+    _i43.AdminDeliveryManagementView: (data) {
+      return _i39.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i43.AdminDeliveryManagementView(),
+        settings: data,
+      );
+    },
     _i2.StartupView: (data) {
       final args = data.getArgs<StartupViewArguments>(
         orElse: () => const StartupViewArguments(),

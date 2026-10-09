@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spare_shop_admin/core/models/bulk_quotation_model.dart';
-import 'package:spare_shop_admin/core/services/invoice_service.dart';
 
 class BulkQuotationService {
   static const String _storageKey = 'voltspare_b2b_quotations_v1';
@@ -18,7 +17,8 @@ class BulkQuotationService {
         _inMemoryQuotations.clear();
         for (final item in decoded) {
           try {
-            _inMemoryQuotations.add(BulkQuotationModel.fromJson(item as Map<String, dynamic>));
+            _inMemoryQuotations
+                .add(BulkQuotationModel.fromJson(item as Map<String, dynamic>));
           } catch (_) {}
         }
       }
@@ -34,7 +34,8 @@ class BulkQuotationService {
     } catch (_) {}
   }
 
-  Future<List<BulkQuotationModel>> getQuotations({String? search, String? statusFilter}) async {
+  Future<List<BulkQuotationModel>> getQuotations(
+      {String? search, String? statusFilter}) async {
     await _init();
     var list = List<BulkQuotationModel>.from(_inMemoryQuotations);
 
@@ -46,17 +47,25 @@ class BulkQuotationService {
             item.customerPhone.toLowerCase().contains(q) ||
             item.customerGst.toLowerCase().contains(q) ||
             item.businessName.toLowerCase().contains(q) ||
-            (item.invoiceNumber != null && item.invoiceNumber!.toLowerCase().contains(q));
+            (item.invoiceNumber != null &&
+                item.invoiceNumber!.toLowerCase().contains(q));
       }).toList();
     }
 
-    if (statusFilter != null && statusFilter.isNotEmpty && statusFilter != 'All') {
+    if (statusFilter != null &&
+        statusFilter.isNotEmpty &&
+        statusFilter != 'All') {
       if (statusFilter == 'Converted') {
         list = list.where((item) => item.isConverted).toList();
       } else if (statusFilter == 'Active') {
-        list = list.where((item) => !item.isConverted && item.status != 'Cancelled').toList();
+        list = list
+            .where((item) => !item.isConverted && item.status != 'Cancelled')
+            .toList();
       } else {
-        list = list.where((item) => item.status.toLowerCase() == statusFilter.toLowerCase()).toList();
+        list = list
+            .where((item) =>
+                item.status.toLowerCase() == statusFilter.toLowerCase())
+            .toList();
       }
     }
 
@@ -89,7 +98,8 @@ class BulkQuotationService {
     await _init();
     final index = _inMemoryQuotations.indexWhere((q) => q.id == quotation.id);
     if (index != -1) {
-      _inMemoryQuotations[index] = quotation.copyWith(updatedAt: DateTime.now());
+      _inMemoryQuotations[index] =
+          quotation.copyWith(updatedAt: DateTime.now());
     } else {
       _inMemoryQuotations.insert(0, quotation);
     }

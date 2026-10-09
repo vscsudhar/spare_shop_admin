@@ -25,6 +25,7 @@ import '../core/services/bulk_quotation_service.dart';
 import '../core/services/cart_service.dart';
 import '../core/services/category_service.dart';
 import '../core/services/delivery_charge_service.dart';
+import '../core/services/delivery_service.dart';
 import '../core/services/enquiry_service.dart';
 import '../core/services/invoice_service.dart';
 import '../core/services/location_service.dart';
@@ -83,4 +84,5 @@ Future<void> setupLocator(
   locator.registerLazySingleton(() => InvoiceService());
   locator.registerLazySingleton(() => AdminCustomerService());
   locator.registerLazySingleton(() => BulkQuotationService());
+  locator.registerLazySingleton(() => DeliveryService());
 }

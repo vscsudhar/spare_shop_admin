@@ -3,7 +3,7 @@ import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/mixins/navigation_mixin.dart';
 import 'package:spare_shop_admin/core/services/token_service.dart';
 import 'package:spare_shop_admin/core/services/location_service.dart';
-import 'package:spare_shop_admin/core/services/staff_service.dart';
+import 'package:spare_shop_admin/core/services/order_service.dart';
 import 'package:spare_shop_admin/ui/common/location_models.dart';
 import 'package:spare_shop_admin/core/theme/theme_service.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
@@ -11,6 +11,7 @@ import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 enum AdminNavigationItem {
   dashboard,
   orders,
+  deliveryManagement,
   returnsExchanges,
   damagedProducts,
   rareRequests,
@@ -418,9 +419,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         final selectedValue =
             roles.contains(currentNormalized) ? currentNormalized : roles.first;
 
-        final popupBgColor = isCompact
-            ? const Color(0xFF1E293B)
-            : AdminColors.panelBackground;
+        final popupBgColor =
+            isCompact ? const Color(0xFF1E293B) : AdminColors.panelBackground;
         final itemTextColor =
             isCompact ? Colors.white : AdminColors.textPrimary;
 
@@ -435,7 +435,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
             child: DropdownButton<String>(
               value: selectedValue,
               dropdownColor: popupBgColor,
-              iconEnabledColor: isCompact ? Colors.white70 : AdminColors.textSecondary,
+              iconEnabledColor:
+                  isCompact ? Colors.white70 : AdminColors.textSecondary,
               onChanged: (String? newValue) {
                 if (newValue != null) {
                   setState(() {
@@ -536,8 +537,24 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                 children: [
                   _sidebarItem(context, Icons.dashboard_rounded, 'Dashboard',
                       AdminNavigationItem.dashboard),
-                  _sidebarItem(context, Icons.shopping_bag_rounded, 'Orders',
-                      AdminNavigationItem.orders),
+                  ValueListenableBuilder<int>(
+                    valueListenable: OrderService.processingCountNotifier,
+                    builder: (context, count, _) {
+                      return _sidebarItem(
+                        context,
+                        Icons.shopping_bag_rounded,
+                        'Orders',
+                        AdminNavigationItem.orders,
+                        badgeCount: count,
+                      );
+                    },
+                  ),
+                  _sidebarItem(
+                    context,
+                    Icons.alt_route_rounded,
+                    'Delivery Management',
+                    AdminNavigationItem.deliveryManagement,
+                  ),
                   _sidebarItem(
                       context,
                       Icons.published_with_changes_rounded,
@@ -583,108 +600,65 @@ class AdminShell extends StatelessWidget with NavigationMixin {
               ),
             ),
             const Divider(color: Colors.white12, height: 1),
-            FutureBuilder<Map<String, String?>>(
-              future: () async {
-                final tokenService = locator<TokenService>();
-                final email = await tokenService.getUserEmail();
-                final locId = await tokenService.getUserLocationId();
-                var loc = await tokenService.getUserLocationName();
-
-                if ((loc == null || loc.isEmpty || loc == 'Global HQ') &&
-                    locId != null &&
-                    locId.isNotEmpty) {
-                  try {
-                    final locations =
-                        await locator<LocationService>().getLocations();
-                    final match = locations.where((l) => l.id == locId);
-                    if (match.isNotEmpty) {
-                      loc = match.first.name;
-                      await tokenService.saveUserLocation(
-                        locationId: locId,
-                        locationName: loc,
-                      );
-                    }
-                  } catch (_) {}
-                }
-
-                if ((loc == null || loc.isEmpty || loc == 'Global HQ') &&
-                    email != null &&
-                    email.isNotEmpty) {
-                  try {
-                    final staffList =
-                        await locator<StaffService>().getStaffMembers();
-                    final member = staffList.where((s) =>
-                        s.email.toLowerCase() == email.toLowerCase().trim());
-                    if (member.isNotEmpty &&
-                        member.first.locationName.isNotEmpty &&
-                        member.first.locationName != 'All Locations (HQ)') {
-                      loc = member.first.locationName;
-                      await tokenService.saveUserLocation(
-                        locationId: member.first.locationId,
-                        locationName: loc,
-                      );
-                    }
-                  } catch (_) {}
-                }
-
-                final canChange = await tokenService.canChangeLocation();
-                if (loc == null || loc.isEmpty) {
-                  loc = canChange ? 'All Locations (HQ)' : 'Assigned Hub';
-                }
-
-                return {'email': email, 'location': loc};
-              }(),
-              builder: (context, snapshot) {
-                final email = snapshot.data?['email'] ?? 'Console User';
-                final loc = snapshot.data?['location'] ?? 'Assigned Hub';
+            ListenableBuilder(
+              listenable: TokenService.locationNotifier,
+              builder: (context, _) {
+                final loc = TokenService.locationNotifier.locationName ??
+                    'All Locations (HQ)';
                 final displayLoc = loc.toLowerCase().contains('hq') ||
                         loc.toLowerCase().contains('hub') ||
                         loc.toLowerCase().contains('all')
                     ? loc
                     : '$loc Hub';
 
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 14,
-                        backgroundColor:
-                            AdminColors.primaryGreen.withValues(alpha: 0.2),
-                        child: Icon(Icons.person,
-                            size: 16, color: AdminColors.accentLime),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              email,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
+                return FutureBuilder<String?>(
+                  future: locator<TokenService>().getUserEmail(),
+                  builder: (context, snapshot) {
+                    final email = snapshot.data ?? 'Console User';
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor:
+                                AdminColors.primaryGreen.withValues(alpha: 0.2),
+                            child: Icon(Icons.person,
+                                size: 16, color: AdminColors.accentLime),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  email,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '📍 $displayLoc',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: AdminColors.accentLime
+                                        .withValues(alpha: 0.8),
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              '📍 $displayLoc',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: AdminColors.accentLime
-                                    .withValues(alpha: 0.8),
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             ),
@@ -714,8 +688,9 @@ class AdminShell extends StatelessWidget with NavigationMixin {
     BuildContext context,
     IconData icon,
     String title,
-    AdminNavigationItem item,
-  ) {
+    AdminNavigationItem item, {
+    int? badgeCount,
+  }) {
     final isSelected = selectedItem == item;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -739,9 +714,47 @@ class AdminShell extends StatelessWidget with NavigationMixin {
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
+          trailing: (badgeCount != null && badgeCount > 0)
+              ? Container(
+                  width: badgeCount > 99 ? 25 : 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF59E0B),
+                    shape:
+                        badgeCount > 99 ? BoxShape.rectangle : BoxShape.circle,
+                    borderRadius:
+                        badgeCount > 99 ? BorderRadius.circular(10) : null,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.35),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.45),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    badgeCount > 99 ? '99+' : '$badgeCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.bold,
+                      height: 1.0,
+                    ),
+                  ),
+                )
+              : null,
           onTap: () {
             if (!isSelected) {
-              _navigate(context, item);
+              Future.microtask(() {
+                if (context.mounted) {
+                  _navigate(context, item);
+                }
+              });
             }
           },
         ),
@@ -750,10 +763,10 @@ class AdminShell extends StatelessWidget with NavigationMixin {
   }
 
   void _navigate(BuildContext context, AdminNavigationItem item) {
-    // If mobile, close the drawer first
+    // If mobile drawer is open, pop it cleanly
     final scaffold = Scaffold.maybeOf(context);
     if (scaffold != null && scaffold.isDrawerOpen) {
-      scaffold.closeDrawer();
+      Navigator.of(context, rootNavigator: false).pop();
     }
 
     switch (item) {
@@ -762,6 +775,9 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         break;
       case AdminNavigationItem.orders:
         goToAdminOrders();
+        break;
+      case AdminNavigationItem.deliveryManagement:
+        goToAdminDeliveryManagement();
         break;
       case AdminNavigationItem.returnsExchanges:
         goToReturnsExchanges();

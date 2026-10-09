@@ -49,7 +49,8 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
         radiusController.text = _radiusKm.toString();
         _selectedLatitude = loc.latitude;
         _selectedLongitude = loc.longitude;
-        _hasUserSelectedLocation = (loc.latitude != 0.0 || loc.longitude != 0.0);
+        _hasUserSelectedLocation =
+            (loc.latitude != 0.0 || loc.longitude != 0.0);
         _isActive = loc.isActive;
         rebuildUi();
       } catch (e) {
@@ -75,7 +76,9 @@ class AdminLocationFormViewModel extends BaseViewModel with NavigationMixin {
     _hasUserSelectedLocation = true;
     _errorMessage = null;
 
-    if (placeName != null && placeName.isNotEmpty && nameController.text.trim().isEmpty) {
+    if (placeName != null &&
+        placeName.isNotEmpty &&
+        nameController.text.trim().isEmpty) {
       nameController.text = placeName;
     }
 

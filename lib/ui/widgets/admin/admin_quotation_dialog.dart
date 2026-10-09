@@ -60,7 +60,8 @@ class AdminQuotationDialog extends StatelessWidget {
             // Scrollable A4 Document View
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: Center(
                   child: Container(
                     width: 820,
@@ -125,7 +126,8 @@ class AdminQuotationDialog extends StatelessWidget {
                   color: Colors.blueAccent.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.description_outlined, color: Colors.blueAccent, size: 20),
+                child: const Icon(Icons.description_outlined,
+                    color: Colors.blueAccent, size: 20),
               ),
               const SizedBox(width: 12),
               Column(
@@ -143,7 +145,8 @@ class AdminQuotationDialog extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: quotation.isConverted
                               ? Colors.green.withValues(alpha: 0.2)
@@ -151,9 +154,13 @@ class AdminQuotationDialog extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          quotation.isConverted ? 'CONVERTED TO INVOICE' : 'B2B QUOTATION',
+                          quotation.isConverted
+                              ? 'CONVERTED TO INVOICE'
+                              : 'B2B QUOTATION',
                           style: TextStyle(
-                            color: quotation.isConverted ? Colors.greenAccent : Colors.amberAccent,
+                            color: quotation.isConverted
+                                ? Colors.greenAccent
+                                : Colors.amberAccent,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -183,8 +190,10 @@ class AdminQuotationDialog extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AdminColors.primaryGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -199,8 +208,10 @@ class AdminQuotationDialog extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -235,7 +246,8 @@ class AdminQuotationDialog extends StatelessWidget {
                         color: const Color(0xFF10B981),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Icon(Icons.electric_bolt, color: Colors.white, size: 20),
+                      child: const Icon(Icons.electric_bolt,
+                          color: Colors.white, size: 20),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -250,9 +262,9 @@ class AdminQuotationDialog extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(
+                const Text(
                   VoltSpareBusinessConfig.legalEntityName,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 ),
                 const Text(
                   '${VoltSpareBusinessConfig.defaultAddressLine1}, ${VoltSpareBusinessConfig.defaultCity} - ${VoltSpareBusinessConfig.defaultPincode}',
@@ -287,11 +299,15 @@ class AdminQuotationDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  _metaRow('Quotation No:', quotation.quotationNumber, isBold: true),
-                  _metaRow('Date:', '${quotation.createdAt.day.toString().padLeft(2, '0')}/${quotation.createdAt.month.toString().padLeft(2, '0')}/${quotation.createdAt.year}'),
+                  _metaRow('Quotation No:', quotation.quotationNumber,
+                      isBold: true),
+                  _metaRow('Date:',
+                      '${quotation.createdAt.day.toString().padLeft(2, '0')}/${quotation.createdAt.month.toString().padLeft(2, '0')}/${quotation.createdAt.year}'),
                   _metaRow('Status:', quotation.status),
-                  if (quotation.invoiceNumber != null && quotation.invoiceNumber!.isNotEmpty)
-                    _metaRow('Invoice Linked:', quotation.invoiceNumber!, isBold: true),
+                  if (quotation.invoiceNumber != null &&
+                      quotation.invoiceNumber!.isNotEmpty)
+                    _metaRow('Invoice Linked:', quotation.invoiceNumber!,
+                        isBold: true),
                 ],
               ),
             ),
@@ -356,21 +372,27 @@ class AdminQuotationDialog extends StatelessWidget {
                   quotation.businessName.isNotEmpty
                       ? '${quotation.businessName} (${quotation.customerName})'
                       : quotation.customerName,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: Color(0xFF0F172A)),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   'Phone: ${quotation.customerPhone}',
-                  style: const TextStyle(color: Color(0xFF334155), fontSize: 11),
+                  style:
+                      const TextStyle(color: Color(0xFF334155), fontSize: 11),
                 ),
                 if (quotation.customerEmail.isNotEmpty)
                   Text(
                     'Email: ${quotation.customerEmail}',
-                    style: const TextStyle(color: Color(0xFF334155), fontSize: 11),
+                    style:
+                        const TextStyle(color: Color(0xFF334155), fontSize: 11),
                   ),
                 Text(
                   'Address: ${quotation.customerAddress.isNotEmpty ? quotation.customerAddress : 'Customer Workshop / Retail Counter'}',
-                  style: const TextStyle(color: Color(0xFF334155), fontSize: 11),
+                  style:
+                      const TextStyle(color: Color(0xFF334155), fontSize: 11),
                 ),
               ],
             ),
@@ -385,14 +407,22 @@ class AdminQuotationDialog extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('CUSTOMER GSTIN / TAX ID', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                const Text('CUSTOMER GSTIN / TAX ID',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF64748B))),
                 const SizedBox(height: 4),
                 Text(
-                  quotation.customerGst.isNotEmpty ? quotation.customerGst : 'URP (Unregistered Person)',
+                  quotation.customerGst.isNotEmpty
+                      ? quotation.customerGst
+                      : 'URP (Unregistered Person)',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: quotation.customerGst.isNotEmpty ? const Color(0xFF0F172A) : Colors.grey,
+                    color: quotation.customerGst.isNotEmpty
+                        ? const Color(0xFF0F172A)
+                        : Colors.grey,
                   ),
                 ),
               ],
@@ -453,19 +483,27 @@ class AdminQuotationDialog extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11)),
+                      Text(item.productName,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 11)),
                       if (item.partNumber.isNotEmpty)
-                        Text('Part No: ${item.partNumber}', style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+                        Text('Part No: ${item.partNumber}',
+                            style: const TextStyle(
+                                fontSize: 10, color: Color(0xFF64748B))),
                     ],
                   ),
                 ),
                 _td(item.hsnCode, align: TextAlign.center),
                 _td('${item.quantity}', align: TextAlign.right),
                 _td(item.priceTier.shortName, align: TextAlign.center),
-                _td('₹${item.unitPrice.toStringAsFixed(2)}', align: TextAlign.right),
-                _td('₹${item.totalTaxable.toStringAsFixed(2)}', align: TextAlign.right),
-                _td('${item.gstRate.toStringAsFixed(0)}%', align: TextAlign.right),
-                _td('₹${item.grandTotal.toStringAsFixed(2)}', align: TextAlign.right, isBold: true),
+                _td('₹${item.unitPrice.toStringAsFixed(2)}',
+                    align: TextAlign.right),
+                _td('₹${item.totalTaxable.toStringAsFixed(2)}',
+                    align: TextAlign.right),
+                _td('${item.gstRate.toStringAsFixed(0)}%',
+                    align: TextAlign.right),
+                _td('₹${item.grandTotal.toStringAsFixed(2)}',
+                    align: TextAlign.right, isBold: true),
               ],
             );
           }),
@@ -489,7 +527,8 @@ class AdminQuotationDialog extends StatelessWidget {
     );
   }
 
-  Widget _td(String text, {TextAlign align = TextAlign.left, bool isBold = false}) {
+  Widget _td(String text,
+      {TextAlign align = TextAlign.left, bool isBold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       child: Text(
@@ -528,9 +567,13 @@ class AdminQuotationDialog extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Quotation Notes & Conditions:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                const Text('Quotation Notes & Conditions:',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
                 const SizedBox(height: 4),
-                Text(quotation.notes, style: const TextStyle(fontSize: 11, color: Color(0xFF475569))),
+                Text(quotation.notes,
+                    style: const TextStyle(
+                        fontSize: 11, color: Color(0xFF475569))),
               ],
             ),
           ),
@@ -548,11 +591,16 @@ class AdminQuotationDialog extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _totalRow('Subtotal (Taxable):', '₹${quotation.subtotal.toStringAsFixed(2)}'),
-                _totalRow('CGST (9%):', '₹${(quotation.totalTax / 2).toStringAsFixed(2)}'),
-                _totalRow('SGST (9%):', '₹${(quotation.totalTax / 2).toStringAsFixed(2)}'),
+                _totalRow('Subtotal (Taxable):',
+                    '₹${quotation.subtotal.toStringAsFixed(2)}'),
+                _totalRow('CGST (9%):',
+                    '₹${(quotation.totalTax / 2).toStringAsFixed(2)}'),
+                _totalRow('SGST (9%):',
+                    '₹${(quotation.totalTax / 2).toStringAsFixed(2)}'),
                 const Divider(color: Color(0xFFCBD5E1), height: 12),
-                _totalRow('Grand Total (INR):', '₹${quotation.grandTotal.toStringAsFixed(2)}', isGrand: true),
+                _totalRow('Grand Total (INR):',
+                    '₹${quotation.grandTotal.toStringAsFixed(2)}',
+                    isGrand: true),
               ],
             ),
           ),
@@ -572,7 +620,8 @@ class AdminQuotationDialog extends StatelessWidget {
             style: TextStyle(
               fontSize: isGrand ? 12 : 11,
               fontWeight: isGrand ? FontWeight.bold : FontWeight.w500,
-              color: isGrand ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+              color:
+                  isGrand ? const Color(0xFF0F172A) : const Color(0xFF64748B),
             ),
           ),
           Text(
@@ -580,7 +629,8 @@ class AdminQuotationDialog extends StatelessWidget {
             style: TextStyle(
               fontSize: isGrand ? 14 : 11,
               fontWeight: FontWeight.bold,
-              color: isGrand ? const Color(0xFF10B981) : const Color(0xFF0F172A),
+              color:
+                  isGrand ? const Color(0xFF10B981) : const Color(0xFF0F172A),
             ),
           ),
         ],
@@ -598,14 +648,21 @@ class AdminQuotationDialog extends StatelessWidget {
           children: [
             const Text(
               'Thank you for your business!',
-              style: TextStyle(fontStyle: FontStyle.italic, color: Color(0xFF64748B), fontSize: 11),
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Color(0xFF64748B),
+                  fontSize: 11),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Text('For VoltSpare Solutions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                const Text('For VoltSpare Solutions',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
                 const SizedBox(height: 24),
-                Text('Authorized Signatory', style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
+                Text('Authorized Signatory',
+                    style:
+                        TextStyle(fontSize: 10, color: Colors.grey.shade600)),
               ],
             ),
           ],

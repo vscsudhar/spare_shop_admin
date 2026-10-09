@@ -346,7 +346,8 @@ class AdminDeliveryChargesView
                         color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
+                            color: AdminColors.primaryGreen
+                                .withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -380,7 +381,8 @@ class AdminDeliveryChargesView
                             decoration: BoxDecoration(
                               color: viewModel.calculatedFee == 0
                                   ? Colors.green.withValues(alpha: 0.2)
-                                  : AdminColors.primaryGreen.withValues(alpha: 0.2),
+                                  : AdminColors.primaryGreen
+                                      .withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: viewModel.calculatedFee == 0
@@ -537,8 +539,8 @@ class AdminDeliveryChargesView
             decoration: BoxDecoration(
               color: AdminColors.primaryGreen.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
-              border:
-                  Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.2)),
+              border: Border.all(
+                  color: AdminColors.primaryGreen.withValues(alpha: 0.2)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

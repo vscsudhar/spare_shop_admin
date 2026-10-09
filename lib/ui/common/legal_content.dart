@@ -8,16 +8,20 @@
 
 class LegalConfig {
   static const String appName = 'VoltSpare';
-  static const String appTagline = 'Automotive Spares & EV Components Management';
-  static const String legalEntityName = 'VoltSpare Automotive Technologies Pvt. Ltd.';
+  static const String appTagline =
+      'Automotive Spares & EV Components Management';
+  static const String legalEntityName =
+      'VoltSpare Automotive Technologies Pvt. Ltd.';
   static const String effectiveDate = 'October 1, 2026';
   static const String lastUpdatedDate = 'October 1, 2026';
   static const String supportEmail = 'support@voltspare.com';
   static const String supportPhone = '+91 99000 88000';
   static const String grievanceEmail = 'grievance@voltspare.com';
   static const String privacyEmail = 'privacy@voltspare.com';
-  static const String grievanceOfficerName = 'VoltSpare Grievance Redressal Officer';
-  static const String grievanceAddress = 'VoltSpare Operations & Redressal Cell, India';
+  static const String grievanceOfficerName =
+      'VoltSpare Grievance Redressal Officer';
+  static const String grievanceAddress =
+      'VoltSpare Operations & Redressal Cell, India';
   static const String governingLaw = 'The laws of the Republic of India';
   static const String jurisdiction =
       'Competent courts in India having jurisdiction, subject to applicable consumer protection laws and mandatory statutory forums';
@@ -60,7 +64,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_2',
       title: '2. Account Registration & Security',
-      summary: 'User account requirements, information accuracy, and credentials.',
+      summary:
+          'User account requirements, information accuracy, and credentials.',
       bulletPoints: [
         'To access certain features, save vehicle profiles, or place orders, you may register an account by providing accurate and complete information (including your name, mobile number, and email address).',
         'You are responsible for maintaining the confidentiality of your login credentials and OTPs, and for all activities that occur under your account.',
@@ -71,7 +76,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_3',
       title: '3. Product Information & Fitment Compatibility',
-      summary: 'Vehicle fitment, product details, and compatibility verification.',
+      summary:
+          'Vehicle fitment, product details, and compatibility verification.',
       bulletPoints: [
         'VoltSpare makes reasonable efforts to provide accurate product names, brand references, vehicle compatibility (by EV/petrol brand and model), pricing, technical descriptions, and images.',
         'Product images are for illustrative purposes and packaging or visual finish may occasionally vary depending on manufacturer batch updates.',
@@ -82,7 +88,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_4',
       title: '4. Product Availability & Hub Inventory',
-      summary: 'Location-based inventory, hub fulfillment, and availability status.',
+      summary:
+          'Location-based inventory, hub fulfillment, and availability status.',
       bulletPoints: [
         'Product availability and estimated delivery timelines may vary based on your selected delivery address, nearest fulfillment hub inventory, order timing, and logistics feasibility.',
         'If an item becomes unavailable or out of stock after order submission, VoltSpare will notify you promptly and process an appropriate refund or alternate arrangement with your consent.',
@@ -92,7 +99,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_5',
       title: '5. Pricing, Applicable Taxes & Invoicing',
-      summary: 'Transparent pricing, GST, delivery charges, and final payable amount.',
+      summary:
+          'Transparent pricing, GST, delivery charges, and final payable amount.',
       bulletPoints: [
         'All prices are listed in Indian Rupees (INR) and clearly display applicable Goods and Services Tax (GST), delivery charges, discounts, and the final net payable total at checkout.',
         'The final amount displayed on the order review screen before payment authorization is the amount payable for the order.',
@@ -103,7 +111,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_6',
       title: '6. Orders & Order Confirmation',
-      summary: 'Order placement, validation, status tracking, and cancellation terms.',
+      summary:
+          'Order placement, validation, status tracking, and cancellation terms.',
       bulletPoints: [
         'You may place an order by selecting desired products and completing the checkout process.',
         'An order confirmation with a unique Order ID will be generated upon successful order receipt and payment validation.',
@@ -114,7 +123,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_7',
       title: '7. Payment Methods & Security',
-      summary: 'Supported payment gateways, transaction validation, and fraud security.',
+      summary:
+          'Supported payment gateways, transaction validation, and fraud security.',
       bulletPoints: [
         'Payments may be processed through supported payment aggregators (e.g., UPI, debit/credit cards, net banking, and Cash on Delivery where eligible).',
         'VoltSpare receives payment confirmation and transaction reference numbers necessary to confirm orders, generate invoices, and handle refunds.',
@@ -125,7 +135,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_8',
       title: '8. Delivery, Logistics & Fulfillment',
-      summary: 'Delivery timelines, address validation, and service conditions.',
+      summary:
+          'Delivery timelines, address validation, and service conditions.',
       bulletPoints: [
         'Delivery timelines depend on delivery location, distance from the assigned VoltSpare fulfillment hub, stock availability, dispatch slot, and operational conditions.',
         'The Platform calculates approximate travel distance between the delivery destination and the fulfillment hub to determine serviceability and delivery fee tiers.',
@@ -136,7 +147,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_9',
       title: '9. Hub Radius & Location Serviceability',
-      summary: 'Geographic service boundaries, hub assignment, and distance calculation.',
+      summary:
+          'Geographic service boundaries, hub assignment, and distance calculation.',
       bulletPoints: [
         'VoltSpare assigns orders to the appropriate fulfillment hub based on the delivery location coordinates (latitude and longitude).',
         'Each hub operates within a designated service radius to ensure reliable delivery times and fresh inventory logistics.',
@@ -147,7 +159,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_10',
       title: '10. Returns, Refunds, Replacement & RMA Policy',
-      summary: 'Eligibility criteria, verification inspection, return windows, and RMA.',
+      summary:
+          'Eligibility criteria, verification inspection, return windows, and RMA.',
       bulletPoints: [
         'Return, refund, or exchange eligibility depends on the product category, condition upon arrival, and the specific return window stated on the product page.',
         'Eligible return scenarios include: defective or damaged products received, incorrect item or variant delivered, or unsealed/missing parts.',
@@ -159,7 +172,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_11',
       title: '11. Warranty Terms',
-      summary: 'Product-specific manufacturer warranty and RMA inspection coverage.',
+      summary:
+          'Product-specific manufacturer warranty and RMA inspection coverage.',
       bulletPoints: [
         'Where a spare part carries a manufacturer warranty or VoltSpare verified warranty, the specific warranty period and terms are stated on the product details page.',
         'Warranty claims require proof of purchase (VoltSpare Tax Invoice) and adherence to manufacturer installation guidelines.',
@@ -169,7 +183,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_12',
       title: '12. Customer Responsibilities',
-      summary: 'Accurate details, vehicle compatibility checks, and receiving parcels.',
+      summary:
+          'Accurate details, vehicle compatibility checks, and receiving parcels.',
       bulletPoints: [
         'Provide accurate contact numbers, complete address landmarks, and recipient names.',
         'Carefully verify vehicle model, make year, and part compatibility prior to placing orders.',
@@ -191,7 +206,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_14',
       title: '14. Intellectual Property Rights',
-      summary: 'VoltSpare trademarks, software, logos, and third-party brand acknowledgments.',
+      summary:
+          'VoltSpare trademarks, software, logos, and third-party brand acknowledgments.',
       bulletPoints: [
         'The VoltSpare brand name, logo, app design, UI layouts, graphic assets, database schemas, and proprietary software are protected under applicable intellectual property laws.',
         'Vehicle brand names, manufacturer logos, and model names referenced on the Platform are used solely to indicate vehicle fitment and compatibility.',
@@ -201,7 +217,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_15',
       title: '15. Third-Party Services & Integrations',
-      summary: 'Payment aggregators, map service providers, and cloud infrastructure.',
+      summary:
+          'Payment aggregators, map service providers, and cloud infrastructure.',
       bulletPoints: [
         'VoltSpare may integrate third-party services including payment gateways, map geocoding providers, notification delivery channels, and cloud hosting.',
         'Your use of services involving these providers is subject to their respective terms and privacy policies in addition to VoltSpare\'s Terms.',
@@ -211,7 +228,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_16',
       title: '16. Limitation of Liability & Service Availability',
-      summary: 'Platform uptime, scheduled maintenance, and reasonable liability terms.',
+      summary:
+          'Platform uptime, scheduled maintenance, and reasonable liability terms.',
       bulletPoints: [
         'VoltSpare strives to ensure maximum platform availability and uptime but does not warrant uninterrupted or error-free continuous service during necessary maintenance windows.',
         'To the extent permitted by law, VoltSpare is not liable for indirect, incidental, or consequential damages resulting from vehicle operation outside recommended manufacturer specifications.',
@@ -221,7 +239,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_17',
       title: '17. Statutory Consumer Protection Compliance',
-      summary: 'Consumer Protection Act, 2019 and E-Commerce Rules, 2020 adherence.',
+      summary:
+          'Consumer Protection Act, 2019 and E-Commerce Rules, 2020 adherence.',
       bulletPoints: [
         'VoltSpare complies with the Consumer Protection Act, 2019 and the Consumer Protection (E-Commerce) Rules, 2020.',
         'The Platform provides transparent disclosures regarding product descriptions, country of origin / manufacturer info where applicable, total price breakdowns, warranty details, and return/refund procedures.',
@@ -231,7 +250,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_18',
       title: '18. Customer Support & Grievance Redressal',
-      summary: 'Grievance Officer details, support contact channels, and resolution timelines.',
+      summary:
+          'Grievance Officer details, support contact channels, and resolution timelines.',
       bulletPoints: [
         'In accordance with the Consumer Protection (E-Commerce) Rules, 2020 and Information Technology Act rules, VoltSpare has designated a Grievance Redressal Officer.',
         'Grievance Redressal Officer: ${LegalConfig.grievanceOfficerName}',
@@ -243,7 +263,8 @@ class VoltSpareTermsAndConditions {
     LegalSection(
       id: 'tc_19',
       title: '19. Modifications to Terms',
-      summary: 'Periodic policy updates, notification of material changes, and effective dates.',
+      summary:
+          'Periodic policy updates, notification of material changes, and effective dates.',
       bulletPoints: [
         'VoltSpare reserves the right to modify or update these Terms to reflect operational improvements, new features, or legislative amendments.',
         'Material updates will be notified through prominent app notices, banner alerts, or updated effective dates.',
@@ -273,7 +294,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_1',
       title: '1. Information We Collect',
-      summary: 'Account details, delivery addresses, vehicle information, and location coordinates.',
+      summary:
+          'Account details, delivery addresses, vehicle information, and location coordinates.',
       bulletPoints: [
         'Account Information: Full name, mobile phone number, email address, and saved vehicle garage details (make, model, variant).',
         'Delivery Details: Recipient contact name, phone number, complete address landmarks, pincode, and user-labeled address tags (e.g. Home, Garage, Workshop).',
@@ -295,7 +317,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_3',
       title: '3. Payment Information Handling',
-      summary: 'Payment reference data; no storage of sensitive card CVV or UPI PINs.',
+      summary:
+          'Payment reference data; no storage of sensitive card CVV or UPI PINs.',
       bulletPoints: [
         'Payment transactions are processed securely through RBI-compliant payment gateway partners.',
         'VoltSpare receives only the transaction status, payment mode, and gateway reference number required to validate your order and process refunds.',
@@ -305,7 +328,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_4',
       title: '4. Purpose of Data Processing',
-      summary: 'How your data enables order fulfillment, customer support, and platform operations.',
+      summary:
+          'How your data enables order fulfillment, customer support, and platform operations.',
       bulletPoints: [
         'Creating and managing your user account and saved vehicle profiles.',
         'Processing orders, verifying inventory, and coordinating dispatch with fulfillment hubs.',
@@ -319,7 +343,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_5',
       title: '5. Location Data & Hub Serviceability Notice',
-      summary: 'Explicit notice on how address coordinates are used for hub fulfillment radius.',
+      summary:
+          'Explicit notice on how address coordinates are used for hub fulfillment radius.',
       bulletPoints: [
         'VoltSpare processes delivery address latitude and longitude coordinates strictly to determine the nearest operational fulfillment hub and verify that the destination falls within the hub\'s designated service radius.',
         'Coordinates are used to calculate route distance and estimate delivery arrival times.',
@@ -329,7 +354,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_6',
       title: '6. Data Sharing & Third-Party Disclosures',
-      summary: 'Strict need-to-know sharing with logistics, payment, and cloud providers.',
+      summary:
+          'Strict need-to-know sharing with logistics, payment, and cloud providers.',
       bulletPoints: [
         'Delivery & Logistics Partners: Sharing recipient name, contact phone, and delivery address to deliver ordered spare parts.',
         'Payment Aggregators: Communicating transaction amounts and order IDs to process payments and refunds.',
@@ -342,7 +368,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_7',
       title: '7. Data Retention & Archival',
-      summary: 'Retention for active service duration, accounting records, and statutory compliance.',
+      summary:
+          'Retention for active service duration, accounting records, and statutory compliance.',
       bulletPoints: [
         'Personal data is retained for as long as your account is active and as necessary to fulfill orders and provide ongoing support.',
         'Tax invoices, transaction logs, and billing records are retained for statutory periods required under Indian tax and corporate laws.',
@@ -352,7 +379,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_8',
       title: '8. Data Security Measures',
-      summary: 'Encryption, secure access controls, and industry-standard protection.',
+      summary:
+          'Encryption, secure access controls, and industry-standard protection.',
       bulletPoints: [
         'VoltSpare implements technical and organizational safeguards including HTTPS/TLS encryption for data in transit, secure hashed credential storage, and role-based access controls.',
         'Administrative consoles restrict access to customer data strictly to authorized staff on a role-specific, need-to-know basis.',
@@ -362,7 +390,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_9',
       title: '9. User Rights & Choices (DPDPA Compliance)',
-      summary: 'Right to access, correct, update, withdraw consent, and request deletion.',
+      summary:
+          'Right to access, correct, update, withdraw consent, and request deletion.',
       bulletPoints: [
         'Right to Access: You can view your personal profile, vehicle garage, saved addresses, and order history anytime within the app.',
         'Right to Correction & Update: You may update or correct your profile information and saved addresses.',
@@ -374,7 +403,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_10',
       title: '10. Children\'s Privacy',
-      summary: 'Platform intended for adult vehicle owners and qualified operators.',
+      summary:
+          'Platform intended for adult vehicle owners and qualified operators.',
       bulletPoints: [
         'VoltSpare is not intended for individuals under 18 years of age without parental or legal guardian consent and supervision.',
         'We do not knowingly collect personal information directly from children.',
@@ -384,7 +414,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_11',
       title: '11. Cookies & Local App Storage',
-      summary: 'Use of local tokens, secure session storage, and UI preference caching.',
+      summary:
+          'Use of local tokens, secure session storage, and UI preference caching.',
       bulletPoints: [
         'The Platform uses local device storage and secure tokens to maintain your login session and preserve cart/vehicle preferences across app restarts.',
         'Web versions may utilize necessary functional cookies for session continuity and security.',
@@ -403,7 +434,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_13',
       title: '13. Changes to Privacy Policy',
-      summary: 'Policy versioning, notification of updates, and archived revisions.',
+      summary:
+          'Policy versioning, notification of updates, and archived revisions.',
       bulletPoints: [
         'We may update this Privacy Policy from time to time to align with technical enhancements, operational updates, or legal requirements.',
         'Significant revisions will be announced through app notifications, banners, or email updates.',
@@ -413,7 +445,8 @@ class VoltSparePrivacyPolicy {
     LegalSection(
       id: 'pp_14',
       title: '14. Privacy Grievance & Data Protection Contact',
-      summary: 'Contact our Grievance Officer for privacy inquiries and data requests.',
+      summary:
+          'Contact our Grievance Officer for privacy inquiries and data requests.',
       bulletPoints: [
         'For inquiries, data access requests, or privacy grievances, contact our Grievance Redressal Officer:',
         'Officer: ${LegalConfig.grievanceOfficerName}',

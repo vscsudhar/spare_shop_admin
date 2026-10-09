@@ -99,7 +99,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                           fontWeight: FontWeight.w600,
                           color: AdminColors.textSecondary)),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(4),
@@ -250,7 +251,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 child: DropdownButtonFormField<String>(
                                   isExpanded: true,
                                   dropdownColor: AdminColors.panelBackground,
-                                  style: TextStyle(color: AdminColors.textPrimary, fontSize: 13),
+                                  style: TextStyle(
+                                      color: AdminColors.textPrimary,
+                                      fontSize: 13),
                                   initialValue: model.categories
                                           .any((c) => c.id == selectedCatId)
                                       ? selectedCatId
@@ -292,26 +295,32 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: actualSellingPriceController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Actual Selling Price (₹) *',
                                     hintText: 'Excl. Tax',
                                     border: OutlineInputBorder(),
                                   ),
-                                  onChanged: (_) => recalculatePrices(setModalState),
+                                  onChanged: (_) =>
+                                      recalculatePrices(setModalState),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: TextField(
                                   controller: taxPercentageController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Tax Percentage (%) *',
                                     hintText: 'e.g. 18',
                                     border: OutlineInputBorder(),
                                   ),
-                                  onChanged: (_) => recalculatePrices(setModalState),
+                                  onChanged: (_) =>
+                                      recalculatePrices(setModalState),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -321,16 +330,20 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   readOnly: true,
                                   enabled: false,
                                   style: TextStyle(
-                                    color: AdminColors.textPrimary.withValues(alpha: 0.8),
+                                    color: AdminColors.textPrimary
+                                        .withValues(alpha: 0.8),
                                     fontWeight: FontWeight.bold,
                                   ),
                                   decoration: InputDecoration(
                                     labelText: 'Selling Price (₹) (Incl. Tax)',
                                     filled: true,
-                                    fillColor: AdminColors.isDarkTheme ? Colors.white10 : Colors.grey.shade100,
+                                    fillColor: AdminColors.isDarkTheme
+                                        ? Colors.white10
+                                        : Colors.grey.shade100,
                                     border: const OutlineInputBorder(),
                                     helperText: 'Disabled: Auto-computed',
-                                    helperStyle: const TextStyle(fontSize: 10, color: Colors.green),
+                                    helperStyle: const TextStyle(
+                                        fontSize: 10, color: Colors.green),
                                   ),
                                 ),
                               ),
@@ -338,26 +351,44 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                           ),
                           const SizedBox(height: 8),
                           Builder(builder: (c) {
-                            final actual = double.tryParse(actualSellingPriceController.text) ?? 0.0;
-                            final rate = double.tryParse(taxPercentageController.text) ?? 0.0;
+                            final actual = double.tryParse(
+                                    actualSellingPriceController.text) ??
+                                0.0;
+                            final rate =
+                                double.tryParse(taxPercentageController.text) ??
+                                    0.0;
                             final tax = actual * (rate / 100.0);
                             final total = actual + tax;
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: Colors.blue.shade50.withValues(alpha: 0.6),
+                                color:
+                                    Colors.blue.shade50.withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(color: Colors.blue.shade200),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Base Price: ₹${actual.toStringAsFixed(2)}',
-                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                                  Text('+ GST (${rate.toStringAsFixed(0)}%): ₹${tax.toStringAsFixed(2)}',
-                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.blue.shade800)),
-                                  Text('= Selling Price: ₹${total.toStringAsFixed(2)} (Incl. Tax)',
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AdminColors.primaryGreen)),
+                                  Text(
+                                      'Base Price: ₹${actual.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600)),
+                                  Text(
+                                      '+ GST (${rate.toStringAsFixed(0)}%): ₹${tax.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.blue.shade800)),
+                                  Text(
+                                      '= Selling Price: ₹${total.toStringAsFixed(2)} (Incl. Tax)',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: AdminColors.primaryGreen)),
                                 ],
                               ),
                             );
@@ -368,7 +399,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: mrpController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'MRP (₹) *',
                                     border: OutlineInputBorder(),
@@ -379,7 +412,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: purchasePriceController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Purchase Price (₹) *',
                                     border: OutlineInputBorder(),
@@ -394,7 +429,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: leastSellingPrice1Controller,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Least Selling Price 1 (₹)',
                                     hintText: 'e.g. Bulk Tier 1',
@@ -406,7 +443,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: leastSellingPrice2Controller,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Least Selling Price 2 (₹)',
                                     hintText: 'e.g. Bulk Tier 2',
@@ -650,8 +689,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                       onPressed: model.isBusy
                           ? null
                           : () async {
-                              final double? actualSellPrice =
-                                  double.tryParse(actualSellingPriceController.text);
+                              final double? actualSellPrice = double.tryParse(
+                                  actualSellingPriceController.text);
                               final double? sellPrice =
                                   double.tryParse(sellingPriceController.text);
                               final double? mrpVal =
@@ -710,10 +749,12 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 categoryId: selectedCatId,
                                 name: nameController.text.trim(),
                                 sellingPrice: sellPrice,
-                                leastSellingPrice1:
-                                    double.tryParse(leastSellingPrice1Controller.text) ?? 0.0,
-                                leastSellingPrice2:
-                                    double.tryParse(leastSellingPrice2Controller.text) ?? 0.0,
+                                leastSellingPrice1: double.tryParse(
+                                        leastSellingPrice1Controller.text) ??
+                                    0.0,
+                                leastSellingPrice2: double.tryParse(
+                                        leastSellingPrice2Controller.text) ??
+                                    0.0,
                                 mrp: mrpVal,
                                 purchasePrice: buyPrice,
                                 taxPercentage: taxVal,
@@ -769,7 +810,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
       final tax = actual * (rate / 100.0);
       final total = actual + tax;
       sellingPriceController.text = total > 0 ? total.toStringAsFixed(2) : '';
-      if (mrpController.text.isEmpty || (double.tryParse(mrpController.text) ?? 0.0) < total) {
+      if (mrpController.text.isEmpty ||
+          (double.tryParse(mrpController.text) ?? 0.0) < total) {
         if (total > 0) {
           mrpController.text = (total * 1.15).toStringAsFixed(0);
         }
@@ -832,7 +874,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 child: DropdownButtonFormField<String>(
                                   isExpanded: true,
                                   dropdownColor: AdminColors.panelBackground,
-                                  style: TextStyle(color: AdminColors.textPrimary, fontSize: 13),
+                                  style: TextStyle(
+                                      color: AdminColors.textPrimary,
+                                      fontSize: 13),
                                   initialValue: selectedCatId,
                                   decoration: const InputDecoration(
                                     labelText: 'Category *',
@@ -869,26 +913,32 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: actualSellingPriceController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Actual Selling Price (₹) *',
                                     hintText: 'Excl. Tax',
                                     border: OutlineInputBorder(),
                                   ),
-                                  onChanged: (_) => recalculatePrices(setModalState),
+                                  onChanged: (_) =>
+                                      recalculatePrices(setModalState),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: TextField(
                                   controller: taxPercentageController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Tax Percentage (%) *',
                                     hintText: 'e.g. 18',
                                     border: OutlineInputBorder(),
                                   ),
-                                  onChanged: (_) => recalculatePrices(setModalState),
+                                  onChanged: (_) =>
+                                      recalculatePrices(setModalState),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -898,16 +948,20 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                   readOnly: true,
                                   enabled: false,
                                   style: TextStyle(
-                                    color: AdminColors.textPrimary.withValues(alpha: 0.8),
+                                    color: AdminColors.textPrimary
+                                        .withValues(alpha: 0.8),
                                     fontWeight: FontWeight.bold,
                                   ),
                                   decoration: InputDecoration(
                                     labelText: 'Selling Price (₹) (Incl. Tax)',
                                     filled: true,
-                                    fillColor: AdminColors.isDarkTheme ? Colors.white10 : Colors.grey.shade100,
+                                    fillColor: AdminColors.isDarkTheme
+                                        ? Colors.white10
+                                        : Colors.grey.shade100,
                                     border: const OutlineInputBorder(),
                                     helperText: 'Disabled: Auto-computed',
-                                    helperStyle: const TextStyle(fontSize: 10, color: Colors.green),
+                                    helperStyle: const TextStyle(
+                                        fontSize: 10, color: Colors.green),
                                   ),
                                 ),
                               ),
@@ -915,26 +969,44 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                           ),
                           const SizedBox(height: 8),
                           Builder(builder: (c) {
-                            final actual = double.tryParse(actualSellingPriceController.text) ?? 0.0;
-                            final rate = double.tryParse(taxPercentageController.text) ?? 18.0;
+                            final actual = double.tryParse(
+                                    actualSellingPriceController.text) ??
+                                0.0;
+                            final rate =
+                                double.tryParse(taxPercentageController.text) ??
+                                    18.0;
                             final tax = actual * (rate / 100.0);
                             final total = actual + tax;
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: Colors.blue.shade50.withValues(alpha: 0.6),
+                                color:
+                                    Colors.blue.shade50.withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(color: Colors.blue.shade200),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Base Price: ₹${actual.toStringAsFixed(2)}',
-                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                                  Text('+ GST (${rate.toStringAsFixed(0)}%): ₹${tax.toStringAsFixed(2)}',
-                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.blue.shade800)),
-                                  Text('= Selling Price: ₹${total.toStringAsFixed(2)} (Incl. Tax)',
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AdminColors.primaryGreen)),
+                                  Text(
+                                      'Base Price: ₹${actual.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600)),
+                                  Text(
+                                      '+ GST (${rate.toStringAsFixed(0)}%): ₹${tax.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.blue.shade800)),
+                                  Text(
+                                      '= Selling Price: ₹${total.toStringAsFixed(2)} (Incl. Tax)',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: AdminColors.primaryGreen)),
                                 ],
                               ),
                             );
@@ -945,7 +1017,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: mrpController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'MRP (₹) *',
                                     border: OutlineInputBorder(),
@@ -956,7 +1030,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: purchasePriceController,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Purchase Price (₹) *',
                                     border: OutlineInputBorder(),
@@ -971,7 +1047,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: leastSellingPrice1Controller,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Least Selling Price 1 (₹)',
                                     hintText: 'e.g. Bulk Tier 1',
@@ -983,7 +1061,9 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               Expanded(
                                 child: TextField(
                                   controller: leastSellingPrice2Controller,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   decoration: const InputDecoration(
                                     labelText: 'Least Selling Price 2 (₹)',
                                     hintText: 'e.g. Bulk Tier 2',
@@ -1185,8 +1265,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                       onPressed: model.isBusy
                           ? null
                           : () async {
-                              final double? actualPrice =
-                                  double.tryParse(actualSellingPriceController.text);
+                              final double? actualPrice = double.tryParse(
+                                  actualSellingPriceController.text);
                               final double? price =
                                   double.tryParse(sellingPriceController.text);
                               final double? mrpVal =
@@ -1250,10 +1330,12 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                               await model.addProduct(
                                 name: nameController.text.trim(),
                                 price: price,
-                                leastSellingPrice1:
-                                    double.tryParse(leastSellingPrice1Controller.text) ?? 0.0,
-                                leastSellingPrice2:
-                                    double.tryParse(leastSellingPrice2Controller.text) ?? 0.0,
+                                leastSellingPrice1: double.tryParse(
+                                        leastSellingPrice1Controller.text) ??
+                                    0.0,
+                                leastSellingPrice2: double.tryParse(
+                                        leastSellingPrice2Controller.text) ??
+                                    0.0,
                                 mrp: mrpVal,
                                 categoryId: categoryId,
                                 partNumber: sku,
@@ -1337,7 +1419,8 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                   children: [
                     Text(
                       'Enter the vehicle brand name to add it to the catalog.',
-                      style: TextStyle(fontSize: 13, color: AdminColors.textSecondary),
+                      style: TextStyle(
+                          fontSize: 13, color: AdminColors.textSecondary),
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -1575,8 +1658,7 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 ? null
                                 : (sel) {
                                     if (sel) {
-                                      setDialogState(
-                                          () => selectedType = 'EV');
+                                      setDialogState(() => selectedType = 'EV');
                                     }
                                   },
                           ),
@@ -2015,14 +2097,14 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                             children: [
                                               Icon(Icons.add_circle_outline,
                                                   size: 16,
-                                                  color: AdminColors
-                                                      .primaryGreen),
+                                                  color:
+                                                      AdminColors.primaryGreen),
                                               const SizedBox(width: 8),
                                               Text(
                                                 '+ Add New Model',
                                                 style: TextStyle(
-                                                  color: AdminColors
-                                                      .primaryGreen,
+                                                  color:
+                                                      AdminColors.primaryGreen,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),

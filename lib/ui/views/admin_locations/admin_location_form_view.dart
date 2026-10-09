@@ -198,7 +198,8 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                               child: Row(
                                 children: [
                                   Icon(Icons.my_location_rounded,
-                                      size: 20, color: AdminColors.primaryGreen),
+                                      size: 20,
+                                      color: AdminColors.primaryGreen),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
@@ -252,7 +253,8 @@ class AdminLocationFormView extends StackedView<AdminLocationFormViewModel> {
                               child: Row(
                                 children: [
                                   Icon(Icons.explore_outlined,
-                                      size: 20, color: AdminColors.primaryGreen),
+                                      size: 20,
+                                      color: AdminColors.primaryGreen),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(

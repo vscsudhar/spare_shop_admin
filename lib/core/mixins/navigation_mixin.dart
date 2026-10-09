@@ -15,7 +15,7 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminDashboard() {
-    return navigationService.navigateTo(Routes.adminDashboardView);
+    return navigationService.replaceWith(Routes.adminDashboardView);
   }
 
   Future<dynamic>? replaceWithAdminDashboard() {
@@ -23,7 +23,11 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminOrders() {
-    return navigationService.navigateTo(Routes.adminOrdersView);
+    return navigationService.replaceWith(Routes.adminOrdersView);
+  }
+
+  Future<dynamic>? goToAdminDeliveryManagement() {
+    return navigationService.replaceWith(Routes.adminDeliveryManagementView);
   }
 
   Future<dynamic>? goToAdminOrderDetail({
@@ -36,7 +40,7 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToReturnsExchanges() {
-    return navigationService.navigateTo(Routes.adminReturnsListView);
+    return navigationService.replaceWith(Routes.adminReturnsListView);
   }
 
   Future<dynamic>? goToNewReturn({String? prefillBill}) {
@@ -54,55 +58,55 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminDamagedProducts() {
-    return navigationService.navigateTo(Routes.adminDamagedProductsView);
+    return navigationService.replaceWith(Routes.adminDamagedProductsView);
   }
 
   Future<dynamic>? goToAdminCategories() {
-    return navigationService.navigateTo(Routes.adminCategoriesView);
+    return navigationService.replaceWith(Routes.adminCategoriesView);
   }
 
   Future<dynamic>? goToAdminProducts() {
-    return navigationService.navigateTo(Routes.adminProductsView);
+    return navigationService.replaceWith(Routes.adminProductsView);
   }
 
   Future<dynamic>? goToAdminBulkProductSell() {
-    return navigationService.navigateTo(Routes.adminBulkProductSellView);
+    return navigationService.replaceWith(Routes.adminBulkProductSellView);
   }
 
   Future<dynamic>? goToAdminInventory() {
-    return navigationService.navigateTo(Routes.adminInventoryView);
+    return navigationService.replaceWith(Routes.adminInventoryView);
   }
 
   Future<dynamic>? goToAdminPurchases() {
-    return navigationService.navigateTo(Routes.adminPurchasesView);
+    return navigationService.replaceWith(Routes.adminPurchasesView);
   }
 
   Future<dynamic>? goToAdminCustomers() {
-    return navigationService.navigateTo(Routes.adminCustomersView);
+    return navigationService.replaceWith(Routes.adminCustomersView);
   }
 
   Future<dynamic>? goToAdminBilling() {
-    return navigationService.navigateTo(Routes.adminBillingView);
+    return navigationService.replaceWith(Routes.adminBillingView);
   }
 
   Future<dynamic>? goToAdminReports() {
-    return navigationService.navigateTo(Routes.adminReportsView);
+    return navigationService.replaceWith(Routes.adminReportsView);
   }
 
   Future<dynamic>? goToAdminStaffRoles() {
-    return navigationService.navigateTo(Routes.adminStaffRolesView);
+    return navigationService.replaceWith(Routes.adminStaffRolesView);
   }
 
   Future<dynamic>? goToAdminSuggestions() {
-    return navigationService.navigateTo(Routes.adminSuggestionsView);
+    return navigationService.replaceWith(Routes.adminSuggestionsView);
   }
 
   Future<dynamic>? goToAdminEnquiries() {
-    return navigationService.navigateTo(Routes.adminEnquiriesView);
+    return navigationService.replaceWith(Routes.adminEnquiriesView);
   }
 
   Future<dynamic>? goToAdminSupportTickets() {
-    return navigationService.navigateTo(Routes.adminSupportTicketsView);
+    return navigationService.replaceWith(Routes.adminSupportTicketsView);
   }
 
   Future<dynamic>? goToAdminTicketChat({required String ticketId}) {
@@ -113,7 +117,7 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminRareRequests() {
-    return navigationService.navigateTo(Routes.adminRareRequestsView);
+    return navigationService.replaceWith(Routes.adminRareRequestsView);
   }
 
   Future<dynamic>? goToAdminRareRequestChat({
@@ -153,7 +157,7 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminSuppliers() {
-    return navigationService.navigateTo(Routes.adminSuppliersView);
+    return navigationService.replaceWith(Routes.adminSuppliersView);
   }
 
   Future<dynamic>? goToAdminSupplierDetail({
@@ -166,7 +170,9 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminSupplierForm() {
-    return navigationService.navigateTo(Routes.adminSupplierFormView);
+    return navigationService.navigateTo(
+      Routes.adminSupplierFormView,
+    );
   }
 
   Future<dynamic>? goToEditAdminSupplier({
@@ -179,15 +185,17 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminSettings() {
-    return navigationService.navigateTo(Routes.adminSettingsView);
+    return navigationService.replaceWith(Routes.adminSettingsView);
   }
 
   Future<dynamic>? goToAdminLocations() {
-    return navigationService.navigateTo(Routes.adminLocationsView);
+    return navigationService.replaceWith(Routes.adminLocationsView);
   }
 
   Future<dynamic>? goToAdminLocationForm() {
-    return navigationService.navigateTo(Routes.adminLocationFormView);
+    return navigationService.navigateTo(
+      Routes.adminLocationFormView,
+    );
   }
 
   Future<dynamic>? goToEditAdminLocation({
@@ -213,7 +221,7 @@ mixin NavigationMixin {
   }
 
   Future<dynamic>? goToAdminDeliveryCharges() {
-    return navigationService.navigateTo(Routes.adminDeliveryChargesView);
+    return navigationService.replaceWith(Routes.adminDeliveryChargesView);
   }
 
   Future<dynamic>? goToAdminForgotPassword() {

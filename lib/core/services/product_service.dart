@@ -116,8 +116,7 @@ class ProductService {
     return list.map((item) => VehicleModelExtension.fromJson(item)).toList();
   }
 
-  Future<VehicleModel> createVehicleModel(
-      Map<String, dynamic> payload) async {
+  Future<VehicleModel> createVehicleModel(Map<String, dynamic> payload) async {
     final response = await _apiClient.post(
       ApiEndpoints.vehicleModels,
       data: payload,

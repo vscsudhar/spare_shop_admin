@@ -244,7 +244,8 @@ class AdminForgotPasswordView
       decoration: BoxDecoration(
         color: AdminColors.primaryGreen.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.4)),
+        border:
+            Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
@@ -450,8 +451,8 @@ class AdminForgotPasswordView
           decoration: BoxDecoration(
             color: AdminColors.primaryGreen.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(10),
-            border:
-                Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
+            border: Border.all(
+                color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
@@ -845,8 +846,8 @@ class AdminForgotPasswordView
           decoration: BoxDecoration(
             color: AdminColors.primaryGreen.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
-            border:
-                Border.all(color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
+            border: Border.all(
+                color: AdminColors.primaryGreen.withValues(alpha: 0.3)),
           ),
           child: Column(
             children: [

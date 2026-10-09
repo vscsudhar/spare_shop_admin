@@ -591,7 +591,9 @@ class AdminBulkProductSellView
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? activeColor.withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected
+              ? activeColor.withValues(alpha: 0.15)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
@@ -696,10 +698,8 @@ class AdminBulkProductSellView
             final p1Controller = viewModel.getPrice1Controller(product);
             final p2Controller = viewModel.getPrice2Controller(product);
 
-            final currentP1 =
-                double.tryParse(p1Controller.text.trim()) ?? 0.0;
-            final currentP2 =
-                double.tryParse(p2Controller.text.trim()) ?? 0.0;
+            final currentP1 = double.tryParse(p1Controller.text.trim()) ?? 0.0;
+            final currentP2 = double.tryParse(p2Controller.text.trim()) ?? 0.0;
 
             final disc1 = product.price > 0 && currentP1 > 0
                 ? ((1.0 - (currentP1 / product.price)) * 100)
@@ -958,8 +958,7 @@ class AdminBulkProductSellView
                           icon: const Icon(Icons.save, size: 18),
                           tooltip: 'Save this product price',
                           color: AdminColors.primaryGreen,
-                          onPressed: () =>
-                              viewModel.saveSingleProduct(product),
+                          onPressed: () => viewModel.saveSingleProduct(product),
                         ),
                       ] else ...[
                         Container(
@@ -1100,7 +1099,7 @@ class AdminBulkProductSellView
 
           // Dropdown picker from Customer Table
           DropdownButtonFormField<AdminCustomerModel?>(
-            value: viewModel.selectedCustomer,
+            initialValue: viewModel.selectedCustomer,
             dropdownColor: AdminColors.panelBackground,
             decoration: InputDecoration(
               labelText: 'Select Registered Customer / Business',
@@ -1121,9 +1120,8 @@ class AdminBulkProductSellView
                 child: Text('-- Choose from Customer Table or Type Manual --'),
               ),
               ...viewModel.customers.map((c) {
-                final gstBadge = c.gstNumber.isNotEmpty
-                    ? ' [GST: ${c.gstNumber}]'
-                    : '';
+                final gstBadge =
+                    c.gstNumber.isNotEmpty ? ' [GST: ${c.gstNumber}]' : '';
                 return DropdownMenuItem(
                   value: c,
                   child: Text('${c.name} (${c.phone})$gstBadge'),
@@ -1287,7 +1285,6 @@ class AdminBulkProductSellView
             ],
           ),
           const SizedBox(height: 16),
-
           if (viewModel.quotationItems.isEmpty) ...[
             Container(
               width: double.infinity,
@@ -1629,8 +1626,7 @@ class AdminBulkProductSellView
                   onPressed: viewModel.isBusy
                       ? null
                       : () async {
-                          final quotation =
-                              await viewModel.createQuotation();
+                          final quotation = await viewModel.createQuotation();
                           if (quotation != null && context.mounted) {
                             AdminQuotationDialog.show(
                               context,
@@ -1697,9 +1693,8 @@ class AdminBulkProductSellView
             style: TextStyle(
               fontSize: isGrand ? 13 : 12,
               fontWeight: isGrand ? FontWeight.bold : FontWeight.w500,
-              color: isGrand
-                  ? AdminColors.textPrimary
-                  : AdminColors.textSecondary,
+              color:
+                  isGrand ? AdminColors.textPrimary : AdminColors.textSecondary,
             ),
           ),
           Text(
@@ -1707,9 +1702,8 @@ class AdminBulkProductSellView
             style: TextStyle(
               fontSize: isGrand ? 16 : 13,
               fontWeight: FontWeight.bold,
-              color: isGrand
-                  ? AdminColors.primaryGreen
-                  : AdminColors.textPrimary,
+              color:
+                  isGrand ? AdminColors.primaryGreen : AdminColors.textPrimary,
             ),
           ),
         ],
@@ -2195,7 +2189,8 @@ class AdminBulkProductSellView
                       style: TextStyle(
                           color: AdminColors.textPrimary, fontSize: 13),
                       decoration: InputDecoration(
-                        hintText: 'Search product name, category, SKU, part no...',
+                        hintText:
+                            'Search product name, category, SKU, part no...',
                         prefixIcon: const Icon(Icons.search, size: 18),
                         filled: true,
                         fillColor: AdminColors.background,
@@ -2226,7 +2221,8 @@ class AdminBulkProductSellView
                               itemBuilder: (context, i) {
                                 final product = items[i];
                                 final isAlreadyAdded = viewModel.quotationItems
-                                    .any((item) => item.productId == product.id);
+                                    .any(
+                                        (item) => item.productId == product.id);
 
                                 return ListTile(
                                   contentPadding: const EdgeInsets.symmetric(
@@ -2298,10 +2294,14 @@ class AdminBulkProductSellView
                                       setState(() {});
                                     },
                                     icon: Icon(
-                                      isAlreadyAdded ? Icons.add : Icons.add_shopping_cart,
+                                      isAlreadyAdded
+                                          ? Icons.add
+                                          : Icons.add_shopping_cart,
                                       size: 14,
                                     ),
-                                    label: Text(isAlreadyAdded ? 'Add More' : 'Add Item'),
+                                    label: Text(isAlreadyAdded
+                                        ? 'Add More'
+                                        : 'Add Item'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: isAlreadyAdded
                                           ? Colors.blueAccent
@@ -2372,7 +2372,8 @@ class AdminBulkProductSellView
             ),
             ElevatedButton(
               onPressed: () {
-                final customVal = double.tryParse(controller.text.trim()) ?? 0.0;
+                final customVal =
+                    double.tryParse(controller.text.trim()) ?? 0.0;
                 if (customVal > 0) {
                   viewModel.updateItemCustomPrice(index, customVal);
                   Navigator.of(ctx).pop();
@@ -2437,7 +2438,7 @@ class AdminBulkProductSellView
 
                     // Target Category
                     DropdownButtonFormField<String>(
-                      value: selectedCat,
+                      initialValue: selectedCat,
                       dropdownColor: AdminColors.panelBackground,
                       decoration: const InputDecoration(
                         labelText: 'Apply to Category',
@@ -2446,8 +2447,8 @@ class AdminBulkProductSellView
                       items: [
                         const DropdownMenuItem(
                             value: 'All', child: Text('All Categories')),
-                        ...viewModel.categories.map((c) => DropdownMenuItem(
-                            value: c.id, child: Text(c.name))),
+                        ...viewModel.categories.map((c) =>
+                            DropdownMenuItem(value: c.id, child: Text(c.name))),
                       ],
                       onChanged: (val) {
                         if (val != null) setState(() => selectedCat = val);
@@ -2469,8 +2470,7 @@ class AdminBulkProductSellView
                       max: 40,
                       divisions: 39,
                       activeColor: AdminColors.primaryGreen,
-                      onChanged: (val) =>
-                          setState(() => tier1Discount = val),
+                      onChanged: (val) => setState(() => tier1Discount = val),
                     ),
 
                     // Tier 2 % discount slider/number
@@ -2487,8 +2487,7 @@ class AdminBulkProductSellView
                       max: 60,
                       divisions: 55,
                       activeColor: Colors.purpleAccent,
-                      onChanged: (val) =>
-                          setState(() => tier2Discount = val),
+                      onChanged: (val) => setState(() => tier2Discount = val),
                     ),
                     const SizedBox(height: 8),
 

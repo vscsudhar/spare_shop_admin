@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spare_shop_admin/core/models/delivery_models.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 
 // Extension methods to serialize and deserialize backend JSON data to UI Models
@@ -244,8 +245,12 @@ extension ProductModelExtension on ProductModel {
       name: json['name'] ?? '',
       price: pricePaise / 100.0,
       originalPrice: mrpPaise / 100.0,
-      leastSellingPrice1: (leastSellingPrice1Paise is num ? leastSellingPrice1Paise : 0) / 100.0,
-      leastSellingPrice2: (leastSellingPrice2Paise is num ? leastSellingPrice2Paise : 0) / 100.0,
+      leastSellingPrice1:
+          (leastSellingPrice1Paise is num ? leastSellingPrice1Paise : 0) /
+              100.0,
+      leastSellingPrice2:
+          (leastSellingPrice2Paise is num ? leastSellingPrice2Paise : 0) /
+              100.0,
       rating: (json['rating'] ?? 4.5).toDouble(),
       description: json['description'] ?? '',
       categoryId: categoryId,
@@ -293,12 +298,24 @@ extension AddressModelExtension on AddressModel {
       addr = parts.join(', ');
     }
 
+    final double? lat = double.tryParse(json['latitude']?.toString() ?? '');
+    final double? lng = double.tryParse(json['longitude']?.toString() ?? '');
+    final double? dist = double.tryParse(
+        json['distanceFromLocationKm']?.toString() ??
+            json['distanceKm']?.toString() ??
+            '');
+
     return AddressModel(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       name: (json['recipientName'] ?? json['name'] ?? 'Customer').toString(),
       phone: (json['phone'] ?? '').toString(),
       addressLine: addr,
       isDefault: json['isDefault'] ?? false,
+      latitude: lat,
+      longitude: lng,
+      distanceFromLocationKm: dist,
+      locationId: json['locationId']?.toString(),
+      locationName: json['locationName']?.toString(),
     );
   }
 
@@ -308,6 +325,11 @@ extension AddressModelExtension on AddressModel {
       'phone': phone,
       'addressLine': addressLine,
       'isDefault': isDefault,
+      'latitude': latitude,
+      'longitude': longitude,
+      'distanceFromLocationKm': distanceFromLocationKm,
+      'locationId': locationId,
+      'locationName': locationName,
     };
   }
 }
@@ -399,8 +421,10 @@ extension OrderModelExtension on OrderModel {
     final double orderTotal = parsePaise(json['grandTotal'] ?? json['total']);
     final double subTotal = parsePaise(json['subTotal']);
     final double taxAmount = parsePaise(json['taxAmount']);
-    final double deliveryFee = parsePaise(json['deliveryFee'] ?? json['deliveryCharge']);
-    final double discountAmount = parsePaise(json['discountAmount'] ?? json['discount']);
+    final double deliveryFee =
+        parsePaise(json['deliveryFee'] ?? json['deliveryCharge']);
+    final double discountAmount =
+        parsePaise(json['discountAmount'] ?? json['discount']);
 
     String? locationId;
     String? locationName;
@@ -539,7 +563,10 @@ extension OrderModelExtension on OrderModel {
       discountAmount: discountAmount,
       address: AddressModelExtension.fromJson(addressMap),
       paymentMethod: (json['paymentMethod'] ?? 'cod').toString(),
-      paymentStatus: json['paymentStatus']?.toString(),
+      paymentStatus: DeliveryOrderModel.resolvePaymentStatus(
+        status: json['paymentStatus']?.toString(),
+        method: (json['paymentMethod'] ?? 'cod').toString(),
+      ),
       locationId: locationId,
       locationName: locationName,
       channel: channel,

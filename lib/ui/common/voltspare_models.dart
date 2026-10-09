@@ -291,6 +291,11 @@ class AddressModel {
   final String phone;
   final String addressLine;
   final bool isDefault;
+  final double? latitude;
+  final double? longitude;
+  final double? distanceFromLocationKm;
+  final String? locationId;
+  final String? locationName;
 
   const AddressModel({
     required this.id,
@@ -298,7 +303,39 @@ class AddressModel {
     required this.phone,
     required this.addressLine,
     this.isDefault = false,
+    this.latitude,
+    this.longitude,
+    this.distanceFromLocationKm,
+    this.locationId,
+    this.locationName,
   });
+
+  AddressModel copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? addressLine,
+    bool? isDefault,
+    double? latitude,
+    double? longitude,
+    double? distanceFromLocationKm,
+    String? locationId,
+    String? locationName,
+  }) {
+    return AddressModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      addressLine: addressLine ?? this.addressLine,
+      isDefault: isDefault ?? this.isDefault,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      distanceFromLocationKm:
+          distanceFromLocationKm ?? this.distanceFromLocationKm,
+      locationId: locationId ?? this.locationId,
+      locationName: locationName ?? this.locationName,
+    );
+  }
 }
 
 enum PaymentType { upi, card, cod }

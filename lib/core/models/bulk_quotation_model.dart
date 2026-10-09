@@ -215,10 +215,13 @@ class BulkQuotationItemModel {
       category: (json['category'] ?? '').toString(),
       image: (json['image'] ?? '').toString(),
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
-      priceTier: PriceTierTypeExtension.fromString(json['priceTier']?.toString()),
+      priceTier:
+          PriceTierTypeExtension.fromString(json['priceTier']?.toString()),
       retailPrice: (json['retailPrice'] as num?)?.toDouble() ?? 0.0,
-      leastSellingPrice1: (json['leastSellingPrice1'] as num?)?.toDouble() ?? 0.0,
-      leastSellingPrice2: (json['leastSellingPrice2'] as num?)?.toDouble() ?? 0.0,
+      leastSellingPrice1:
+          (json['leastSellingPrice1'] as num?)?.toDouble() ?? 0.0,
+      leastSellingPrice2:
+          (json['leastSellingPrice2'] as num?)?.toDouble() ?? 0.0,
       unitPrice: (json['unitPrice'] as num?)?.toDouble() ?? 0.0,
       gstRate: (json['gstRate'] as num?)?.toDouble() ?? 18.0,
     );
@@ -265,14 +268,16 @@ class BulkQuotationModel {
     this.status = 'Quotation',
     this.invoiceNumber,
     this.invoiceId,
-    this.notes = 'Prices valid for 15 days from quotation date. Subject to stock availability.',
+    this.notes =
+        'Prices valid for 15 days from quotation date. Subject to stock availability.',
     required this.createdAt,
     this.updatedAt,
     this.validUntil,
   });
 
   bool get isConverted =>
-      status.toLowerCase().contains('converted') || (invoiceNumber != null && invoiceNumber!.isNotEmpty);
+      status.toLowerCase().contains('converted') ||
+      (invoiceNumber != null && invoiceNumber!.isNotEmpty);
 
   BulkQuotationModel copyWith({
     String? id,
@@ -392,7 +397,7 @@ class BulkQuotationModel {
         invoiceNumber ??
         'INV-${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}-${quotationNumber.replaceAll(RegExp(r'[^0-9]'), '').padLeft(4, '0')}';
 
-    final isIntraState = true; // Default intra-state Karnataka
+    const isIntraState = true; // Default intra-state Karnataka
     int sNo = 1;
 
     final invoiceItems = items.map((item) {
@@ -410,7 +415,9 @@ class BulkQuotationModel {
       final iModel = InvoiceItemModel(
         sNo: sNo++,
         name: item.productName,
-        sku: item.partNumber.isNotEmpty ? item.partNumber : 'SKU-${item.productId.substring(0, item.productId.length > 6 ? 6 : item.productId.length)}',
+        sku: item.partNumber.isNotEmpty
+            ? item.partNumber
+            : 'SKU-${item.productId.substring(0, item.productId.length > 6 ? 6 : item.productId.length)}',
         hsnCode: item.hsnCode,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
@@ -446,9 +453,13 @@ class BulkQuotationModel {
     );
 
     final customer = InvoiceCustomerInfo(
-      name: businessName.isNotEmpty ? '$businessName ($customerName)' : customerName,
+      name: businessName.isNotEmpty
+          ? '$businessName ($customerName)'
+          : customerName,
       phone: customerPhone,
-      address: customerAddress.isNotEmpty ? customerAddress : 'Direct B2B Customer Address',
+      address: customerAddress.isNotEmpty
+          ? customerAddress
+          : 'Direct B2B Customer Address',
       gstin: customerGst.isNotEmpty ? customerGst : 'URP (Unregistered Person)',
       state: 'Karnataka',
       stateCode: '29',
@@ -481,12 +492,38 @@ class BulkQuotationModel {
   static String _numberToWords(int number) {
     if (number == 0) return 'Zero Rupees Only';
     final units = [
-      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-      'Seventeen', 'Eighteen', 'Nineteen'
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen'
     ];
     final tens = [
-      '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety'
     ];
 
     String convertBelowThousand(int n) {

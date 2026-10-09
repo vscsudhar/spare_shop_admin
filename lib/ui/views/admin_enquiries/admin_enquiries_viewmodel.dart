@@ -73,7 +73,8 @@ class AdminEnquiriesViewModel extends BaseViewModel with NavigationMixin {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Enquiry status updated to ${displayStatus.toUpperCase()}'),
+            content: Text(
+                'Enquiry status updated to ${displayStatus.toUpperCase()}'),
             backgroundColor: const Color(0xFF10B981),
           ),
         );

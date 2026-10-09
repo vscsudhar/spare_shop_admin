@@ -25,7 +25,8 @@ class AdminLocationMapPicker extends StatefulWidget {
   final double initialLatitude;
   final double initialLongitude;
   final double radiusKm;
-  final void Function(double lat, double lng, {String? placeName}) onLocationChanged;
+  final void Function(double lat, double lng, {String? placeName})
+      onLocationChanged;
   final double height;
 
   const AdminLocationMapPicker({
@@ -96,7 +97,8 @@ class _AdminLocationMapPickerState extends State<AdminLocationMapPicker>
             widget.initialLongitude != _currentLng)) {
       _currentLat = widget.initialLatitude;
       _currentLng = widget.initialLongitude;
-      _mapController.move(LatLng(_currentLat, _currentLng), _mapController.camera.zoom);
+      _mapController.move(
+          LatLng(_currentLat, _currentLng), _mapController.camera.zoom);
     }
   }
 
@@ -124,7 +126,8 @@ class _AdminLocationMapPickerState extends State<AdminLocationMapPicker>
   }
 
   void _onCameraPositionChanged(LatLng center) {
-    if (!_pinAnimationController.isAnimating && _pinAnimationController.value == 0) {
+    if (!_pinAnimationController.isAnimating &&
+        _pinAnimationController.value == 0) {
       _pinAnimationController.forward();
     }
 
@@ -244,7 +247,8 @@ class _AdminLocationMapPickerState extends State<AdminLocationMapPicker>
       _searchController.clear();
       _searchResults = [];
     });
-    _mapController.move(LatLng(widget.initialLatitude, widget.initialLongitude), 15.0);
+    _mapController.move(
+        LatLng(widget.initialLatitude, widget.initialLongitude), 15.0);
     widget.onLocationChanged(_currentLat, _currentLng);
     _bouncePin();
   }
@@ -554,8 +558,7 @@ class _AdminLocationMapPickerState extends State<AdminLocationMapPicker>
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.touch_app_outlined,
-                      color: Colors.white, size: 14),
+                  Icon(Icons.touch_app_outlined, color: Colors.white, size: 14),
                   SizedBox(width: 6),
                   Text(
                     'Tap map or drag to position location pin',

@@ -186,7 +186,8 @@ class InvoiceService {
     }
     try {
       final byteData = await rootBundle.load('assets/images/logo_full.png');
-      final bytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+      final bytes = byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
       _cachedLogoBase64 = 'data:image/png;base64,${base64Encode(bytes)}';
       return _cachedLogoBase64!;
     } catch (e) {
@@ -198,7 +199,8 @@ class InvoiceService {
   InvoiceService({ApiClient? apiClient})
       : _apiClient = apiClient ?? locator<ApiClient>();
 
-  InvoiceBusinessInfo get businessInfo => _cachedBusinessInfo ?? const InvoiceBusinessInfo();
+  InvoiceBusinessInfo get businessInfo =>
+      _cachedBusinessInfo ?? const InvoiceBusinessInfo();
 
   /// Load and cache the dynamic business information from general settings
   Future<InvoiceBusinessInfo> loadBusinessSettings() async {
@@ -208,16 +210,33 @@ class InvoiceService {
       final g = data['general'] ?? {};
       _cachedBusinessInfo = InvoiceBusinessInfo(
         name: (g['appName'] ?? VoltSpareBusinessConfig.storeName).toString(),
-        legalName: (g['legalName'] ?? g['appName'] ?? VoltSpareBusinessConfig.legalEntityName).toString(),
-        addressLine1: (g['addressLine1'] ?? g['address'] ?? VoltSpareBusinessConfig.defaultAddressLine1).toString(),
+        legalName: (g['legalName'] ??
+                g['appName'] ??
+                VoltSpareBusinessConfig.legalEntityName)
+            .toString(),
+        addressLine1: (g['addressLine1'] ??
+                g['address'] ??
+                VoltSpareBusinessConfig.defaultAddressLine1)
+            .toString(),
         addressLine2: (g['addressLine2'] ?? '').toString(),
         city: (g['city'] ?? VoltSpareBusinessConfig.defaultCity).toString(),
         state: (g['state'] ?? VoltSpareBusinessConfig.defaultState).toString(),
-        stateCode: (g['stateCode'] ?? getStateCode(g['state'] ?? VoltSpareBusinessConfig.defaultState)).toString(),
-        pincode: (g['postalCode'] ?? g['pincode'] ?? VoltSpareBusinessConfig.defaultPincode).toString(),
-        phone: (g['supportPhone'] ?? VoltSpareBusinessConfig.supportPhone).toString(),
-        email: (g['supportEmail'] ?? VoltSpareBusinessConfig.billingEmail).toString(),
-        gstin: (g['gstin'] ?? g['gstNumber'] ?? VoltSpareBusinessConfig.defaultGstin).toString(),
+        stateCode: (g['stateCode'] ??
+                getStateCode(
+                    g['state'] ?? VoltSpareBusinessConfig.defaultState))
+            .toString(),
+        pincode: (g['postalCode'] ??
+                g['pincode'] ??
+                VoltSpareBusinessConfig.defaultPincode)
+            .toString(),
+        phone: (g['supportPhone'] ?? VoltSpareBusinessConfig.supportPhone)
+            .toString(),
+        email: (g['supportEmail'] ?? VoltSpareBusinessConfig.billingEmail)
+            .toString(),
+        gstin: (g['gstin'] ??
+                g['gstNumber'] ??
+                VoltSpareBusinessConfig.defaultGstin)
+            .toString(),
         pan: (g['pan'] ?? VoltSpareBusinessConfig.defaultPan).toString(),
         website: (g['website'] ?? VoltSpareBusinessConfig.website).toString(),
       );
@@ -271,15 +290,19 @@ class InvoiceService {
   /// Map Indian state name or string to GST State Code
   static String getStateCode(String stateName) {
     final s = stateName.toLowerCase().trim();
-    if (s.contains('karnataka') || s.contains('bangalore') || s.contains('blr')) return '29';
-    if (s.contains('tamil') || s.contains('chennai') || s.contains('tn')) return '33';
-    if (s.contains('maharashtra') || s.contains('mumbai') || s.contains('pune')) return '27';
+    if (s.contains('karnataka') || s.contains('bangalore') || s.contains('blr'))
+      return '29';
+    if (s.contains('tamil') || s.contains('chennai') || s.contains('tn'))
+      return '33';
+    if (s.contains('maharashtra') || s.contains('mumbai') || s.contains('pune'))
+      return '27';
     if (s.contains('delhi') || s.contains('ncr')) return '07';
     if (s.contains('telangana') || s.contains('hyderabad')) return '36';
     if (s.contains('andhra')) return '37';
     if (s.contains('kerala') || s.contains('kochi')) return '32';
     if (s.contains('gujarat') || s.contains('ahmedabad')) return '24';
-    if (s.contains('uttar pradesh') || s.contains('up') || s.contains('noida')) return '09';
+    if (s.contains('uttar pradesh') || s.contains('up') || s.contains('noida'))
+      return '09';
     if (s.contains('rajasthan') || s.contains('jaipur')) return '08';
     if (s.contains('west bengal') || s.contains('kolkata')) return '19';
     if (s.contains('haryana') || s.contains('gurgaon')) return '06';
@@ -313,13 +336,39 @@ class InvoiceService {
     if (number == 0) return 'Zero';
 
     final units = [
-      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-      'Seventeen', 'Eighteen', 'Nineteen'
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen'
     ];
 
     final tens = [
-      '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety'
     ];
 
     String formatUnderThousand(int n) {
@@ -372,7 +421,8 @@ class InvoiceService {
     InvoiceBusinessInfo? businessInfo,
     double defaultTaxPercentage = 18.0,
   }) {
-    final business = businessInfo ?? _cachedBusinessInfo ?? const InvoiceBusinessInfo();
+    final business =
+        businessInfo ?? _cachedBusinessInfo ?? const InvoiceBusinessInfo();
     final invoiceNumber = getOrGenerateInvoiceNumber(order);
 
     // Extract customer address details
@@ -389,8 +439,12 @@ class InvoiceService {
     final bool isIntraState = customerStateCode == business.stateCode;
 
     final customer = InvoiceCustomerInfo(
-      name: order.address.name.isNotEmpty ? order.address.name : 'Valued Customer',
-      phone: order.address.phone.isNotEmpty ? order.address.phone : '+91 99000 88000',
+      name: order.address.name.isNotEmpty
+          ? order.address.name
+          : 'Valued Customer',
+      phone: order.address.phone.isNotEmpty
+          ? order.address.phone
+          : '+91 99000 88000',
       address: order.address.addressLine.isNotEmpty
           ? order.address.addressLine
           : 'Standard Delivery Address',
@@ -418,7 +472,7 @@ class InvoiceService {
 
       // Selling price per item
       final double totalItemPrice = item.product.price * qty;
-      
+
       // Calculate taxable base value from total item price
       // Taxable Base = Total / (1 + rate / 100)
       final double taxableVal = totalItemPrice / (1.0 + (rate / 100.0));
@@ -451,12 +505,16 @@ class InvoiceService {
       // SKU resolution
       final String sku = item.product.id.length >= 8
           ? 'VS-SKU-${item.product.id.substring(item.product.id.length - 6).toUpperCase()}'
-          : (item.product.id.isNotEmpty ? 'VS-${item.product.id.toUpperCase()}' : 'VS-GEN-${i + 1}');
+          : (item.product.id.isNotEmpty
+              ? 'VS-${item.product.id.toUpperCase()}'
+              : 'VS-GEN-${i + 1}');
 
       invoiceItems.add(
         InvoiceItemModel(
           sNo: i + 1,
-          name: item.product.name.isNotEmpty ? item.product.name : 'Spare Part Item',
+          name: item.product.name.isNotEmpty
+              ? item.product.name
+              : 'Spare Part Item',
           sku: sku,
           hsnCode: '8708',
           quantity: qty,
@@ -485,7 +543,8 @@ class InvoiceService {
       }
     }
 
-    final double grandTotal = order.total > 0 && order.total >= (computedTotalSum + deliveryCharges - 1)
+    final double grandTotal = order.total > 0 &&
+            order.total >= (computedTotalSum + deliveryCharges - 1)
         ? order.total
         : (computedTotalSum + deliveryCharges);
 
@@ -510,7 +569,8 @@ class InvoiceService {
       orderNumber: order.orderNumber,
       orderDate: order.date,
       paymentMethod: order.paymentMethod.toUpperCase(),
-      paymentStatus: order.status == OrderStatus.cancelled ? 'CANCELLED' : 'PAID',
+      paymentStatus:
+          order.status == OrderStatus.cancelled ? 'CANCELLED' : 'PAID',
       orderStatus: order.status.name.toUpperCase(),
       channel: order.channel,
       fulfillmentHub: order.locationName,
@@ -527,15 +587,19 @@ class InvoiceService {
     InvoiceBusinessInfo? businessInfo,
     double defaultTaxPercentage = 18.0,
   }) {
-    final business = businessInfo ?? _cachedBusinessInfo ?? const InvoiceBusinessInfo();
-    final invoiceNumber = (posData['invoiceNumber'] ?? 'INV-POS-UNKNOWN').toString();
-    final customerName = (posData['customerName'] ?? 'Walk-in Guest').toString();
+    final business =
+        businessInfo ?? _cachedBusinessInfo ?? const InvoiceBusinessInfo();
+    final invoiceNumber =
+        (posData['invoiceNumber'] ?? 'INV-POS-UNKNOWN').toString();
+    final customerName =
+        (posData['customerName'] ?? 'Walk-in Guest').toString();
     final locationName = (posData['locationName'] ?? 'Main Branch').toString();
     final dateStr = (posData['dateStr'] ?? '').toString();
     final invoiceDate = DateTime.tryParse(dateStr) ?? DateTime.now();
 
     final rawItems = posData['items'] as List<dynamic>? ?? [];
-    final double rawGrandTotal = (posData['grandTotal'] as num?)?.toDouble() ?? 0.0;
+    final double rawGrandTotal =
+        (posData['grandTotal'] as num?)?.toDouble() ?? 0.0;
     final double rawDiscount = (posData['discount'] as num?)?.toDouble() ?? 0.0;
 
     final customer = InvoiceCustomerInfo(
@@ -600,8 +664,12 @@ class InvoiceService {
       totalIgst: 0.0,
       totalTax: computedCgst + computedSgst,
       deliveryCharges: 0.0,
-      grandTotal: rawGrandTotal > 0 ? rawGrandTotal : (computedTaxable + computedCgst + computedSgst),
-      amountInWords: convertAmountToWords(rawGrandTotal > 0 ? rawGrandTotal : (computedTaxable + computedCgst + computedSgst)),
+      grandTotal: rawGrandTotal > 0
+          ? rawGrandTotal
+          : (computedTaxable + computedCgst + computedSgst),
+      amountInWords: convertAmountToWords(rawGrandTotal > 0
+          ? rawGrandTotal
+          : (computedTaxable + computedCgst + computedSgst)),
       isIntraState: true,
     );
 
@@ -649,26 +717,48 @@ class InvoiceService {
 
     final rawBusiness = json['business'] as Map<String, dynamic>? ?? {};
     final business = InvoiceBusinessInfo(
-      name: (rawBusiness['name'] ?? VoltSpareBusinessConfig.storeName).toString(),
-      legalName: (rawBusiness['legalName'] ?? VoltSpareBusinessConfig.legalEntityName).toString(),
-      addressLine1: (rawBusiness['addressLine1'] ?? VoltSpareBusinessConfig.defaultAddressLine1).toString(),
-      addressLine2: (rawBusiness['addressLine2'] ?? VoltSpareBusinessConfig.defaultAddressLine2).toString(),
-      city: (rawBusiness['city'] ?? VoltSpareBusinessConfig.defaultCity).toString(),
-      state: (rawBusiness['state'] ?? VoltSpareBusinessConfig.defaultState).toString(),
-      stateCode: (rawBusiness['stateCode'] ?? VoltSpareBusinessConfig.defaultStateCode).toString(),
-      pincode: (rawBusiness['postalCode'] ?? rawBusiness['pincode'] ?? VoltSpareBusinessConfig.defaultPincode).toString(),
-      phone: (rawBusiness['phone'] ?? VoltSpareBusinessConfig.supportPhone).toString(),
-      email: (rawBusiness['email'] ?? VoltSpareBusinessConfig.billingEmail).toString(),
-      gstin: (rawBusiness['gstin'] ?? VoltSpareBusinessConfig.defaultGstin).toString(),
-      pan: (rawBusiness['pan'] ?? VoltSpareBusinessConfig.defaultPan).toString(),
-      website: (rawBusiness['website'] ?? VoltSpareBusinessConfig.website).toString(),
+      name:
+          (rawBusiness['name'] ?? VoltSpareBusinessConfig.storeName).toString(),
+      legalName:
+          (rawBusiness['legalName'] ?? VoltSpareBusinessConfig.legalEntityName)
+              .toString(),
+      addressLine1: (rawBusiness['addressLine1'] ??
+              VoltSpareBusinessConfig.defaultAddressLine1)
+          .toString(),
+      addressLine2: (rawBusiness['addressLine2'] ??
+              VoltSpareBusinessConfig.defaultAddressLine2)
+          .toString(),
+      city: (rawBusiness['city'] ?? VoltSpareBusinessConfig.defaultCity)
+          .toString(),
+      state: (rawBusiness['state'] ?? VoltSpareBusinessConfig.defaultState)
+          .toString(),
+      stateCode:
+          (rawBusiness['stateCode'] ?? VoltSpareBusinessConfig.defaultStateCode)
+              .toString(),
+      pincode: (rawBusiness['postalCode'] ??
+              rawBusiness['pincode'] ??
+              VoltSpareBusinessConfig.defaultPincode)
+          .toString(),
+      phone: (rawBusiness['phone'] ?? VoltSpareBusinessConfig.supportPhone)
+          .toString(),
+      email: (rawBusiness['email'] ?? VoltSpareBusinessConfig.billingEmail)
+          .toString(),
+      gstin: (rawBusiness['gstin'] ?? VoltSpareBusinessConfig.defaultGstin)
+          .toString(),
+      pan:
+          (rawBusiness['pan'] ?? VoltSpareBusinessConfig.defaultPan).toString(),
+      website: (rawBusiness['website'] ?? VoltSpareBusinessConfig.website)
+          .toString(),
     );
 
     final rawCustomer = json['customer'] as Map<String, dynamic>? ?? {};
     final customer = InvoiceCustomerInfo(
       name: (rawCustomer['name'] ?? 'Valued Customer').toString(),
       phone: (rawCustomer['phone'] ?? '').toString(),
-      address: (rawCustomer['address'] ?? rawCustomer['addressLine1'] ?? 'Standard Address').toString(),
+      address: (rawCustomer['address'] ??
+              rawCustomer['addressLine1'] ??
+              'Standard Address')
+          .toString(),
       city: (rawCustomer['city'] ?? '').toString(),
       state: (rawCustomer['state'] ?? 'Tamil Nadu').toString(),
       stateCode: (rawCustomer['stateCode'] ?? '33').toString(),
@@ -683,13 +773,16 @@ class InvoiceService {
       final rawUnitPrice = parseNum(it['unitPrice']);
       final rate = parseNum(it['taxPercentage'] ?? it['gstRate'] ?? 18);
       final total = parseNum(it['total']);
-      final taxable = parseNum(it['taxableValue'] ?? it['amount'] ?? (total > 0 ? total / (1.0 + (rate / 100.0)) : (rawUnitPrice * qty)));
+      final taxable = parseNum(it['taxableValue'] ??
+          it['amount'] ??
+          (total > 0 ? total / (1.0 + (rate / 100.0)) : (rawUnitPrice * qty)));
       final taxableUnitRate = qty > 0 ? (taxable / qty) : taxable;
 
       items.add(
         InvoiceItemModel(
           sNo: i + 1,
-          name: (it['productName'] ?? it['name'] ?? 'Automotive Part').toString(),
+          name:
+              (it['productName'] ?? it['name'] ?? 'Automotive Part').toString(),
           sku: (it['sku'] ?? 'SKU-UNKNOWN').toString(),
           hsnCode: (it['hsnCode'] ?? '8708').toString(),
           quantity: qty,
@@ -709,12 +802,15 @@ class InvoiceService {
 
     final subtotal = parseNum(json['subtotal'] ?? json['subTotal']);
     final grandTotal = parseNum(json['grandTotal'] ?? json['total']);
-    final totalTax = parseNum(json['taxAmount'] ?? json['totalTax'] ?? json['tax']);
-    final deliveryCharges = parseNum(json['deliveryCharge'] ?? json['deliveryFee']);
+    final totalTax =
+        parseNum(json['taxAmount'] ?? json['totalTax'] ?? json['tax']);
+    final deliveryCharges =
+        parseNum(json['deliveryCharge'] ?? json['deliveryFee']);
     final totalDiscount = parseNum(json['discount'] ?? json['discountAmount']);
     final isIntraState = json['isIntraState'] ?? true;
 
-    final taxableAmount = parseNum(json['taxableAmount'] ?? json['taxableValue'] ?? subtotal);
+    final taxableAmount =
+        parseNum(json['taxableAmount'] ?? json['taxableValue'] ?? subtotal);
 
     final summary = InvoiceSummary(
       subtotal: subtotal,
@@ -726,7 +822,8 @@ class InvoiceService {
       totalTax: totalTax,
       deliveryCharges: deliveryCharges,
       grandTotal: grandTotal,
-      amountInWords: (json['amountInWords'] ?? convertAmountToWords(grandTotal)).toString(),
+      amountInWords: (json['amountInWords'] ?? convertAmountToWords(grandTotal))
+          .toString(),
       isIntraState: isIntraState,
     );
 
@@ -879,7 +976,9 @@ class InvoiceService {
     final businessCityState = [business.city, business.state]
         .where((s) => s.trim().isNotEmpty)
         .join(', ');
-    final businessPin = business.pincode.trim().isNotEmpty ? ' - ${business.pincode.trim()}' : '';
+    final businessPin = business.pincode.trim().isNotEmpty
+        ? ' - ${business.pincode.trim()}'
+        : '';
 
     final itemsRows = invoice.items.map((item) {
       final cgstText = summary.isIntraState

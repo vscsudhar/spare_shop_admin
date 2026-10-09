@@ -145,7 +145,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                       const SizedBox(width: 8),
                                       AdminStatusChip(
                                         label: viewModel.order.status.name,
-                                        color: _statusColor(viewModel.order.status),
+                                        color: _statusColor(
+                                            viewModel.order.status),
                                       ),
                                     ],
                                   ),
@@ -170,7 +171,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                     isGreen: true),
                               ],
                               const SizedBox(height: 8),
-                              _priceRow('Delivery Charges',
+                              _priceRow(
+                                  'Delivery Charges',
                                   viewModel.order.deliveryFee > 0
                                       ? '₹${viewModel.order.deliveryFee.toStringAsFixed(2)}'
                                       : 'FREE',
@@ -206,7 +208,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   Expanded(
                                     child: DropdownButtonFormField<OrderStatus>(
                                       initialValue: viewModel.order.status,
-                                      dropdownColor: AdminColors.panelBackground,
+                                      dropdownColor:
+                                          AdminColors.panelBackground,
                                       decoration: InputDecoration(
                                         labelText: 'Update Status',
                                         contentPadding:
@@ -618,39 +621,48 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                 const Divider(),
                                 const SizedBox(height: 12),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Order Source',
                                           style: AdminTextStyles.bodySecondary
-                                              .copyWith(fontWeight: FontWeight.bold),
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(height: 6),
                                         _buildChannelBadge(viewModel.order),
                                       ],
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Text(
                                           'Payment Method',
                                           style: AdminTextStyles.bodySecondary
-                                              .copyWith(fontWeight: FontWeight.bold),
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(height: 6),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
-                                            color: Colors.white.withValues(alpha: 0.06),
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: Colors.white24),
+                                            color: Colors.white
+                                                .withValues(alpha: 0.06),
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                            border: Border.all(
+                                                color: Colors.white24),
                                           ),
                                           child: Text(
-                                            viewModel.order.paymentMethod.toUpperCase(),
+                                            viewModel.order.paymentMethod
+                                                .toUpperCase(),
                                             style: const TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
@@ -733,7 +745,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
     );
   }
 
-  Widget _priceRow(String label, String value, {bool isBold = false, bool isGreen = false}) {
+  Widget _priceRow(String label, String value,
+      {bool isBold = false, bool isGreen = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

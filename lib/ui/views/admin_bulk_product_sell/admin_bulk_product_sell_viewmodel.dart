@@ -35,7 +35,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
   // --------------------------------------------------------------------------
   // Tab Navigation
   // --------------------------------------------------------------------------
-  int _selectedTabIndex = 0; // 0: Price Setup, 1: Create Quotation / Invoice, 2: Quotations Directory
+  int _selectedTabIndex =
+      0; // 0: Price Setup, 1: Create Quotation / Invoice, 2: Quotations Directory
   int get selectedTabIndex => _selectedTabIndex;
 
   void setTabIndex(int index) {
@@ -97,7 +98,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
     return _price2Controllers[product.id]!;
   }
 
-  bool isProductModified(String productId) => _modifiedProductIds.contains(productId);
+  bool isProductModified(String productId) =>
+      _modifiedProductIds.contains(productId);
 
   void onPriceChanged(String productId) {
     final product = _allProducts.firstWhere(
@@ -151,7 +153,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
         final q = _searchQuery.toLowerCase();
         final matchName = product.name.toLowerCase().contains(q);
         final matchDesc = product.description.toLowerCase().contains(q);
-        final matchBadge = product.fitmentBadge?.toLowerCase().contains(q) ?? false;
+        final matchBadge =
+            product.fitmentBadge?.toLowerCase().contains(q) ?? false;
         final matchType = product.vehicleType.toLowerCase().contains(q);
         if (!matchName && !matchDesc && !matchBadge && !matchType) return false;
       }
@@ -216,11 +219,17 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
   }
 
   Future<void> saveSingleProduct(ProductModel product) async {
-    final p1 = double.tryParse(_price1Controllers[product.id]?.text.trim() ?? '') ?? 0.0;
-    final p2 = double.tryParse(_price2Controllers[product.id]?.text.trim() ?? '') ?? 0.0;
+    final p1 =
+        double.tryParse(_price1Controllers[product.id]?.text.trim() ?? '') ??
+            0.0;
+    final p2 =
+        double.tryParse(_price2Controllers[product.id]?.text.trim() ?? '') ??
+            0.0;
 
     if (p1 > product.price && product.price > 0) {
-      showFeedback('Warning: Least Price 1 is higher than regular price (₹${product.price}).', isError: true);
+      showFeedback(
+          'Warning: Least Price 1 is higher than regular price (₹${product.price}).',
+          isError: true);
     }
 
     setBusy(true);
@@ -257,8 +266,10 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
 
     for (final id in _modifiedProductIds) {
       final product = _allProducts.firstWhere((p) => p.id == id);
-      final p1 = double.tryParse(_price1Controllers[id]?.text.trim() ?? '') ?? 0.0;
-      final p2 = double.tryParse(_price2Controllers[id]?.text.trim() ?? '') ?? 0.0;
+      final p1 =
+          double.tryParse(_price1Controllers[id]?.text.trim() ?? '') ?? 0.0;
+      final p2 =
+          double.tryParse(_price2Controllers[id]?.text.trim() ?? '') ?? 0.0;
 
       updates.add({
         'productId': id,
@@ -295,7 +306,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
 
       final count = _modifiedProductIds.length;
       _modifiedProductIds.clear();
-      showFeedback('Successfully updated bulk selling prices for $count products.');
+      showFeedback(
+          'Successfully updated bulk selling prices for $count products.');
     } catch (e) {
       showFeedback('Error saving bulk updates: $e', isError: true);
     } finally {
@@ -316,8 +328,12 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
         continue;
       }
 
-      final currentP1 = double.tryParse(_price1Controllers[product.id]?.text.trim() ?? '') ?? product.leastSellingPrice1;
-      final currentP2 = double.tryParse(_price2Controllers[product.id]?.text.trim() ?? '') ?? product.leastSellingPrice2;
+      final currentP1 =
+          double.tryParse(_price1Controllers[product.id]?.text.trim() ?? '') ??
+              product.leastSellingPrice1;
+      final currentP2 =
+          double.tryParse(_price2Controllers[product.id]?.text.trim() ?? '') ??
+              product.leastSellingPrice2;
 
       final bool shouldUpdateP1 = overwriteExisting || currentP1 <= 0;
       final bool shouldUpdateP2 = overwriteExisting || currentP2 <= 0;
@@ -328,13 +344,15 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
       if (basePrice <= 0) continue;
 
       if (shouldUpdateP1) {
-        final newP1 = (basePrice * (1.0 - (tier1DiscountPercent / 100.0))).clamp(0.0, basePrice);
+        final newP1 = (basePrice * (1.0 - (tier1DiscountPercent / 100.0)))
+            .clamp(0.0, basePrice);
         _price1Controllers[product.id] ??= TextEditingController();
         _price1Controllers[product.id]!.text = newP1.toStringAsFixed(2);
       }
 
       if (shouldUpdateP2) {
-        final newP2 = (basePrice * (1.0 - (tier2DiscountPercent / 100.0))).clamp(0.0, basePrice);
+        final newP2 = (basePrice * (1.0 - (tier2DiscountPercent / 100.0)))
+            .clamp(0.0, basePrice);
         _price2Controllers[product.id] ??= TextEditingController();
         _price2Controllers[product.id]!.text = newP2.toStringAsFixed(2);
       }
@@ -344,7 +362,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
     }
 
     notifyListeners();
-    showFeedback('Rule calculated and applied to $updatedCount products. Click "Save Changes" to persist.');
+    showFeedback(
+        'Rule calculated and applied to $updatedCount products. Click "Save Changes" to persist.');
   }
 
   // --------------------------------------------------------------------------
@@ -357,10 +376,12 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
   final TextEditingController customerPhoneController = TextEditingController();
   final TextEditingController customerEmailController = TextEditingController();
   final TextEditingController customerGstController = TextEditingController();
-  final TextEditingController customerAddressController = TextEditingController();
+  final TextEditingController customerAddressController =
+      TextEditingController();
   final TextEditingController businessNameController = TextEditingController();
   final TextEditingController quotationNotesController = TextEditingController(
-    text: 'Prices valid for 15 days from quotation date. Subject to stock availability.',
+    text:
+        'Prices valid for 15 days from quotation date. Subject to stock availability.',
   );
 
   final List<BulkQuotationItemModel> _quotationItems = [];
@@ -393,7 +414,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
       customerEmailController.text = customer.email;
       customerGstController.text = customer.gstNumber;
       customerAddressController.text = customer.address;
-      businessNameController.text = customer.type.contains('Workshop') || customer.type.contains('Wholesale')
+      businessNameController.text = customer.type.contains('Workshop') ||
+              customer.type.contains('Wholesale')
           ? customer.name
           : '';
     }
@@ -417,7 +439,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
     PriceTierType tier = PriceTierType.retail,
     double? customPrice,
   }) {
-    final existingIndex = _quotationItems.indexWhere((item) => item.productId == product.id);
+    final existingIndex =
+        _quotationItems.indexWhere((item) => item.productId == product.id);
     if (existingIndex != -1) {
       final existing = _quotationItems[existingIndex];
       _quotationItems[existingIndex] = existing.copyWith(
@@ -448,24 +471,30 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
       if (newQty <= 0) {
         removeItemFromQuotation(index);
       } else {
-        _quotationItems[index] = _quotationItems[index].copyWith(quantity: newQty);
+        _quotationItems[index] =
+            _quotationItems[index].copyWith(quantity: newQty);
         notifyListeners();
       }
     }
   }
 
-  void updateItemPriceTier(int index, PriceTierType tier, {double? customPrice}) {
+  void updateItemPriceTier(int index, PriceTierType tier,
+      {double? customPrice}) {
     if (index >= 0 && index < _quotationItems.length) {
       final item = _quotationItems[index];
       double newUnitPrice;
       switch (tier) {
         case PriceTierType.least1:
-          newUnitPrice = item.leastSellingPrice1 > 0 ? item.leastSellingPrice1 : item.retailPrice;
+          newUnitPrice = item.leastSellingPrice1 > 0
+              ? item.leastSellingPrice1
+              : item.retailPrice;
           break;
         case PriceTierType.least2:
           newUnitPrice = item.leastSellingPrice2 > 0
               ? item.leastSellingPrice2
-              : (item.leastSellingPrice1 > 0 ? item.leastSellingPrice1 : item.retailPrice);
+              : (item.leastSellingPrice1 > 0
+                  ? item.leastSellingPrice1
+                  : item.retailPrice);
           break;
         case PriceTierType.custom:
           newUnitPrice = customPrice ?? item.unitPrice;
@@ -521,17 +550,20 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
       return null;
     }
     if (_quotationItems.isEmpty) {
-      showFeedback('Please add at least one product item to the quotation.', isError: true);
+      showFeedback('Please add at least one product item to the quotation.',
+          isError: true);
       return null;
     }
 
     setBusy(true);
     try {
-      final quotationNum = await _quotationService.generateNextQuotationNumber();
+      final quotationNum =
+          await _quotationService.generateNextQuotationNumber();
       final quotation = BulkQuotationModel(
         id: 'quo_${DateTime.now().millisecondsSinceEpoch}',
         quotationNumber: quotationNum,
-        customerId: _selectedCustomer?.id ?? 'cust_${DateTime.now().millisecondsSinceEpoch}',
+        customerId: _selectedCustomer?.id ??
+            'cust_${DateTime.now().millisecondsSinceEpoch}',
         customerName: name,
         customerPhone: phone,
         customerEmail: customerEmailController.text.trim(),
@@ -569,7 +601,8 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
       await loadQuotations();
       final businessSettings = await _invoiceService.loadBusinessSettings();
       final invoice = converted.toInvoiceModel(businessInfo: businessSettings);
-      showFeedback('B2B Invoice ${invoice.invoiceNumber} created successfully!');
+      showFeedback(
+          'B2B Invoice ${invoice.invoiceNumber} created successfully!');
       return invoice;
     } catch (e) {
       showFeedback('Failed to create B2B invoice: $e', isError: true);
@@ -606,13 +639,16 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
         final matchCust = q.customerName.toLowerCase().contains(query);
         final matchPhone = q.customerPhone.toLowerCase().contains(query);
         final matchGst = q.customerGst.toLowerCase().contains(query);
-        final matchInv = q.invoiceNumber?.toLowerCase().contains(query) ?? false;
-        if (!matchNo && !matchCust && !matchPhone && !matchGst && !matchInv) return false;
+        final matchInv =
+            q.invoiceNumber?.toLowerCase().contains(query) ?? false;
+        if (!matchNo && !matchCust && !matchPhone && !matchGst && !matchInv)
+          return false;
       }
 
       if (_quotationStatusFilter != 'All') {
         if (_quotationStatusFilter == 'Active' && q.isConverted) return false;
-        if (_quotationStatusFilter == 'Converted' && !q.isConverted) return false;
+        if (_quotationStatusFilter == 'Converted' && !q.isConverted)
+          return false;
       }
 
       return true;
@@ -626,14 +662,16 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
     } catch (_) {}
   }
 
-  Future<InvoiceModel?> convertQuotationToInvoice(BulkQuotationModel quotation) async {
+  Future<InvoiceModel?> convertQuotationToInvoice(
+      BulkQuotationModel quotation) async {
     setBusy(true);
     try {
       final converted = await _quotationService.convertToInvoice(quotation);
       await loadQuotations();
       final businessSettings = await _invoiceService.loadBusinessSettings();
       final invoice = converted.toInvoiceModel(businessInfo: businessSettings);
-      showFeedback('Quotation ${quotation.quotationNumber} converted to Tax Invoice ${invoice.invoiceNumber}!');
+      showFeedback(
+          'Quotation ${quotation.quotationNumber} converted to Tax Invoice ${invoice.invoiceNumber}!');
       return invoice;
     } catch (e) {
       showFeedback('Failed to convert quotation: $e', isError: true);
@@ -698,10 +736,14 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
 
       for (final p in _allProducts) {
         _price1Controllers[p.id] = TextEditingController(
-          text: p.leastSellingPrice1 > 0 ? p.leastSellingPrice1.toStringAsFixed(2) : '',
+          text: p.leastSellingPrice1 > 0
+              ? p.leastSellingPrice1.toStringAsFixed(2)
+              : '',
         );
         _price2Controllers[p.id] = TextEditingController(
-          text: p.leastSellingPrice2 > 0 ? p.leastSellingPrice2.toStringAsFixed(2) : '',
+          text: p.leastSellingPrice2 > 0
+              ? p.leastSellingPrice2.toStringAsFixed(2)
+              : '',
         );
       }
     } catch (e) {

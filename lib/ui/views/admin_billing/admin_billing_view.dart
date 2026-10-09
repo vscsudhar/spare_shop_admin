@@ -862,7 +862,8 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                         ),
                         onPressed: () {
                           final invoiceService = InvoiceService();
-                          final model = invoiceService.createInvoiceFromPosData(invoice);
+                          final model =
+                              invoiceService.createInvoiceFromPosData(invoice);
                           AdminInvoiceDialog.show(context, model);
                         },
                       ),
@@ -985,19 +986,27 @@ class AdminBillingView extends StackedView<AdminBillingViewModel> {
                                                   },
                                                 ),
                                                 IconButton(
-                                                  tooltip: 'View Full GST Invoice',
+                                                  tooltip:
+                                                      'View Full GST Invoice',
                                                   icon: Icon(
-                                                      Icons.receipt_long_outlined,
-                                                      color: AdminColors.primaryGreen,
+                                                      Icons
+                                                          .receipt_long_outlined,
+                                                      color: AdminColors
+                                                          .primaryGreen,
                                                       size: 18),
                                                   onPressed: () {
-                                                    final invoiceService = InvoiceService();
-                                                    final model = invoiceService.createInvoiceFromPosData(inv);
-                                                    AdminInvoiceDialog.show(context, model);
+                                                    final invoiceService =
+                                                        InvoiceService();
+                                                    final model = invoiceService
+                                                        .createInvoiceFromPosData(
+                                                            inv);
+                                                    AdminInvoiceDialog.show(
+                                                        context, model);
                                                   },
                                                 ),
                                                 IconButton(
-                                                  tooltip: 'Print Thermal Receipt',
+                                                  tooltip:
+                                                      'Print Thermal Receipt',
                                                   icon: const Icon(Icons.print,
                                                       size: 18),
                                                   onPressed: () {

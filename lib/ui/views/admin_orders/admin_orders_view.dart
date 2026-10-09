@@ -191,13 +191,15 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
-                  label: '📱 Mobile App (${viewModel.appOrdersCount})',
+                  label: '📱 Mobile App',
+                  count: viewModel.appOrdersCount,
                   isSelected: viewModel.selectedChannelFilter == 'app',
                   onTap: () => viewModel.setSelectedChannelFilter('app'),
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
-                  label: '🏪 Store POS (${viewModel.posOrdersCount})',
+                  label: '🏪 Store POS',
+                  count: viewModel.posOrdersCount,
                   isSelected: viewModel.selectedChannelFilter == 'pos',
                   onTap: () => viewModel.setSelectedChannelFilter('pos'),
                 ),
@@ -208,15 +210,18 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                   color: Colors.white24,
                 ),
                 const SizedBox(width: 14),
-                // Status filters
+                // Status filters with notification count badges
                 AdminFilterChip(
                   label: 'All Statuses',
+                  count: viewModel.allOrdersCount,
                   isSelected: viewModel.selectedStatus == null,
                   onTap: () => viewModel.setFilterStatus(null),
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
                   label: 'Processing',
+                  count: viewModel.processingOrdersCount,
+                  countColor: AdminColors.pending,
                   isSelected:
                       viewModel.selectedStatus == OrderStatus.processing,
                   onTap: () =>
@@ -225,18 +230,24 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                 const SizedBox(width: 8),
                 AdminFilterChip(
                   label: 'Shipped',
+                  count: viewModel.shippedOrdersCount,
+                  countColor: AdminColors.inProgress,
                   isSelected: viewModel.selectedStatus == OrderStatus.shipped,
                   onTap: () => viewModel.setFilterStatus(OrderStatus.shipped),
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
                   label: 'Delivered',
+                  count: viewModel.deliveredOrdersCount,
+                  countColor: AdminColors.success,
                   isSelected: viewModel.selectedStatus == OrderStatus.delivered,
                   onTap: () => viewModel.setFilterStatus(OrderStatus.delivered),
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
                   label: 'Cancelled',
+                  count: viewModel.cancelledOrdersCount,
+                  countColor: AdminColors.cancelled,
                   isSelected: viewModel.selectedStatus == OrderStatus.cancelled,
                   onTap: () => viewModel.setFilterStatus(OrderStatus.cancelled),
                 ),

@@ -164,7 +164,8 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
                             ],
                           ),
                           const Divider(height: 32),
-                          _buildActiveSectionContent(context, viewModel, isWide),
+                          _buildActiveSectionContent(
+                              context, viewModel, isWide),
                           const Divider(height: 48),
 
                           // Save Action row
@@ -558,8 +559,7 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
             ),
             if (viewModel.isMapMoved)
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AdminColors.primaryGreen.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
@@ -780,8 +780,7 @@ class AdminSettingsView extends StackedView<AdminSettingsViewModel> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide:
-                BorderSide(color: AdminColors.primaryGreen, width: 1.5),
+            borderSide: BorderSide(color: AdminColors.primaryGreen, width: 1.5),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -838,8 +837,8 @@ class InteractiveAdminMapPicker extends StatefulWidget {
   final double initialLat;
   final double initialLng;
   final Function(double lat, double lng) onLocationChanged;
-  final Function(String taluk, String district, String state, [String? postalCode])?
-      onAreaSelected;
+  final Function(String taluk, String district, String state,
+      [String? postalCode])? onAreaSelected;
 
   const InteractiveAdminMapPicker({
     Key? key,
@@ -903,7 +902,8 @@ class _InteractiveAdminMapPickerState extends State<InteractiveAdminMapPicker>
         widget.initialLng != oldWidget.initialLng) {
       _currentLat = widget.initialLat;
       _currentLng = widget.initialLng;
-      _mapController.move(LatLng(_currentLat, _currentLng), _mapController.camera.zoom);
+      _mapController.move(
+          LatLng(_currentLat, _currentLng), _mapController.camera.zoom);
     }
   }
 
@@ -1119,7 +1119,8 @@ class _InteractiveAdminMapPickerState extends State<InteractiveAdminMapPicker>
     _mapController.move(LatLng(loc.latitude, loc.longitude), 16.0);
     widget.onLocationChanged(loc.latitude, loc.longitude);
     if (widget.onAreaSelected != null) {
-      widget.onAreaSelected!(loc.taluk, loc.district, loc.state, loc.postalCode);
+      widget.onAreaSelected!(
+          loc.taluk, loc.district, loc.state, loc.postalCode);
     }
   }
 
@@ -1419,10 +1420,10 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
-                const Color(0xFF0F172A),
-                const Color(0xFF1E293B),
+                Color(0xFF0F172A),
+                Color(0xFF1E293B),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -1475,11 +1476,16 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _statutoryChip('Consumer Protection Act 2019', Icons.gavel_rounded),
-                  _statutoryChip('E-Commerce Rules 2020', Icons.shopping_bag_outlined),
-                  _statutoryChip('DPDPA 2023 Notice & Consent', Icons.shield_outlined),
-                  _statutoryChip('Hub Radius Serviceability', Icons.location_on_outlined),
-                  _statutoryChip('Effective: ${LegalConfig.effectiveDate}', Icons.event_available_outlined),
+                  _statutoryChip(
+                      'Consumer Protection Act 2019', Icons.gavel_rounded),
+                  _statutoryChip(
+                      'E-Commerce Rules 2020', Icons.shopping_bag_outlined),
+                  _statutoryChip(
+                      'DPDPA 2023 Notice & Consent', Icons.shield_outlined),
+                  _statutoryChip(
+                      'Hub Radius Serviceability', Icons.location_on_outlined),
+                  _statutoryChip('Effective: ${LegalConfig.effectiveDate}',
+                      Icons.event_available_outlined),
                 ],
               ),
               const SizedBox(height: 12),
@@ -1488,17 +1494,18 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.1)),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(Icons.support_agent_rounded,
+                    Icon(Icons.support_agent_rounded,
                         color: Colors.white70, size: 18),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Grievance Redressal: ${LegalConfig.grievanceOfficerName} • ${LegalConfig.grievanceEmail} • ${LegalConfig.supportPhone}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
@@ -1517,7 +1524,8 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
         Row(
           children: [
             ChoiceChip(
-              label: Text('Terms & Conditions (${VoltSpareTermsAndConditions.sections.length})'),
+              label: Text(
+                  'Terms & Conditions (${VoltSpareTermsAndConditions.sections.length})'),
               selected: _activeTab == 0,
               onSelected: (selected) {
                 if (selected) setState(() => _activeTab = 0);
@@ -1525,7 +1533,8 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
             ),
             const SizedBox(width: 8),
             ChoiceChip(
-              label: Text('Privacy Policy (${VoltSparePrivacyPolicy.sections.length})'),
+              label: Text(
+                  'Privacy Policy (${VoltSparePrivacyPolicy.sections.length})'),
               selected: _activeTab == 1,
               onSelected: (selected) {
                 if (selected) setState(() => _activeTab = 1);
@@ -1539,7 +1548,8 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
                 style: TextStyle(color: AdminColors.textPrimary, fontSize: 12),
                 decoration: InputDecoration(
                   hintText: 'Search legal clauses...',
-                  hintStyle: TextStyle(color: AdminColors.textSecondary, fontSize: 12),
+                  hintStyle:
+                      TextStyle(color: AdminColors.textSecondary, fontSize: 12),
                   prefixIcon: const Icon(Icons.search, size: 16),
                   isDense: true,
                   contentPadding:
@@ -1585,7 +1595,8 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
             child: Center(
               child: Text(
                 'No legal sections matched "$_searchQuery"',
-                style: TextStyle(color: AdminColors.textSecondary, fontSize: 13),
+                style:
+                    TextStyle(color: AdminColors.textSecondary, fontSize: 13),
               ),
             ),
           )
@@ -1641,8 +1652,7 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
         key: PageStorageKey(sec.id),
         initiallyExpanded: true,
         tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-        childrenPadding:
-            const EdgeInsets.only(left: 14, right: 14, bottom: 14),
+        childrenPadding: const EdgeInsets.only(left: 14, right: 14, bottom: 14),
         title: Text(
           sec.title,
           style: TextStyle(
@@ -1718,4 +1728,3 @@ class _LegalPoliciesViewerState extends State<_LegalPoliciesViewer> {
     );
   }
 }
-
