@@ -290,19 +290,23 @@ class InvoiceService {
   /// Map Indian state name or string to GST State Code
   static String getStateCode(String stateName) {
     final s = stateName.toLowerCase().trim();
-    if (s.contains('karnataka') || s.contains('bangalore') || s.contains('blr'))
+    if (s.contains('karnataka') || s.contains('bangalore') || s.contains('blr')) {
       return '29';
-    if (s.contains('tamil') || s.contains('chennai') || s.contains('tn'))
+    }
+    if (s.contains('tamil') || s.contains('chennai') || s.contains('tn')) {
       return '33';
-    if (s.contains('maharashtra') || s.contains('mumbai') || s.contains('pune'))
+    }
+    if (s.contains('maharashtra') || s.contains('mumbai') || s.contains('pune')) {
       return '27';
+    }
     if (s.contains('delhi') || s.contains('ncr')) return '07';
     if (s.contains('telangana') || s.contains('hyderabad')) return '36';
     if (s.contains('andhra')) return '37';
     if (s.contains('kerala') || s.contains('kochi')) return '32';
     if (s.contains('gujarat') || s.contains('ahmedabad')) return '24';
-    if (s.contains('uttar pradesh') || s.contains('up') || s.contains('noida'))
+    if (s.contains('uttar pradesh') || s.contains('up') || s.contains('noida')) {
       return '09';
+    }
     if (s.contains('rajasthan') || s.contains('jaipur')) return '08';
     if (s.contains('west bengal') || s.contains('kolkata')) return '19';
     if (s.contains('haryana') || s.contains('gurgaon')) return '06';

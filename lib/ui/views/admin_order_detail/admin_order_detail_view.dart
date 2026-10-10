@@ -144,7 +144,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                       _buildChannelBadge(viewModel.order),
                                       const SizedBox(width: 8),
                                       AdminStatusChip(
-                                        label: viewModel.order.status.name,
+                                        label: _formatOrderStatus(
+                                            viewModel.order.status),
                                         color: _statusColor(
                                             viewModel.order.status),
                                       ),
@@ -222,7 +223,7 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                       items: OrderStatus.values.map((s) {
                                         return DropdownMenuItem(
                                             value: s,
-                                            child: Text(s.name.toUpperCase()));
+                                            child: Text(_formatOrderStatus(s).toUpperCase()));
                                       }).toList(),
                                       onChanged: (s) {
                                         if (s != null) {
@@ -234,8 +235,9 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   if (viewModel.order.status ==
                                       OrderStatus.processing) ...[
                                     const SizedBox(width: 16),
-                                    ElevatedButton(
+                                    ElevatedButton.icon(
                                       onPressed: viewModel.markOutForDelivery,
+                                      icon: const Icon(Icons.local_shipping_outlined, size: 16),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             AdminColors.primaryGreen,
@@ -246,8 +248,8 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                             borderRadius:
                                                 BorderRadius.circular(8)),
                                       ),
-                                      child:
-                                          const Text('Mark Out for Delivery'),
+                                      label:
+                                          const Text('Mark In Transit'),
                                     ),
                                   ],
                                 ],
@@ -1058,6 +1060,19 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
         );
       },
     );
+  }
+
+  String _formatOrderStatus(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.processing:
+        return 'Processing';
+      case OrderStatus.shipped:
+        return 'In Transit';
+      case OrderStatus.delivered:
+        return 'Delivered';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
+    }
   }
 
   Color _statusColor(OrderStatus status) {

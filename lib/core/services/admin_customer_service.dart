@@ -314,8 +314,9 @@ class AdminCustomerModel {
   String get initials {
     final parts = name.trim().split(' ');
     if (parts.isEmpty || parts[0].isEmpty) return 'VS';
-    if (parts.length == 1)
+    if (parts.length == 1) {
       return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    }
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 }

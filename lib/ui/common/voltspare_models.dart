@@ -371,6 +371,10 @@ class OrderModel {
   final String? locationId;
   final String? locationName;
   final String channel; // 'app', 'online', 'pos', 'in_store'
+  final String? assignedPartnerId;
+  final String? assignedPartnerName;
+  final String? deliveryStatus;
+  final String? deliveryNotes;
 
   const OrderModel({
     required this.id,
@@ -389,6 +393,10 @@ class OrderModel {
     this.locationId,
     this.locationName,
     this.channel = 'app',
+    this.assignedPartnerId,
+    this.assignedPartnerName,
+    this.deliveryStatus,
+    this.deliveryNotes,
   });
 
   bool get isPosOrder =>
@@ -417,6 +425,10 @@ class OrderModel {
     String? locationId,
     String? locationName,
     String? channel,
+    String? assignedPartnerId,
+    String? assignedPartnerName,
+    String? deliveryStatus,
+    String? deliveryNotes,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -435,6 +447,10 @@ class OrderModel {
       locationId: locationId ?? this.locationId,
       locationName: locationName ?? this.locationName,
       channel: channel ?? this.channel,
+      assignedPartnerId: assignedPartnerId ?? this.assignedPartnerId,
+      assignedPartnerName: assignedPartnerName ?? this.assignedPartnerName,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+      deliveryNotes: deliveryNotes ?? this.deliveryNotes,
     );
   }
 }

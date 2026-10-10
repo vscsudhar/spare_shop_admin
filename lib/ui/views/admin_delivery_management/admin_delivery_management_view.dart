@@ -1432,10 +1432,36 @@ class AdminDeliveryManagementView
     );
   }
 
+  String _formatBatchStatus(String status) {
+    final s = status.toLowerCase();
+    if (s == 'in_transit' || s == 'transit' || s == 'shipped' || s == 'out_for_delivery') {
+      return 'IN TRANSIT';
+    } else if (s == 'completed' || s == 'delivered') {
+      return 'COMPLETED';
+    } else if (s == 'cancelled') {
+      return 'CANCELLED';
+    } else {
+      return 'ASSIGNED';
+    }
+  }
+
+  String _formatStopStatus(String status) {
+    final s = status.toLowerCase();
+    if (s == 'shipped' || s == 'in_transit' || s == 'out_for_delivery' || s == 'transit') {
+      return 'IN TRANSIT';
+    } else if (s == 'delivered' || s == 'completed') {
+      return 'DELIVERED';
+    } else if (s == 'cancelled' || s == 'returned') {
+      return 'CANCELLED';
+    } else {
+      return 'PROCESSING';
+    }
+  }
+
   Color _getStopStatusColor(String status) {
     final s = status.toLowerCase();
     if (s == 'delivered' || s == 'completed') return Colors.green;
-    if (s == 'shipped' || s == 'in_transit' || s == 'out_for_delivery') {
+    if (s == 'shipped' || s == 'in_transit' || s == 'out_for_delivery' || s == 'transit') {
       return Colors.blue;
     }
     if (s == 'cancelled' || s == 'returned') return Colors.red;
@@ -1448,9 +1474,13 @@ class AdminDeliveryManagementView
     DeliveryAssignmentModel assignment,
   ) {
     Color statusColor;
-    if (assignment.status == 'completed') {
+    if (assignment.status == 'completed' ||
+        assignment.status == 'delivered') {
       statusColor = Colors.green;
-    } else if (assignment.status == 'in_transit') {
+    } else if (assignment.status == 'in_transit' ||
+        assignment.status == 'transit' ||
+        assignment.status == 'shipped' ||
+        assignment.status == 'out_for_delivery') {
       statusColor = Colors.blue;
     } else if (assignment.status == 'cancelled') {
       statusColor = Colors.red;
@@ -1521,7 +1551,7 @@ class AdminDeliveryManagementView
                       children: [
                         Icon(Icons.local_shipping_outlined, size: 16, color: Colors.blue),
                         SizedBox(width: 8),
-                        Text('In Transit (Shipped)', style: TextStyle(fontSize: 12)),
+                        Text('In Transit (Transit)', style: TextStyle(fontSize: 12)),
                       ],
                     ),
                   ),
@@ -1557,7 +1587,7 @@ class AdminDeliveryManagementView
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        assignment.status.toUpperCase().replaceAll('_', ' '),
+                        _formatBatchStatus(assignment.status),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -1745,7 +1775,7 @@ class AdminDeliveryManagementView
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ord.orderStatus.toUpperCase().replaceAll('_', ' '),
+                            _formatStopStatus(ord.orderStatus),
                             style: TextStyle(
                               fontSize: 8.5,
                               fontWeight: FontWeight.bold,
@@ -1810,7 +1840,10 @@ class AdminDeliveryManagementView
                       assignment, 'in_transit', context),
                   child: const Text('Mark In Transit', style: TextStyle(fontSize: 11)),
                 )
-              else if (assignment.status == 'in_transit')
+              else if (assignment.status == 'in_transit' ||
+                  assignment.status == 'transit' ||
+                  assignment.status == 'shipped' ||
+                  assignment.status == 'out_for_delivery')
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,

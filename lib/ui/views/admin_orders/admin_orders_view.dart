@@ -229,7 +229,7 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                 ),
                 const SizedBox(width: 8),
                 AdminFilterChip(
-                  label: 'Shipped',
+                  label: 'In Transit',
                   count: viewModel.shippedOrdersCount,
                   countColor: AdminColors.inProgress,
                   isSelected: viewModel.selectedStatus == OrderStatus.shipped,
@@ -362,7 +362,7 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: AdminStatusChip(
-                      label: order.status.name,
+                      label: _formatOrderStatus(order.status),
                       color: _statusColor(order.status),
                     ),
                   ),
@@ -725,6 +725,19 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
         );
       },
     );
+  }
+
+  String _formatOrderStatus(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.processing:
+        return 'Processing';
+      case OrderStatus.shipped:
+        return 'In Transit';
+      case OrderStatus.delivered:
+        return 'Delivered';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
+    }
   }
 
   Color _statusColor(OrderStatus status) {

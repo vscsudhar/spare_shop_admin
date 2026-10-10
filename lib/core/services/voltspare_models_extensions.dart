@@ -338,9 +338,12 @@ extension OrderModelExtension on OrderModel {
   static OrderModel fromJson(Map<String, dynamic> json) {
     final statusString = (json['status'] ?? 'pending').toString().toLowerCase();
     OrderStatus status = OrderStatus.processing;
-    if (statusString == 'shipped' || statusString == 'out_for_delivery') {
+    if (statusString == 'shipped' ||
+        statusString == 'out_for_delivery' ||
+        statusString == 'in_transit' ||
+        statusString == 'transit') {
       status = OrderStatus.shipped;
-    } else if (statusString == 'delivered') {
+    } else if (statusString == 'delivered' || statusString == 'completed') {
       status = OrderStatus.delivered;
     } else if (statusString == 'cancelled' || statusString == 'returned') {
       status = OrderStatus.cancelled;
@@ -548,6 +551,27 @@ extension OrderModelExtension on OrderModel {
       }
     }
 
+    String? assignedPartnerId;
+    String? assignedPartnerName;
+    String? deliveryStatus;
+    String? deliveryNotes;
+
+    if (json['deliveryAssignment'] is Map) {
+      final da = json['deliveryAssignment'] as Map;
+      if (da['driver'] is Map) {
+        assignedPartnerId =
+            (da['driver']['_id'] ?? da['driver']['id'])?.toString();
+        assignedPartnerName = da['driver']['name']?.toString();
+      } else if (da['driver'] != null) {
+        assignedPartnerId = da['driver'].toString();
+      }
+      deliveryStatus = da['status']?.toString();
+      deliveryNotes = da['notes']?.toString();
+    } else if (json['assignedPartnerId'] != null) {
+      assignedPartnerId = json['assignedPartnerId']?.toString();
+      assignedPartnerName = json['assignedPartnerName']?.toString();
+    }
+
     return OrderModel(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       orderNumber: (json['orderNumber'] ?? '').toString(),
@@ -570,6 +594,10 @@ extension OrderModelExtension on OrderModel {
       locationId: locationId,
       locationName: locationName,
       channel: channel,
+      assignedPartnerId: assignedPartnerId,
+      assignedPartnerName: assignedPartnerName,
+      deliveryStatus: deliveryStatus,
+      deliveryNotes: deliveryNotes,
     );
   }
 }

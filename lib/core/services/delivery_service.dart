@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
@@ -272,8 +271,11 @@ class DeliveryService {
     int count = 0;
     for (final b in _assignmentsCache) {
       if (b.driverId == driverId &&
-          (b.status == 'assigned' || b.status == 'in_transit')) {
-        count += b.orders.where((o) => o.orderStatus != 'cancelled').length;
+          (b.status == 'assigned' || b.status == 'in_transit' || b.status == 'transit' || b.status == 'shipped')) {
+        count += b.orders.where((o) =>
+            o.orderStatus != 'cancelled' &&
+            o.orderStatus != 'delivered' &&
+            o.orderStatus != 'completed').length;
       }
     }
     return count;
@@ -285,14 +287,16 @@ class DeliveryService {
     final List<OrderModel> allOrders =
         await _orderService.adminGetAllOrders(locationId: locationId);
 
-    // Active assigned order IDs across all active batches
+    // Active assigned order IDs across all active batches in memory/storage
     final activeAssignedIds = <String>{};
     for (final batch in _assignmentsCache) {
-      if (batch.status == 'assigned' || batch.status == 'in_transit') {
+      if (batch.status != 'cancelled') {
         for (final ord in batch.orders) {
-          activeAssignedIds.add(ord.id);
-          if (ord.orderNumber.isNotEmpty) {
-            activeAssignedIds.add(ord.orderNumber);
+          if (ord.orderStatus != 'cancelled') {
+            activeAssignedIds.add(ord.id);
+            if (ord.orderNumber.isNotEmpty) {
+              activeAssignedIds.add(ord.orderNumber);
+            }
           }
         }
       }
@@ -303,13 +307,19 @@ class DeliveryService {
     for (int i = 0; i < allOrders.length; i++) {
       final order = allOrders[i];
 
-      // ONLY include orders with 'processing' or 'shipped' status
-      if (order.status != OrderStatus.processing &&
-          order.status != OrderStatus.shipped) {
+      // Exclude orders that already have an assigned delivery driver in DB
+      if (order.assignedPartnerId != null &&
+          order.assignedPartnerId!.isNotEmpty) {
         continue;
       }
 
-      // Exclude already actively assigned orders
+      // ONLY include orders with 'processing' status (pending dispatch).
+      // Dispatched (shipped/in_transit), delivered, and cancelled orders MUST NOT show up in Assign Deliveries!
+      if (order.status != OrderStatus.processing) {
+        continue;
+      }
+
+      // Exclude already actively assigned orders from any local/cached batches
       if (activeAssignedIds.contains(order.id) ||
           activeAssignedIds.contains(order.orderNumber)) {
         continue;
@@ -399,11 +409,13 @@ class DeliveryService {
       );
       sequencedOrders.add(ord);
 
-      // Trigger backend order assignment update
+      // Trigger backend order assignment & status sync
       try {
         if (!ord.id.startsWith('ord_auto_gen_')) {
           await _orderService.adminAssignDelivery(ord.id, driverId,
               notes: 'Batch assignment to $driverName');
+          // Automatically mark order as shipped / out for delivery
+          await _orderService.adminUpdateOrderStatus(ord.id, 'shipped');
         }
       } catch (e) {
         debugPrint('[DeliveryService] API assign call: $e');
@@ -443,22 +455,239 @@ class DeliveryService {
     _assignmentsCache.insert(0, assignment);
     await _persistAssignments();
 
+    // Notify Order Service and listeners that orders have been assigned & updated
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
+
     return assignment;
   }
 
-  /// 4. Get all assignments with optional filtering
+  /// 4. Get all assignments with live DB order sync and optional filtering
   Future<List<DeliveryAssignmentModel>> getAssignments({
     String? status,
     String? driverId,
     String? search,
   }) async {
     await _loadAssignments();
+
+    // Synchronize real-time order statuses & details directly from database / OrderService
+    try {
+      final allDbOrders = await _orderService.adminGetAllOrders();
+      if (allDbOrders.isNotEmpty) {
+        final dbOrdersMap = <String, OrderModel>{};
+        for (final o in allDbOrders) {
+          dbOrdersMap[o.id] = o;
+          if (o.orderNumber.isNotEmpty) {
+            dbOrdersMap[o.orderNumber] = o;
+          }
+        }
+
+        bool hasChanges = false;
+        for (int i = 0; i < _assignmentsCache.length; i++) {
+          final assignment = _assignmentsCache[i];
+          final updatedOrders = assignment.orders.map((ord) {
+            final dbOrder = dbOrdersMap[ord.id] ?? dbOrdersMap[ord.orderNumber];
+            if (dbOrder != null) {
+              String realStatus = 'processing';
+              if (dbOrder.status == OrderStatus.shipped) {
+                realStatus = 'in_transit';
+              } else if (dbOrder.status == OrderStatus.delivered) {
+                realStatus = 'delivered';
+              } else if (dbOrder.status == OrderStatus.cancelled) {
+                realStatus = 'cancelled';
+              } else {
+                realStatus = 'processing';
+              }
+              return ord.copyWith(
+                orderStatus: realStatus,
+                customerName: dbOrder.address.name.isNotEmpty ? dbOrder.address.name : ord.customerName,
+                address: dbOrder.address.addressLine.isNotEmpty ? dbOrder.address.addressLine : ord.address,
+                amount: dbOrder.total > 0 ? dbOrder.total : ord.amount,
+                paymentMethod: dbOrder.paymentMethod.isNotEmpty ? dbOrder.paymentMethod : ord.paymentMethod,
+                paymentStatus: dbOrder.paymentStatus ?? ord.paymentStatus,
+              );
+            }
+            return ord;
+          }).toList();
+
+          // Calculate reconciled batch status
+          String batchStatus = assignment.status;
+          final allDelivered = updatedOrders.isNotEmpty &&
+              updatedOrders.every((o) => o.orderStatus == 'delivered' || o.orderStatus == 'completed');
+          final allCancelled = updatedOrders.isNotEmpty &&
+              updatedOrders.every((o) => o.orderStatus == 'cancelled');
+          final hasInTransit = updatedOrders.any((o) =>
+              o.orderStatus == 'in_transit' ||
+              o.orderStatus == 'shipped' ||
+              o.orderStatus == 'out_for_delivery');
+
+          if (allDelivered) {
+            batchStatus = 'completed';
+          } else if (allCancelled) {
+            batchStatus = 'cancelled';
+          } else if (hasInTransit) {
+            batchStatus = 'in_transit';
+          }
+
+          if (batchStatus != assignment.status || updatedOrders != assignment.orders) {
+            _assignmentsCache[i] = assignment.copyWith(
+              orders: updatedOrders,
+              status: batchStatus,
+            );
+            hasChanges = true;
+          }
+        }
+
+        // Auto-import any DB orders that have assigned drivers but are not in _assignmentsCache
+        final existingAssignedOrderIds = <String>{};
+        for (final b in _assignmentsCache) {
+          for (final o in b.orders) {
+            existingAssignedOrderIds.add(o.id);
+            if (o.orderNumber.isNotEmpty) existingAssignedOrderIds.add(o.orderNumber);
+          }
+        }
+
+        final unbatchedAssignedOrders = allDbOrders.where((o) =>
+          ((o.assignedPartnerId != null && o.assignedPartnerId!.isNotEmpty) ||
+           o.status == OrderStatus.shipped) &&
+          !existingAssignedOrderIds.contains(o.id) &&
+          !existingAssignedOrderIds.contains(o.orderNumber)
+        ).toList();
+
+        if (unbatchedAssignedOrders.isNotEmpty) {
+          final partners = await getDeliveryPartners();
+          final defaultPartner = partners.isNotEmpty
+              ? partners.first
+              : const DeliveryPartnerModel(
+                  id: 'staff_del_arun',
+                  name: 'Arun Kumar',
+                  phone: '+91 98765 11223',
+                  email: 'arun.k@voltspare.com',
+                  role: 'Delivery Driver',
+                  status: 'Active',
+                  locationName: defaultHubName,
+                );
+
+          final driverMap = <String, List<OrderModel>>{};
+          for (final ord in unbatchedAssignedOrders) {
+            final dId = (ord.assignedPartnerId != null && ord.assignedPartnerId!.isNotEmpty)
+                ? ord.assignedPartnerId!
+                : defaultPartner.id;
+            driverMap.putIfAbsent(dId, () => []).add(ord);
+          }
+
+          for (final entry in driverMap.entries) {
+            final dId = entry.key;
+            final driverOrders = entry.value;
+            final matchedPartner = partners.firstWhere(
+              (p) => p.id == dId,
+              orElse: () => DeliveryPartnerModel(
+                id: dId,
+                name: driverOrders.first.assignedPartnerName ?? 'Delivery Partner',
+                phone: '',
+                email: '',
+                role: 'Delivery Driver',
+                status: 'Active',
+                locationName: defaultHubName,
+              ),
+            );
+
+            final sequenced = <DeliveryOrderModel>[];
+            for (int i = 0; i < driverOrders.length; i++) {
+              final ord = driverOrders[i];
+              final coords = (ord.address.latitude != null &&
+                      ord.address.longitude != null &&
+                      ord.address.latitude != 0.0)
+                  ? (ord.address.latitude!, ord.address.longitude!)
+                  : getCoordinatesForAddress(ord.address.addressLine, i);
+              final dist = (ord.address.distanceFromLocationKm != null &&
+                      ord.address.distanceFromLocationKm! > 0)
+                  ? ord.address.distanceFromLocationKm!
+                  : DeliveryOrderModel.calculateDistance(
+                      hubLatitude, hubLongitude, coords.$1, coords.$2);
+
+              String stopStatus = 'processing';
+              if (ord.status == OrderStatus.shipped) {
+                stopStatus = 'in_transit';
+              } else if (ord.status == OrderStatus.delivered) {
+                stopStatus = 'delivered';
+              } else if (ord.status == OrderStatus.cancelled) {
+                stopStatus = 'cancelled';
+              }
+
+              sequenced.add(DeliveryOrderModel(
+                id: ord.id,
+                orderNumber: ord.orderNumber,
+                customerName: ord.address.name.isNotEmpty
+                    ? ord.address.name
+                    : 'Customer ${i + 1}',
+                customerPhone: ord.address.phone,
+                address: ord.address.addressLine,
+                latitude: coords.$1,
+                longitude: coords.$2,
+                distanceKm: dist,
+                amount: ord.total,
+                paymentStatus: ord.paymentStatus ?? 'unpaid',
+                paymentMethod: ord.paymentMethod,
+                orderStatus: stopStatus,
+                assignedPartnerId: dId,
+                assignedPartnerName: matchedPartner.name,
+                sequence: i + 1,
+              ));
+            }
+
+            final batchNum = 'BATCH-DEL-${DateTime.now().year}-${(_assignmentsCache.length + 1).toString().padLeft(3, '0')}';
+            final batchStatus = sequenced.every((o) => o.orderStatus == 'delivered')
+                ? 'completed'
+                : (sequenced.any((o) => o.orderStatus == 'in_transit')
+                    ? 'in_transit'
+                    : 'assigned');
+
+            _assignmentsCache.insert(
+              0,
+              DeliveryAssignmentModel(
+                id: 'batch_${dId}_${DateTime.now().millisecondsSinceEpoch}',
+                batchNumber: batchNum,
+                driverId: dId,
+                driverName: matchedPartner.name,
+                orders: sequenced,
+                status: batchStatus,
+                totalOrders: sequenced.length,
+                assignedByName: 'System Admin',
+                assignedAt: driverOrders.first.date,
+                locationName: matchedPartner.locationName.isNotEmpty
+                    ? matchedPartner.locationName
+                    : defaultHubName,
+              ),
+            );
+            hasChanges = true;
+          }
+        }
+
+        if (hasChanges) {
+          await _persistAssignments();
+        }
+      }
+    } catch (e) {
+      debugPrint('[DeliveryService] Live DB sync error in getAssignments: $e');
+    }
+
     List<DeliveryAssignmentModel> list = List.from(_assignmentsCache);
 
     if (status != null && status.isNotEmpty && status.toLowerCase() != 'all') {
-      list = list
-          .where((a) => a.status.toLowerCase() == status.toLowerCase())
-          .toList();
+      final sNorm = status
+          .toLowerCase()
+          .replaceAll('_', '')
+          .replaceAll('-', '')
+          .replaceAll(' ', '');
+      list = list.where((a) {
+        final aNorm = a.status
+            .toLowerCase()
+            .replaceAll('_', '')
+            .replaceAll('-', '')
+            .replaceAll(' ', '');
+        return aNorm == sNorm;
+      }).toList();
     }
 
     if (driverId != null && driverId.isNotEmpty && driverId.toLowerCase() != 'all') {
@@ -522,6 +751,21 @@ class DeliveryService {
     _assignmentsCache[idx] = updated;
     await _persistAssignments();
 
+    // Synchronize reassignment to backend Order API
+    for (final ord in updatedOrders) {
+      if (!ord.id.startsWith('ord_auto_gen_')) {
+        try {
+          await _orderService.adminAssignDelivery(ord.id, newDriverId,
+              notes: 'Reassigned from $oldDriverName to $newDriverName');
+        } catch (e) {
+          debugPrint('[DeliveryService] API reassign call: $e');
+        }
+      }
+    }
+
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
+
     return updated;
   }
 
@@ -576,6 +820,18 @@ class DeliveryService {
     _assignmentsCache[idx] = updated;
     await _persistAssignments();
 
+    // Reset order status back to processing in backend Order API
+    if (!targetOrder.id.startsWith('ord_auto_gen_')) {
+      try {
+        await _orderService.adminUpdateOrderStatus(targetOrder.id, 'processing');
+      } catch (e) {
+        debugPrint('[DeliveryService] API remove/restore status call: $e');
+      }
+    }
+
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
+
     return updated;
   }
 
@@ -624,6 +880,20 @@ class DeliveryService {
 
     _assignmentsCache[idx] = updated;
     await _persistAssignments();
+
+    // Synchronize assignment & status to backend Order API
+    if (!order.id.startsWith('ord_auto_gen_')) {
+      try {
+        await _orderService.adminAssignDelivery(order.id, old.driverId,
+            notes: 'Added to batch ${old.batchNumber}');
+        await _orderService.adminUpdateOrderStatus(order.id, 'shipped');
+      } catch (e) {
+        debugPrint('[DeliveryService] API add order assign call: $e');
+      }
+    }
+
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
 
     return updated;
   }
@@ -679,7 +949,7 @@ class DeliveryService {
     String? notes,
   }) async {
     await _loadAssignments();
-    final idx = _assignmentsCache.indexWhere((a) => a.id == assignmentId);
+    final idx = _assignmentsCache.indexWhere((a) => a.id == assignmentId || a.batchNumber == assignmentId);
     if (idx == -1) {
       throw Exception('Assignment batch not found.');
     }
@@ -688,29 +958,32 @@ class DeliveryService {
 
     // Determine corresponding order status in DB
     String dbOrderStatus = 'processing';
-    if (newStatus == 'in_transit' || newStatus == 'shipped') {
+    String localStopStatus = 'processing';
+    if (newStatus == 'in_transit' || newStatus == 'transit' || newStatus == 'shipped' || newStatus == 'out_for_delivery') {
       dbOrderStatus = 'shipped';
+      localStopStatus = 'in_transit';
     } else if (newStatus == 'completed' || newStatus == 'delivered') {
       dbOrderStatus = 'delivered';
+      localStopStatus = 'delivered';
     } else if (newStatus == 'cancelled') {
-      dbOrderStatus = 'processing';
+      dbOrderStatus = 'cancelled';
+      localStopStatus = 'cancelled';
     } else {
       dbOrderStatus = 'processing';
+      localStopStatus = 'processing';
     }
 
     // Update order status on each order model within the batch
     final updatedOrders = old.orders.map((o) {
-      return o.copyWith(orderStatus: dbOrderStatus);
+      return o.copyWith(orderStatus: localStopStatus);
     }).toList();
 
     // Synchronize every order to backend database
     for (final ord in old.orders) {
-      if (!ord.id.startsWith('ord_auto_gen_')) {
-        try {
-          await _orderService.adminUpdateOrderStatus(ord.id, dbOrderStatus);
-        } catch (e) {
-          debugPrint('[DeliveryService] Failed to sync order status for ${ord.id}: $e');
-        }
+      try {
+        await _orderService.adminUpdateOrderStatus(ord.id, dbOrderStatus);
+      } catch (e) {
+        debugPrint('[DeliveryService] Failed to sync order status for ${ord.id}: $e');
       }
     }
 
@@ -725,13 +998,17 @@ class DeliveryService {
       );
 
     final updated = old.copyWith(
-      status: newStatus,
+      status: (newStatus == 'transit' || newStatus == 'shipped') ? 'in_transit' : newStatus,
       orders: updatedOrders,
       history: updatedHistory,
     );
 
     _assignmentsCache[idx] = updated;
     await _persistAssignments();
+
+    // Notify Order Service and listeners that orders have been updated
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
 
     return updated;
   }
@@ -745,7 +1022,7 @@ class DeliveryService {
     String? notes,
   }) async {
     await _loadAssignments();
-    final idx = _assignmentsCache.indexWhere((a) => a.id == assignmentId);
+    final idx = _assignmentsCache.indexWhere((a) => a.id == assignmentId || a.batchNumber == assignmentId);
     if (idx == -1) {
       throw Exception('Assignment batch not found.');
     }
@@ -754,32 +1031,36 @@ class DeliveryService {
 
     // Map to DB status
     String dbStatus = 'processing';
+    String localStopStatus = 'processing';
     if (newOrderStatus == 'shipped' ||
         newOrderStatus == 'in_transit' ||
+        newOrderStatus == 'transit' ||
         newOrderStatus == 'out_for_delivery') {
       dbStatus = 'shipped';
+      localStopStatus = 'in_transit';
     } else if (newOrderStatus == 'delivered' || newOrderStatus == 'completed') {
       dbStatus = 'delivered';
+      localStopStatus = 'delivered';
     } else if (newOrderStatus == 'cancelled') {
       dbStatus = 'cancelled';
+      localStopStatus = 'cancelled';
     } else {
       dbStatus = 'processing';
+      localStopStatus = 'processing';
     }
 
     final updatedOrders = old.orders.map((o) {
       if (o.id == orderId || o.orderNumber == orderId) {
-        return o.copyWith(orderStatus: dbStatus);
+        return o.copyWith(orderStatus: localStopStatus);
       }
       return o;
     }).toList();
 
-    // Call OrderService to sync status to MongoDB
-    if (!orderId.startsWith('ord_auto_gen_')) {
-      try {
-        await _orderService.adminUpdateOrderStatus(orderId, dbStatus);
-      } catch (e) {
-        debugPrint('[DeliveryService] Failed to update single order status for $orderId: $e');
-      }
+    // Call OrderService to sync status to MongoDB / Order model
+    try {
+      await _orderService.adminUpdateOrderStatus(orderId, dbStatus);
+    } catch (e) {
+      debugPrint('[DeliveryService] Failed to update single order status for $orderId: $e');
     }
 
     // Determine batch status automatically if all stops are finished
@@ -792,13 +1073,14 @@ class DeliveryService {
     final hasInTransit = updatedOrders.any((o) =>
         o.orderStatus == 'shipped' ||
         o.orderStatus == 'in_transit' ||
+        o.orderStatus == 'transit' ||
         o.orderStatus == 'out_for_delivery');
 
     if (allDelivered) {
       batchStatus = 'completed';
     } else if (allCancelled) {
       batchStatus = 'cancelled';
-    } else if (hasInTransit && batchStatus == 'assigned') {
+    } else if (hasInTransit && (batchStatus == 'assigned' || batchStatus == 'pending')) {
       batchStatus = 'in_transit';
     }
 
@@ -826,6 +1108,10 @@ class DeliveryService {
 
     _assignmentsCache[idx] = updated;
     await _persistAssignments();
+
+    // Notify Order Service and listeners that single order status has updated
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
 
     return updated;
   }

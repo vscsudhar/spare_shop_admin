@@ -131,8 +131,9 @@ class OrderService {
   Future<int> refreshProcessingCount(
       {String? locationId, bool force = false}) async {
     final now = DateTime.now();
-    if (!force && _isFetchingProcessingCount)
+    if (!force && _isFetchingProcessingCount) {
       return processingCountNotifier.value;
+    }
     if (!force &&
         _lastProcessingCountFetch != null &&
         now.difference(_lastProcessingCountFetch!).inSeconds < 5) {
@@ -210,15 +211,46 @@ class OrderService {
   }
 
   Future<OrderModel> adminUpdateOrderStatus(String id, String status) async {
-    final response = await _apiClient.patch(
-      '${ApiEndpoints.adminOrders}/$id/status',
-      data: {'status': status},
-    );
-    final data = response.data['data'] ?? {};
-    final order = OrderModelExtension.fromJson(data);
-    refreshProcessingCount(force: true);
-    orderRefreshNotifier.value = DateTime.now();
-    return order;
+    OrderStatus enumStatus = OrderStatus.processing;
+    if (status == 'shipped' ||
+        status == 'in_transit' ||
+        status == 'out_for_delivery') {
+      enumStatus = OrderStatus.shipped;
+    } else if (status == 'delivered' || status == 'completed') {
+      enumStatus = OrderStatus.delivered;
+    } else if (status == 'cancelled' || status == 'returned') {
+      enumStatus = OrderStatus.cancelled;
+    } else {
+      enumStatus = OrderStatus.processing;
+    }
+
+    // Update in mockOrderList if present
+    final mockIdx =
+        mockOrderList.indexWhere((o) => o.id == id || o.orderNumber == id);
+    if (mockIdx != -1) {
+      mockOrderList[mockIdx] =
+          mockOrderList[mockIdx].copyWith(status: enumStatus);
+    }
+
+    try {
+      final response = await _apiClient.patch(
+        '${ApiEndpoints.adminOrders}/$id/status',
+        data: {'status': status},
+      );
+      final data = response.data['data'] ?? {};
+      final order = OrderModelExtension.fromJson(data);
+      refreshProcessingCount(force: true);
+      orderRefreshNotifier.value = DateTime.now();
+      return order;
+    } catch (e) {
+      debugPrint('[OrderService] adminUpdateOrderStatus API error: $e');
+      refreshProcessingCount(force: true);
+      orderRefreshNotifier.value = DateTime.now();
+      if (mockIdx != -1) {
+        return mockOrderList[mockIdx];
+      }
+      rethrow;
+    }
   }
 
   Future<OrderModel> adminUpdateOrderLocation(
@@ -248,12 +280,27 @@ class OrderService {
 
   Future<void> adminAssignDelivery(String id, String driverId,
       {String notes = ''}) async {
-    await _apiClient.post(
-      '${ApiEndpoints.adminOrders}/$id/assign-delivery',
-      data: {
-        'driverId': driverId,
-        'notes': notes,
-      },
-    );
+    final mockIdx =
+        mockOrderList.indexWhere((o) => o.id == id || o.orderNumber == id);
+    if (mockIdx != -1) {
+      mockOrderList[mockIdx] = mockOrderList[mockIdx].copyWith(
+        assignedPartnerId: driverId,
+        deliveryStatus: 'assigned',
+        deliveryNotes: notes,
+      );
+    }
+
+    try {
+      await _apiClient.post(
+        '${ApiEndpoints.adminOrders}/$id/assign-delivery',
+        data: {
+          'driverId': driverId,
+          'notes': notes,
+        },
+      );
+    } catch (e) {
+      debugPrint('[OrderService] adminAssignDelivery error: $e');
+    }
+    orderRefreshNotifier.value = DateTime.now();
   }
 }

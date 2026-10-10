@@ -296,8 +296,9 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                                 value: 'Fleet', child: Text('Fleet Owners')),
                           ],
                           onChanged: (val) {
-                            if (val != null)
+                            if (val != null) {
                               viewModel.setSelectedTypeFilter(val);
+                            }
                           },
                         ),
                       ),
@@ -1658,8 +1659,9 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                                       child: Text('🏬 In-Store / POS User')),
                                 ],
                                 onChanged: (val) {
-                                  if (val != null)
+                                  if (val != null) {
                                     setState(() => selectedSource = val);
+                                  }
                                 },
                               ),
                             ),
@@ -1690,8 +1692,9 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                                       child: Text('Wholesaler')),
                                 ],
                                 onChanged: (val) {
-                                  if (val != null)
+                                  if (val != null) {
                                     setState(() => selectedType = val);
+                                  }
                                 },
                               ),
                             ),
@@ -1724,8 +1727,9 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                                       child: Text('Disabled')),
                                 ],
                                 onChanged: (val) {
-                                  if (val != null)
+                                  if (val != null) {
                                     setState(() => selectedStatus = val);
+                                  }
                                 },
                               ),
                             ),
@@ -1744,10 +1748,12 @@ class AdminCustomersView extends StackedView<AdminCustomersViewModel> {
                                     const TextInputType.numberWithOptions(
                                         decimal: true),
                                 validator: (val) {
-                                  if (val == null || val.trim().isEmpty)
+                                  if (val == null || val.trim().isEmpty) {
                                     return 'Due amount is required';
-                                  if (double.tryParse(val) == null)
+                                  }
+                                  if (double.tryParse(val) == null) {
                                     return 'Must be a valid number';
+                                  }
                                   return null;
                                 },
                               ),

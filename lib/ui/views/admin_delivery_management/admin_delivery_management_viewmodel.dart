@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/core/models/delivery_models.dart';
 import 'package:spare_shop_admin/core/services/delivery_service.dart';
+import 'package:spare_shop_admin/core/services/order_service.dart';
 import 'package:stacked/stacked.dart';
 
 class AdminDeliveryManagementViewModel extends BaseViewModel {
@@ -72,9 +73,21 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
       _partner1Orders.length + _partner2Orders.length;
 
   Future<void> init() async {
+    OrderService.orderRefreshNotifier.removeListener(_onOrderRefresh);
+    OrderService.orderRefreshNotifier.addListener(_onOrderRefresh);
     setBusy(true);
     await loadData();
     setBusy(false);
+  }
+
+  void _onOrderRefresh() async {
+    await loadData();
+  }
+
+  @override
+  void dispose() {
+    OrderService.orderRefreshNotifier.removeListener(_onOrderRefresh);
+    super.dispose();
   }
 
   Future<void> loadData() async {
@@ -91,6 +104,7 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
       _assignments = await _deliveryService.getAssignments();
 
       await _refreshRoutes();
+      notifyListeners();
     } catch (e) {
       debugPrint('[AdminDeliveryManagementViewModel] Error loading data: $e');
     }
@@ -526,9 +540,20 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
 
   List<DeliveryAssignmentModel> get filteredAssignments {
     return _assignments.where((a) {
-      if (_assignmentStatusFilter != 'All' &&
-          a.status.toLowerCase() != _assignmentStatusFilter.toLowerCase()) {
-        return false;
+      if (_assignmentStatusFilter != 'All') {
+        final filterNorm = _assignmentStatusFilter
+            .toLowerCase()
+            .replaceAll('_', '')
+            .replaceAll('-', '')
+            .replaceAll(' ', '');
+        final statusNorm = a.status
+            .toLowerCase()
+            .replaceAll('_', '')
+            .replaceAll('-', '')
+            .replaceAll(' ', '');
+        if (filterNorm != statusNorm) {
+          return false;
+        }
       }
       if (_assignmentPartnerFilter != 'All' &&
           a.driverId != _assignmentPartnerFilter) {
@@ -668,8 +693,12 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
     BuildContext context,
   ) async {
     try {
-      await _deliveryService.updateAssignmentStatus(assignment.id, status);
-      await refreshAssignments();
+      final updated = await _deliveryService.updateAssignmentStatus(assignment.id, status);
+      final idx = _assignments.indexWhere((a) => a.id == assignment.id || a.batchNumber == assignment.batchNumber);
+      if (idx != -1) {
+        _assignments[idx] = updated;
+      }
+      _assignments = await _deliveryService.getAssignments();
       _eligibleOrders = await _deliveryService.getEligibleOrders();
       notifyListeners();
       if (context.mounted) {
@@ -699,12 +728,16 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
     BuildContext context,
   ) async {
     try {
-      await _deliveryService.updateOrderStopStatus(
+      final updated = await _deliveryService.updateOrderStopStatus(
         assignment.id,
         order.id,
         newOrderStatus,
       );
-      await refreshAssignments();
+      final idx = _assignments.indexWhere((a) => a.id == assignment.id || a.batchNumber == assignment.batchNumber);
+      if (idx != -1) {
+        _assignments[idx] = updated;
+      }
+      _assignments = await _deliveryService.getAssignments();
       _eligibleOrders = await _deliveryService.getEligibleOrders();
       notifyListeners();
       if (context.mounted) {

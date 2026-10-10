@@ -641,14 +641,16 @@ class AdminBulkProductSellViewModel extends FutureViewModel<void>
         final matchGst = q.customerGst.toLowerCase().contains(query);
         final matchInv =
             q.invoiceNumber?.toLowerCase().contains(query) ?? false;
-        if (!matchNo && !matchCust && !matchPhone && !matchGst && !matchInv)
+        if (!matchNo && !matchCust && !matchPhone && !matchGst && !matchInv) {
           return false;
+        }
       }
 
       if (_quotationStatusFilter != 'All') {
         if (_quotationStatusFilter == 'Active' && q.isConverted) return false;
-        if (_quotationStatusFilter == 'Converted' && !q.isConverted)
+        if (_quotationStatusFilter == 'Converted' && !q.isConverted) {
           return false;
+        }
       }
 
       return true;
