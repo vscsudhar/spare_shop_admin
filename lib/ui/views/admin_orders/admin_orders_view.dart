@@ -71,8 +71,11 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                   IconButton(
                     onPressed:
                         viewModel.isBusy ? null : () => viewModel.loadOrders(),
-                    icon: const Icon(Icons.refresh,
-                        size: 18, color: Colors.white70),
+                    icon: Icon(Icons.refresh,
+                        size: 18,
+                        color: AdminColors.isDarkTheme
+                            ? Colors.white70
+                            : AdminColors.textSecondary),
                     tooltip: 'Refresh Orders',
                   ),
                 ],
@@ -254,10 +257,10 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
               ],
             ),
           ),
-          const SizedBox(height: 18),
-
           // Orders Data Table
           AdminDataTable(
+            columnFlex: const [3, 2, 3, 3, 2, 2, 2, 3],
+            minWidth: 1180,
             columns: const [
               'Order Number',
               'Date',
@@ -272,18 +275,30 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
               final hasLocation =
                   order.locationName != null && order.locationName!.isNotEmpty;
               return AdminTableRow(
+                columnFlex: const [3, 2, 3, 3, 2, 2, 2, 3],
                 onTap: () => viewModel.openOrderDetail(order),
                 cells: [
-                  Text(order.orderNumber,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                      '${order.date.day}/${order.date.month}/${order.date.year}'),
+                    order.orderNumber,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${order.date.day}/${order.date.month}/${order.date.year}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(order.address.name,
-                          style: const TextStyle(fontWeight: FontWeight.w600)),
+                      Text(
+                        order.address.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       if (order.address.addressLine.isNotEmpty)
                         Text(
                           order.address.addressLine,
@@ -304,7 +319,7 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                             borderRadius: BorderRadius.circular(6),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                  horizontal: 7, vertical: 3.5),
                               decoration: BoxDecoration(
                                 color: AdminColors.primaryGreen
                                     .withValues(alpha: 0.12),
@@ -320,44 +335,66 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                                       size: 13,
                                       color: AdminColors.primaryGreen),
                                   const SizedBox(width: 4),
-                                  Text(
-                                    '${order.locationName!} Hub',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: AdminColors.primaryGreen,
+                                  Flexible(
+                                    child: Text(
+                                      _formatHubName(order.locationName!),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: AdminColors.primaryGreen,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  const Icon(Icons.swap_horiz_rounded,
-                                      size: 14, color: Colors.white70),
+                                  const SizedBox(width: 3),
+                                  Icon(Icons.swap_horiz_rounded,
+                                      size: 13,
+                                      color: AdminColors.primaryGreen
+                                          .withValues(alpha: 0.8)),
                                 ],
                               ),
                             ),
                           )
-                        : OutlinedButton.icon(
-                            onPressed: () => _showAssignLocationDialog(
+                        : InkWell(
+                            onTap: () => _showAssignLocationDialog(
                                 context, viewModel, order),
-                            icon: const Icon(Icons.add_location_alt,
-                                size: 12, color: Colors.amber),
-                            label: const Text(
-                              '+ Assign Hub',
-                              style:
-                                  TextStyle(fontSize: 11, color: Colors.amber),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                  color: Colors.amber.withValues(alpha: 0.5)),
+                            borderRadius: BorderRadius.circular(6),
+                            child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6)),
+                                  horizontal: 7, vertical: 3.5),
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                    color: Colors.amber.withValues(alpha: 0.4)),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.add_location_alt,
+                                      size: 12, color: Colors.amber),
+                                  SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      '+ Assign Hub',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.amber,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                   ),
                   Text('₹${order.total.toStringAsFixed(2)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -370,34 +407,65 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                     alignment: Alignment.centerLeft,
                     child: _buildChannelBadge(order),
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextButton(
-                        onPressed: () => viewModel.openOrderDetail(order),
-                        child: Text('Manage',
-                            style: TextStyle(
-                                color: AdminColors.primaryGreen,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold)),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextButton(
+                            onPressed: () => viewModel.openOrderDetail(order),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text('Manage',
+                                style: TextStyle(
+                                    color: AdminColors.primaryGreen,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(width: 4),
+                          IconButton(
+                            onPressed: () =>
+                                viewModel.viewInvoice(context, order),
+                            icon: Icon(Icons.receipt_long_outlined,
+                                size: 16, color: AdminColors.primaryGreen),
+                            tooltip: 'View & Download GST Invoice',
+                            padding: const EdgeInsets.all(6),
+                            constraints: const BoxConstraints(
+                                minWidth: 28, minHeight: 28),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          const SizedBox(width: 2),
+                          IconButton(
+                            onPressed: () => _showAssignLocationDialog(
+                                context, viewModel, order),
+                            icon: Icon(
+                              Icons.edit_location_alt_outlined,
+                              size: 16,
+                              color: hasLocation
+                                  ? AdminColors.primaryGreen
+                                  : (AdminColors.isDarkTheme
+                                      ? Colors.amberAccent
+                                      : Colors.amber[800]),
+                            ),
+                            tooltip: hasLocation
+                                ? 'Reassign Hub (${_formatHubName(order.locationName!)})'
+                                : 'Assign Hub to Order',
+                            padding: const EdgeInsets.all(6),
+                            constraints: const BoxConstraints(
+                                minWidth: 28, minHeight: 28),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () => viewModel.viewInvoice(context, order),
-                        icon: Icon(Icons.receipt_long_outlined,
-                            size: 16, color: AdminColors.primaryGreen),
-                        tooltip: 'View & Download GST Invoice',
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      IconButton(
-                        onPressed: () => _showAssignLocationDialog(
-                            context, viewModel, order),
-                        icon: const Icon(Icons.edit_location_alt_outlined,
-                            size: 16, color: Colors.white70),
-                        tooltip: 'Reassign Hub (e.g. if product out of stock)',
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  )
+                    ),
+                  ),
                 ],
               );
             }).toList(),
@@ -443,9 +511,11 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: AdminColors.isDarkTheme
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.black.withValues(alpha: 0.03),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white12),
+                    border: Border.all(color: AdminColors.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,26 +540,30 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                             style: TextStyle(
                                 fontSize: 11, color: AdminColors.textSecondary),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: order.locationName != null
-                                  ? AdminColors.primaryGreen
-                                      .withValues(alpha: 0.2)
-                                  : Colors.amber.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              order.locationName != null
-                                  ? '${order.locationName!} Hub'
-                                  : '⚠️ Unassigned',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
                                 color: order.locationName != null
                                     ? AdminColors.primaryGreen
-                                    : Colors.amber,
+                                    .withValues(alpha: 0.2)
+                                    : Colors.amber.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                order.locationName != null
+                                    ? _formatHubName(order.locationName!)
+                                    : '⚠️ Unassigned',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: order.locationName != null
+                                      ? AdminColors.primaryGreen
+                                      : Colors.amber,
+                                ),
                               ),
                             ),
                           ),
@@ -504,9 +578,11 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.02),
+                    color: AdminColors.isDarkTheme
+                        ? Colors.white.withValues(alpha: 0.02)
+                        : Colors.black.withValues(alpha: 0.02),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white10),
+                    border: Border.all(color: AdminColors.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -523,8 +599,8 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                             padding: const EdgeInsets.only(bottom: 2.0),
                             child: Row(
                               children: [
-                                const Icon(Icons.circle,
-                                    size: 6, color: Colors.white54),
+                                Icon(Icons.circle,
+                                    size: 6, color: AdminColors.textLight),
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: Text(
@@ -580,11 +656,12 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                 ),
                 const SizedBox(height: 8),
                 if (viewModel.locations.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
                     child: Text(
                       'No locations registered in system. Please create locations in Locations Management.',
-                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                      style: TextStyle(
+                          color: AdminColors.textSecondary, fontSize: 12),
                     ),
                   )
                 else
@@ -605,13 +682,15 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                               borderRadius: BorderRadius.circular(8)),
                           tileColor: isCurrent
                               ? AdminColors.primaryGreen.withValues(alpha: 0.15)
-                              : Colors.white.withValues(alpha: 0.03),
+                              : (AdminColors.isDarkTheme
+                                  ? Colors.white.withValues(alpha: 0.03)
+                                  : Colors.black.withValues(alpha: 0.03)),
                           leading: Icon(
                             Icons.storefront_outlined,
                             size: 18,
                             color: isCurrent
                                 ? AdminColors.primaryGreen
-                                : Colors.white70,
+                                : AdminColors.textSecondary,
                           ),
                           title: Text(
                             '${loc.name} Hub',
@@ -620,13 +699,14 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
                                   isCurrent ? FontWeight.bold : FontWeight.w600,
                               color: isCurrent
                                   ? AdminColors.primaryGreen
-                                  : Colors.white,
+                                  : AdminColors.textPrimary,
                             ),
                           ),
                           subtitle: Text(
                             'Coverage Radius: ${loc.radiusDisplay}',
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.white54),
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: AdminColors.textSecondary),
                           ),
                           trailing: isCurrent
                               ? Container(
@@ -725,6 +805,12 @@ class AdminOrdersView extends StackedView<AdminOrdersViewModel> {
         );
       },
     );
+  }
+
+  String _formatHubName(String name) {
+    final clean =
+        name.replaceAll(RegExp(r'\s*hub$', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'Hub' : '$clean Hub';
   }
 
   String _formatOrderStatus(OrderStatus status) {

@@ -6,13 +6,20 @@ import 'api_endpoints.dart';
 import 'package:spare_shop_admin/ui/common/voltspare_models.dart';
 import 'voltspare_models_extensions.dart';
 
+class ImageUploadResult {
+  final String url;
+  final String? publicId;
+
+  ImageUploadResult({required this.url, this.publicId});
+}
+
 class ProductService {
   final ApiClient _apiClient;
 
   ProductService({ApiClient? apiClient})
       : _apiClient = apiClient ?? locator<ApiClient>();
 
-  Future<String> uploadImage(dynamic fileOrPath, {String? fileName}) async {
+  Future<ImageUploadResult> uploadImage(dynamic fileOrPath, {String? fileName}) async {
     List<int> bytes;
     String name = fileName ?? 'image.jpg';
 
@@ -34,13 +41,21 @@ class ProductService {
         bytes,
         filename: name.isNotEmpty ? name : 'image.jpg',
       ),
+      'folder': 'voltspare/products',
     });
     final response = await _apiClient.post(
       '/uploads',
       data: formData,
     );
     final data = response.data['data'] ?? {};
-    return data['url'] ?? '';
+    final url = (data['secure_url'] ?? data['url'] ?? '').toString();
+    final publicId = data['public_id'] ?? data['publicId'];
+    return ImageUploadResult(url: url, publicId: publicId?.toString());
+  }
+
+  Future<String> uploadImageUrl(dynamic fileOrPath, {String? fileName}) async {
+    final result = await uploadImage(fileOrPath, fileName: fileName);
+    return result.url;
   }
 
   Future<List<CategoryModel>> getCategories() async {

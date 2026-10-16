@@ -30,21 +30,73 @@ class AdminProductsViewModel extends FutureViewModel<void>
 
   String? get pickedImagePath => _pickedImageFile?.path;
 
+  int? _pickedImageSizeBytes;
+  int? get pickedImageSizeBytes => _pickedImageSizeBytes;
+
+  String get pickedImageSizeFormatted {
+    if (_pickedImageSizeBytes == null) return '';
+    final kb = _pickedImageSizeBytes! / 1024;
+    if (kb >= 1024) {
+      return '${(kb / 1024).toStringAsFixed(2)} MB';
+    }
+    return '${kb.toStringAsFixed(1)} KB';
+  }
+
+  String? _imageValidationError;
+  String? get imageValidationError => _imageValidationError;
+
+  bool _isUploadingImage = false;
+  bool get isUploadingImage => _isUploadingImage;
+
   final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> pickProductImage() async {
+    _imageValidationError = null;
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
+        imageQuality: 90,
       );
       if (image != null) {
+        // 1. Client-side extension validation
+        final name = image.name.toLowerCase();
+        final isValidExt = name.endsWith('.jpg') ||
+            name.endsWith('.jpeg') ||
+            name.endsWith('.png') ||
+            name.endsWith('.webp');
+
+        if (!isValidExt) {
+          _imageValidationError = 'Only JPG, JPEG, PNG, and WebP images are allowed.';
+          notifyListeners();
+          _dialogService.showDialog(
+            title: 'Unsupported Image Format',
+            description: 'Only JPG, JPEG, PNG, and WebP images are allowed.',
+          );
+          return;
+        }
+
+        // 2. Client-side size validation (5 MB limit)
+        final bytes = await image.readAsBytes();
+        if (bytes.length > 5 * 1024 * 1024) {
+          _imageValidationError = 'Each product image must be 5 MB or smaller.';
+          notifyListeners();
+          _dialogService.showDialog(
+            title: 'Image Too Large',
+            description: 'Each product image must be 5 MB or smaller.',
+          );
+          return;
+        }
+
         _pickedImageFile = image;
-        _pickedImageBytes = await image.readAsBytes();
+        _pickedImageBytes = bytes;
+        _pickedImageSizeBytes = bytes.length;
+        _imageValidationError = null;
         notifyListeners();
       }
     } catch (e) {
       debugPrint('Error picking product image: $e');
+      _imageValidationError = 'Failed to select image: $e';
+      notifyListeners();
     }
   }
 
@@ -59,13 +111,18 @@ class AdminProductsViewModel extends FutureViewModel<void>
   void clearPickedImage() {
     _pickedImageFile = null;
     _pickedImageBytes = null;
+    _pickedImageSizeBytes = null;
+    _imageValidationError = null;
     notifyListeners();
   }
 
   void resetImageState() {
     _pickedImageFile = null;
     _pickedImageBytes = null;
+    _pickedImageSizeBytes = null;
     _existingImageCleared = false;
+    _imageValidationError = null;
+    _isUploadingImage = false;
     notifyListeners();
   }
 
@@ -374,8 +431,13 @@ class AdminProductsViewModel extends FutureViewModel<void>
     setBusy(true);
     try {
       String? imageUrl = _existingImageCleared ? null : existingImageUrl;
+      String? publicId;
       if (_pickedImageFile != null) {
-        imageUrl = await _productService.uploadImage(_pickedImageFile!);
+        _isUploadingImage = true;
+        notifyListeners();
+        final uploadResult = await _productService.uploadImage(_pickedImageFile!);
+        imageUrl = uploadResult.url;
+        publicId = uploadResult.publicId;
       }
 
       final payload = {
@@ -395,7 +457,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
 
       if (imageUrl != null && imageUrl.isNotEmpty) {
         payload['images'] = [
-          {'url': imageUrl, 'isDefault': true}
+          {'url': imageUrl, if (publicId != null) 'publicId': publicId, 'isDefault': true}
         ];
       }
 
@@ -420,6 +482,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
         description: errMsg,
       );
     } finally {
+      _isUploadingImage = false;
       setBusy(false);
     }
   }
@@ -442,8 +505,13 @@ class AdminProductsViewModel extends FutureViewModel<void>
     setBusy(true);
     try {
       String? imageUrl;
+      String? publicId;
       if (_pickedImageFile != null) {
-        imageUrl = await _productService.uploadImage(_pickedImageFile!);
+        _isUploadingImage = true;
+        notifyListeners();
+        final uploadResult = await _productService.uploadImage(_pickedImageFile!);
+        imageUrl = uploadResult.url;
+        publicId = uploadResult.publicId;
       }
 
       String realCategoryId = categoryId;
@@ -477,7 +545,7 @@ class AdminProductsViewModel extends FutureViewModel<void>
 
       if (imageUrl != null && imageUrl.isNotEmpty) {
         payload['images'] = [
-          {'url': imageUrl, 'isDefault': true}
+          {'url': imageUrl, if (publicId != null) 'publicId': publicId, 'isDefault': true}
         ];
       }
 

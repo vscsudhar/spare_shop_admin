@@ -620,6 +620,40 @@ class AdminProductsView extends StackedView<AdminProductsViewModel> {
                                 ),
                               ],
                             ),
+                            if (model.pickedImageBytes != null) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'Size: ${model.pickedImageSizeFormatted} (Max 5 MB: JPG, PNG, WebP)',
+                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                ),
+                              ),
+                            ],
+                            if (model.imageValidationError != null) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  model.imageValidationError!,
+                                  style: const TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                            if (model.isUploadingImage) ...[
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text('Uploading image to Cloudinary...', style: TextStyle(fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(height: 8),
                           ] else if (!model.existingImageCleared &&
                               product.imageAsset != null &&

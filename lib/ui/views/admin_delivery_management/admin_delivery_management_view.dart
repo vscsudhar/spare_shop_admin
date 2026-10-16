@@ -1532,7 +1532,11 @@ class AdminDeliveryManagementView
                 tooltip: 'Change Batch Status (Syncs to Orders Module)',
                 initialValue: assignment.status,
                 onSelected: (newStatus) {
-                  viewModel.updateBatchStatus(assignment, newStatus, context);
+                  if (newStatus == 'cancelled') {
+                    viewModel.deleteBatch(assignment, context);
+                  } else {
+                    viewModel.updateBatchStatus(assignment, newStatus, context);
+                  }
                 },
                 itemBuilder: (ctx) => [
                   const PopupMenuItem(
@@ -1809,6 +1813,17 @@ class AdminDeliveryManagementView
             children: [
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red.shade700,
+                  side: BorderSide(color: Colors.red.shade300),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                ),
+                icon: const Icon(Icons.delete_forever_outlined, size: 16),
+                label: const Text('Delete Batch', style: TextStyle(fontSize: 11)),
+                onPressed: () => viewModel.deleteBatch(assignment, context),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.blue.shade700,
                   side: BorderSide(color: Colors.blue.shade300),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -1876,7 +1891,7 @@ class AdminDeliveryManagementView
                   const PopupMenuDivider(),
                   const PopupMenuItem(
                     value: 'cancelled',
-                    child: Text('Cancel Batch', style: TextStyle(fontSize: 12, color: Colors.red)),
+                    child: Text('Delete & Disband Batch', style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.bold)),
                   ),
                 ],
                 child: Container(

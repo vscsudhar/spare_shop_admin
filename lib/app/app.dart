@@ -1,3 +1,4 @@
+import 'package:spare_shop_admin/core/services/push_notification_service.dart';
 import 'package:spare_shop_admin/core/services/bulk_quotation_service.dart';
 import 'package:spare_shop_admin/ui/bottom_sheets/notice/notice_sheet.dart';
 import 'package:spare_shop_admin/ui/dialogs/info_alert/info_alert_dialog.dart';
@@ -70,6 +71,8 @@ import 'package:spare_shop_admin/ui/views/admin_enquiries/admin_enquiries_view.d
 import 'package:spare_shop_admin/core/services/enquiry_service.dart';
 import 'package:spare_shop_admin/ui/views/admin_delivery_management/admin_delivery_management_view.dart';
 import 'package:spare_shop_admin/core/services/delivery_service.dart';
+import 'package:spare_shop_admin/ui/views/admin_notifications/admin_notifications_view.dart';
+import 'package:spare_shop_admin/core/services/notification_admin_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -112,6 +115,7 @@ import 'package:spare_shop_admin/core/services/delivery_service.dart';
     MaterialRoute(page: AdminReturnDetailView),
     MaterialRoute(page: AdminDamagedProductsView),
     MaterialRoute(page: AdminDeliveryChargesView),
+    MaterialRoute(page: AdminNotificationsView),
 // @stacked-route
   ],
   dependencies: [
@@ -131,6 +135,7 @@ import 'package:spare_shop_admin/core/services/delivery_service.dart';
     LazySingleton(classType: ProductService),
     LazySingleton(classType: CartService),
     LazySingleton(classType: WishlistService),
+    LazySingleton(classType: PushNotificationService),
     LazySingleton(classType: AddressService),
     LazySingleton(classType: OrderService),
     LazySingleton(classType: RareRequestService),
@@ -148,6 +153,7 @@ import 'package:spare_shop_admin/core/services/delivery_service.dart';
     LazySingleton(classType: AdminCustomerService),
     LazySingleton(classType: BulkQuotationService),
     LazySingleton(classType: DeliveryService),
+    LazySingleton(classType: NotificationAdminService),
     // @stacked-service
   ],
   bottomsheets: [

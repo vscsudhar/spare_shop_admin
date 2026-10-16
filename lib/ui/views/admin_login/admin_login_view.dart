@@ -1,3 +1,4 @@
+import 'package:spare_shop_admin/ui/widgets/common/server_config_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 import 'package:stacked/stacked.dart';
@@ -316,6 +317,18 @@ class AdminLoginView extends StackedView<AdminLoginViewModel> {
                         ),
                         const SizedBox(height: 16),
 
+                        // Server Configuration button
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              onPressed: () => ServerConfigDialog.show(context),
+                              icon: Icon(Icons.settings_ethernet_rounded, size: 14, color: AdminColors.textSecondary),
+                              label: Text('Server IP & URL', style: TextStyle(fontSize: 11, color: AdminColors.textSecondary)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
                         // Remember me checkbox
                         Row(
                           children: [

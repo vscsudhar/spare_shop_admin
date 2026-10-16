@@ -328,6 +328,8 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
           ),
           const SizedBox(height: 12),
           AdminDataTable(
+            columnFlex: const [3, 2, 3, 3, 2, 2, 2, 2],
+            minWidth: 980,
             columns: const [
               'Order Number',
               'Date',
@@ -342,18 +344,30 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
               final hasLoc =
                   order.locationName != null && order.locationName!.isNotEmpty;
               return AdminTableRow(
+                columnFlex: const [3, 2, 3, 3, 2, 2, 2, 2],
                 onTap: () => viewModel.openOrderDetail(order),
                 cells: [
-                  Text(order.orderNumber,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                      '${order.date.day}/${order.date.month}/${order.date.year}'),
-                  Text(order.address.name),
+                    order.orderNumber,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${order.date.day}/${order.date.month}/${order.date.year}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    order.address.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                          horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
                         color: hasLoc
                             ? AdminColors.primaryGreen.withValues(alpha: 0.12)
@@ -376,16 +390,20 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                                 : Colors.amber,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            hasLoc
-                                ? '${order.locationName!} Hub'
-                                : 'Unassigned',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: hasLoc
-                                  ? AdminColors.primaryGreen
-                                  : Colors.amber,
+                          Flexible(
+                            child: Text(
+                              hasLoc
+                                  ? _formatHubName(order.locationName!)
+                                  : 'Unassigned',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: hasLoc
+                                    ? AdminColors.primaryGreen
+                                    : Colors.amber,
+                              ),
                             ),
                           ),
                         ],
@@ -396,7 +414,11 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
                     alignment: Alignment.centerLeft,
                     child: _buildChannelBadge(order),
                   ),
-                  Text('₹${order.total.toStringAsFixed(2)}'),
+                  Text(
+                    '₹${order.total.toStringAsFixed(2)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: AdminStatusChip(
@@ -577,6 +599,12 @@ class AdminDashboardView extends StackedView<AdminDashboardViewModel> {
       case OrderStatus.cancelled:
         return AdminColors.cancelled;
     }
+  }
+
+  String _formatHubName(String name) {
+    final clean =
+        name.replaceAll(RegExp(r'\s*hub$', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'Hub' : '$clean Hub';
   }
 
   Widget _buildChannelBadge(OrderModel order) {

@@ -98,68 +98,112 @@ class AdminForgotPasswordViewModel extends BaseViewModel with NavigationMixin {
     setBusy(true);
 
     try {
-      // 1. Fetch staff accounts from database / StaffService
+      // 1. First attempt verification via public backend forgot-password API
+      try {
+        final response = await _apiClient.post(
+          ApiEndpoints.forgotPassword,
+          data: {
+            'email': email,
+            'phone': phone,
+          },
+        );
+
+        final dynamic responseBody = response.data;
+        final dynamic data = responseBody is Map
+            ? (responseBody['data'] ?? responseBody)
+            : null;
+
+        if (data != null && data is Map) {
+          _resetToken = (data['token'] ?? data['resetToken'])?.toString();
+          final userData = data['user'];
+          if (userData is Map<String, dynamic>) {
+            _matchedStaff = StaffMemberModel(
+              id: (userData['_id'] ?? userData['id'])?.toString() ??
+                  'staff_db',
+              name: userData['name']?.toString() ?? 'Staff Member',
+              email: (userData['email'] ?? email).toString(),
+              role: userData['role']?.toString() ?? 'Staff Member',
+              phone: (userData['phone'] ?? phone).toString(),
+              shift: '09:00 AM - 06:00 PM',
+              status: 'Active',
+            );
+          } else {
+            _matchedStaff = StaffMemberModel(
+              id: 'staff_db',
+              name: email,
+              email: email,
+              role: 'Staff Member',
+              phone: phone,
+              shift: '09:00 AM - 06:00 PM',
+              status: 'Active',
+            );
+          }
+          _generatedOtp = data['otp']?.toString() ?? '0000';
+          _currentStep = ForgotPasswordStep.verifyOtp;
+          _errorMessage = null;
+          return;
+        }
+      } catch (apiError) {
+        final errStr = apiError
+            .toString()
+            .replaceAll('ApiException: ', '')
+            .replaceAll('Exception: ', '');
+
+        if (errStr.contains('400') ||
+            errStr.toLowerCase().contains('match') ||
+            errStr.toLowerCase().contains('phone') ||
+            errStr.toLowerCase().contains('mobile')) {
+          _errorMessage =
+              'Mobile number does not match our records for this email account. Please check or contact your administrator.';
+          return;
+        } else if (errStr.contains('404') ||
+            errStr.toLowerCase().contains('not found')) {
+          _errorMessage =
+              'No staff account found with this email. Please check your details or contact your administrator.';
+          return;
+        }
+        // If it's a network/offline error, continue to check local cache below
+      }
+
+      // 2. Offline fallback: check local cached staff directory
       final staffList = await _staffService.getStaffMembers();
       final cleanInputPhone = _cleanPhone(phone);
-
-      // 2. Find matching staff by email
       final matched = staffList.where(
         (s) => s.email.trim().toLowerCase() == email,
       );
 
-      if (matched.isEmpty) {
+      if (matched.isNotEmpty) {
+        final staff = matched.first;
+        final staffCleanPhone = _cleanPhone(staff.phone);
+        bool phoneMatches = false;
+        if (cleanInputPhone.isNotEmpty && staffCleanPhone.isNotEmpty) {
+          if (cleanInputPhone == staffCleanPhone) {
+            phoneMatches = true;
+          } else if (cleanInputPhone.length >= 10 &&
+              staffCleanPhone.length >= 10) {
+            final last10Input =
+                cleanInputPhone.substring(cleanInputPhone.length - 10);
+            final last10Staff =
+                staffCleanPhone.substring(staffCleanPhone.length - 10);
+            phoneMatches = last10Input == last10Staff;
+          }
+        }
+
+        if (!phoneMatches) {
+          _errorMessage =
+              'Mobile number does not match our records for this email account. Please check or contact your administrator.';
+          return;
+        }
+
+        _matchedStaff = staff;
+        _resetToken = 'token_${DateTime.now().millisecondsSinceEpoch}';
+        _generatedOtp = '0000';
+        _currentStep = ForgotPasswordStep.verifyOtp;
+        _errorMessage = null;
+      } else {
         _errorMessage =
             'No staff account found with this email. Please check your details or contact your administrator.';
-        setBusy(false);
-        notifyListeners();
-        return;
       }
-
-      final staff = matched.first;
-      final staffCleanPhone = _cleanPhone(staff.phone);
-
-      // 3. Verify mobile number match (compare last 10 digits or exact)
-      bool phoneMatches = false;
-      if (cleanInputPhone.isNotEmpty && staffCleanPhone.isNotEmpty) {
-        if (cleanInputPhone == staffCleanPhone) {
-          phoneMatches = true;
-        } else if (cleanInputPhone.length >= 10 &&
-            staffCleanPhone.length >= 10) {
-          final last10Input =
-              cleanInputPhone.substring(cleanInputPhone.length - 10);
-          final last10Staff =
-              staffCleanPhone.substring(staffCleanPhone.length - 10);
-          phoneMatches = last10Input == last10Staff;
-        }
-      }
-
-      if (!phoneMatches) {
-        _errorMessage =
-            'Mobile number does not match our records for this email account. Please check or contact your administrator.';
-        setBusy(false);
-        notifyListeners();
-        return;
-      }
-
-      _matchedStaff = staff;
-
-      // 4. Request / Generate OTP from API
-      try {
-        final response = await _apiClient.post(
-          ApiEndpoints.forgotPassword,
-          data: {'email': email},
-        );
-        if (response.data != null && response.data['data'] != null) {
-          _resetToken = response.data['data']['token']?.toString();
-        }
-      } catch (_) {
-        // Fallback token for local simulation
-        _resetToken = 'token_${DateTime.now().millisecondsSinceEpoch}';
-      }
-
-      _generatedOtp = '0000';
-      _currentStep = ForgotPasswordStep.verifyOtp;
-      _errorMessage = null;
     } catch (e) {
       _errorMessage = 'Verification error: ${e.toString()}';
     } finally {
@@ -245,23 +289,27 @@ class AdminForgotPasswordViewModel extends BaseViewModel with NavigationMixin {
       // 1. Permanently update custom password in StaffService & SharedPreferences
       await _staffService.updatePassword(email, newPassword);
 
-      // 2. Update staff member model
-      final updatedStaff = _matchedStaff!.copyWith(password: newPassword);
-      await _staffService.updateStaffMember(updatedStaff);
+      // 2. Update staff member model if local cache exists
+      if (_matchedStaff != null && _matchedStaff!.id.isNotEmpty) {
+        final updatedStaff = _matchedStaff!.copyWith(password: newPassword);
+        await _staffService.updateStaffMember(updatedStaff);
+      }
 
-      // 3. Hit Backend reset-password API if token available
-      if (_resetToken != null && _resetToken!.isNotEmpty) {
-        try {
-          await _apiClient.post(
-            ApiEndpoints.resetPassword,
-            data: {
+      // 3. Hit Backend reset-password API directly
+      try {
+        await _apiClient.post(
+          ApiEndpoints.resetPassword,
+          data: {
+            if (_resetToken != null && _resetToken!.isNotEmpty)
               'token': _resetToken,
-              'password': newPassword,
-            },
-          );
-        } catch (apiErr) {
-          debugPrint('Backend reset-password API note: $apiErr');
-        }
+            'email': email,
+            'phone': phoneController.text.trim(),
+            'password': newPassword,
+            'confirmPassword': confirmPassword,
+          },
+        );
+      } catch (apiErr) {
+        debugPrint('Backend reset-password API note: $apiErr');
       }
 
       _currentStep = ForgotPasswordStep.success;

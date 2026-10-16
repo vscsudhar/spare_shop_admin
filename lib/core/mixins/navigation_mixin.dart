@@ -184,6 +184,10 @@ mixin NavigationMixin {
     );
   }
 
+  Future<dynamic>? goToAdminNotifications() {
+    return navigationService.replaceWith(Routes.adminNotificationsView);
+  }
+
   Future<dynamic>? goToAdminSettings() {
     return navigationService.replaceWith(Routes.adminSettingsView);
   }

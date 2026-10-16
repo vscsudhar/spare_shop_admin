@@ -606,6 +606,34 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
     }
   }
 
+  Future<void> deleteBatch(
+    DeliveryAssignmentModel assignment,
+    BuildContext context,
+  ) async {
+    try {
+      await _deliveryService.deleteAssignment(assignment.id);
+      _assignments = await _deliveryService.getAssignments();
+      _eligibleOrders = await _deliveryService.getEligibleOrders();
+      notifyListeners();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Batch ${assignment.batchNumber} deleted. Orders automatically returned to Assign Deliveries.',
+            ),
+            backgroundColor: const Color(0xFF0F9F59),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   Future<void> removeOrderFromBatch(
     DeliveryAssignmentModel assignment,
     DeliveryOrderModel order,
@@ -622,7 +650,7 @@ class AdminDeliveryManagementViewModel extends BaseViewModel {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Order ${order.orderNumber} removed from assignment. Customer order is active & ready for re-assignment.',
+              'Order ${order.orderNumber} removed from batch and returned to Assign Deliveries tab.',
             ),
             backgroundColor: const Color(0xFF0F9F59),
           ),

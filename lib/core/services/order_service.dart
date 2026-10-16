@@ -210,6 +210,18 @@ class OrderService {
     return OrderModelExtension.fromJson(data);
   }
 
+  Future<OrderModel> adminUnassignDelivery(String id) async {
+    try {
+      final response = await _apiClient.delete('${ApiEndpoints.adminOrders}/$id/assign-delivery');
+      final data = response.data['data'] ?? {};
+      refreshProcessingCount(force: true);
+      orderRefreshNotifier.value = DateTime.now();
+      return OrderModelExtension.fromJson(data);
+    } catch (_) {
+      return await adminUpdateOrderStatus(id, 'processing');
+    }
+  }
+
   Future<OrderModel> adminUpdateOrderStatus(String id, String status) async {
     OrderStatus enumStatus = OrderStatus.processing;
     if (status == 'shipped' ||

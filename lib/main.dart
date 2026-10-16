@@ -1,8 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:spare_shop_admin/firebase_options.dart';
+import 'package:spare_shop_admin/core/services/push_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:spare_shop_admin/app/app.bottomsheets.dart';
 import 'package:spare_shop_admin/app/app.dialogs.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'package:spare_shop_admin/app/app.router.dart';
+import 'package:spare_shop_admin/core/services/api_endpoints.dart';
 import 'package:spare_shop_admin/core/theme/app_theme.dart';
 import 'package:spare_shop_admin/core/theme/theme_service.dart';
 import 'package:stacked/stacked.dart';
@@ -10,7 +14,16 @@ import 'package:stacked_services/stacked_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ApiEndpoints.initFromStorage();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await setupLocator();
+  try {
+    await locator<PushNotificationService>().initialize();
+  } catch (e) {
+    debugPrint('Admin PushNotificationService init error: $e');
+  }
   setupDialogUi();
   setupBottomSheetUi();
   runApp(const MainApp());

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spare_shop_admin/app/app.locator.dart';
 import 'api_client.dart';
 import 'api_endpoints.dart';
+import 'token_service.dart';
 
 class StaffMemberModel {
   final String id;
@@ -205,7 +206,7 @@ class StaffService {
       role: 'Delivery Driver',
       phone: '+91 96665 44332',
       shift: '08:00 AM - 05:00 PM',
-      status: 'On Leave',
+      status: 'Active',
       locationId: '6aaa4372a8009fa74492d9ca',
       locationName: 'Madukkarai',
     ),
@@ -307,47 +308,50 @@ class StaffService {
       }
     }
 
-    // 2. Fetch live staff list from backend API
+    // 2. Fetch live staff list from backend API (only if authenticated)
     try {
-      final endpoint = (locationId != null &&
-              locationId.isNotEmpty &&
-              locationId != 'All' &&
-              locationId != 'all')
-          ? '${ApiEndpoints.staff}?locationId=$locationId'
-          : ApiEndpoints.staff;
-      final response = await _apiClient.get(endpoint);
-      final dynamic rawData = response.data['data'];
-      if (rawData is List) {
-        for (final item in rawData) {
-          if (item is Map<String, dynamic>) {
-            final backendStaff = StaffMemberModel.fromJson(item);
-            final emailLower = backendStaff.email.trim().toLowerCase();
-            final existingIdx = _cache.indexWhere(
-              (s) =>
-                  s.id == backendStaff.id ||
-                  s.email.toLowerCase() == emailLower,
-            );
+      final token = await locator<TokenService>().getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        final endpoint = (locationId != null &&
+                locationId.isNotEmpty &&
+                locationId != 'All' &&
+                locationId != 'all')
+            ? '${ApiEndpoints.staff}?locationId=$locationId'
+            : ApiEndpoints.staff;
+        final response = await _apiClient.get(endpoint);
+        final dynamic rawData = response.data['data'];
+        if (rawData is List) {
+          for (final item in rawData) {
+            if (item is Map<String, dynamic>) {
+              final backendStaff = StaffMemberModel.fromJson(item);
+              final emailLower = backendStaff.email.trim().toLowerCase();
+              final existingIdx = _cache.indexWhere(
+                (s) =>
+                    s.id == backendStaff.id ||
+                    s.email.toLowerCase() == emailLower,
+              );
 
-            // Determine preserved password (custom password > existing cache password > backend staff password)
-            String preservedPass = backendStaff.password;
-            if (_customPasswords.containsKey(emailLower)) {
-              preservedPass = _customPasswords[emailLower]!;
-            } else if (existingIdx != -1 &&
-                _cache[existingIdx].password.isNotEmpty) {
-              preservedPass = _cache[existingIdx].password;
-            }
+              // Determine preserved password (custom password > existing cache password > backend staff password)
+              String preservedPass = backendStaff.password;
+              if (_customPasswords.containsKey(emailLower)) {
+                preservedPass = _customPasswords[emailLower]!;
+              } else if (existingIdx != -1 &&
+                  _cache[existingIdx].password.isNotEmpty) {
+                preservedPass = _cache[existingIdx].password;
+              }
 
-            final staffWithPass =
-                backendStaff.copyWith(password: preservedPass);
+              final staffWithPass =
+                  backendStaff.copyWith(password: preservedPass);
 
-            if (existingIdx != -1) {
-              _cache[existingIdx] = staffWithPass;
-            } else {
-              _cache.add(staffWithPass);
+              if (existingIdx != -1) {
+                _cache[existingIdx] = staffWithPass;
+              } else {
+                _cache.add(staffWithPass);
+              }
             }
           }
+          await _persistStaff();
         }
-        await _persistStaff();
       }
     } catch (e) {
       debugPrint('Backend staff API sync: $e');

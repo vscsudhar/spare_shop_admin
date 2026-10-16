@@ -400,12 +400,16 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                                         size: 13,
                                         color: AdminColors.primaryGreen),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      c.locationName!,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: AdminColors.primaryGreen,
+                                    Flexible(
+                                      child: Text(
+                                        c.locationName!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: AdminColors.primaryGreen,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 4),
@@ -415,25 +419,39 @@ class AdminReturnsListView extends StackedView<AdminReturnsListViewModel> {
                                 ),
                               ),
                             )
-                          : OutlinedButton.icon(
-                              onPressed: () => _showAssignLocationDialog(
+                          : InkWell(
+                              onTap: () => _showAssignLocationDialog(
                                   context, viewModel, c),
-                              icon: const Icon(Icons.add_location_alt,
-                                  size: 12, color: Colors.amber),
-                              label: const Text(
-                                '+ Add Hub',
-                                style: TextStyle(
-                                    fontSize: 11, color: Colors.amber),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                    color: Colors.amber.withValues(alpha: 0.5)),
+                              borderRadius: BorderRadius.circular(6),
+                              child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
+                                    horizontal: 7, vertical: 3.5),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                      color: Colors.amber.withValues(alpha: 0.4)),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.add_location_alt,
+                                        size: 12, color: Colors.amber),
+                                    SizedBox(width: 4),
+                                    Flexible(
+                                      child: Text(
+                                        '+ Add Hub',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.amber,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                     ),

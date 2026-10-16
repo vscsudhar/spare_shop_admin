@@ -307,19 +307,13 @@ class DeliveryService {
     for (int i = 0; i < allOrders.length; i++) {
       final order = allOrders[i];
 
-      // Exclude orders that already have an assigned delivery driver in DB
-      if (order.assignedPartnerId != null &&
-          order.assignedPartnerId!.isNotEmpty) {
-        continue;
-      }
-
       // ONLY include orders with 'processing' status (pending dispatch).
       // Dispatched (shipped/in_transit), delivered, and cancelled orders MUST NOT show up in Assign Deliveries!
       if (order.status != OrderStatus.processing) {
         continue;
       }
 
-      // Exclude already actively assigned orders from any local/cached batches
+      // Exclude orders that currently belong to an active, uncompleted batch
       if (activeAssignedIds.contains(order.id) ||
           activeAssignedIds.contains(order.orderNumber)) {
         continue;
@@ -769,6 +763,40 @@ class DeliveryService {
     return updated;
   }
 
+  /// Delete/Disband an entire assignment batch and return all orders to Assign Deliveries
+  Future<void> deleteAssignment(String assignmentId, {String? adminName}) async {
+    await _loadAssignments();
+    final idx = _assignmentsCache.indexWhere(
+        (a) => a.id == assignmentId || a.batchNumber == assignmentId);
+    if (idx == -1) return;
+
+    final batch = _assignmentsCache[idx];
+
+    // Unassign all orders that are not already delivered
+    for (final ord in batch.orders) {
+      if (ord.orderStatus != 'delivered' && ord.orderStatus != 'completed') {
+        if (!ord.id.startsWith('ord_auto_gen_')) {
+          try {
+            await _orderService.adminUnassignDelivery(ord.id);
+          } catch (e) {
+            debugPrint('[DeliveryService] Failed to unassign order ${ord.id}: $e');
+            try {
+              await _orderService.adminUpdateOrderStatus(ord.id, 'processing');
+            } catch (_) {}
+          }
+        }
+      }
+    }
+
+    // Permanently remove the batch from cache and persistence
+    _assignmentsCache.removeAt(idx);
+    await _persistAssignments();
+    debugPrint('[DeliveryService] Batch ${batch.batchNumber} permanently deleted and removed from Active Batches.');
+
+    OrderService.orderRefreshNotifier.value = DateTime.now();
+    _orderService.refreshProcessingCount(force: true);
+  }
+
   /// 6. Remove an order from an active assignment (DOES NOT cancel customer order)
   Future<DeliveryAssignmentModel> removeOrderFromAssignment(
     String assignmentId,
@@ -792,47 +820,64 @@ class DeliveryService {
         .where((o) => o.id != orderId && o.orderNumber != orderId)
         .toList();
 
-    // Re-index remaining sequences
-    for (int i = 0; i < remainingOrders.length; i++) {
-      remainingOrders[i] = remainingOrders[i].copyWith(sequence: i + 1);
-    }
+    DeliveryAssignmentModel resultModel;
 
-    final updatedHistory = List<DeliveryHistoryItem>.from(old.history)
-      ..add(
-        DeliveryHistoryItem(
-          action: 'Order Removed',
-          changedByName: adminName ?? 'System Admin',
-          timestamp: DateTime.now(),
-          notes: 'Order ${targetOrder.orderNumber} removed. Reason: ${reason ?? "Removed by Admin for reassignment"}. Customer order remains active.',
-        ),
+    // If no remaining orders in the batch, delete the batch completely!
+    if (remainingOrders.isEmpty) {
+      _assignmentsCache.removeAt(idx);
+      await _persistAssignments();
+      debugPrint('[DeliveryService] Batch ${old.batchNumber} has 0 orders left and was permanently deleted.');
+      resultModel = old.copyWith(
+        orders: [],
+        totalOrders: 0,
+        status: 'cancelled',
+      );
+    } else {
+      // Re-index remaining sequences
+      for (int i = 0; i < remainingOrders.length; i++) {
+        remainingOrders[i] = remainingOrders[i].copyWith(sequence: i + 1);
+      }
+
+      final updatedHistory = List<DeliveryHistoryItem>.from(old.history)
+        ..add(
+          DeliveryHistoryItem(
+            action: 'Order Removed',
+            changedByName: adminName ?? 'System Admin',
+            timestamp: DateTime.now(),
+            notes: 'Order ${targetOrder.orderNumber} removed. Reason: ${reason ?? "Removed by Admin for reassignment"}. Customer order returned to Assign Deliveries.',
+          ),
+        );
+
+      final routeData = await calculateRoute(remainingOrders);
+
+      resultModel = old.copyWith(
+        orders: remainingOrders,
+        totalOrders: remainingOrders.length,
+        totalDistanceKm: routeData.totalDistanceKm,
+        estimatedDurationMin: routeData.totalDurationMinutes,
+        history: updatedHistory,
       );
 
-    final routeData = await calculateRoute(remainingOrders);
+      _assignmentsCache[idx] = resultModel;
+      await _persistAssignments();
+    }
 
-    final updated = old.copyWith(
-      orders: remainingOrders,
-      totalOrders: remainingOrders.length,
-      totalDistanceKm: routeData.totalDistanceKm,
-      estimatedDurationMin: routeData.totalDurationMinutes,
-      history: updatedHistory,
-    );
-
-    _assignmentsCache[idx] = updated;
-    await _persistAssignments();
-
-    // Reset order status back to processing in backend Order API
+    // Reset order status and clear delivery assignment in backend Order API
     if (!targetOrder.id.startsWith('ord_auto_gen_')) {
       try {
-        await _orderService.adminUpdateOrderStatus(targetOrder.id, 'processing');
+        await _orderService.adminUnassignDelivery(targetOrder.id);
       } catch (e) {
-        debugPrint('[DeliveryService] API remove/restore status call: $e');
+        debugPrint('[DeliveryService] API unassign/restore status call: $e');
+        try {
+          await _orderService.adminUpdateOrderStatus(targetOrder.id, 'processing');
+        } catch (_) {}
       }
     }
 
     OrderService.orderRefreshNotifier.value = DateTime.now();
     _orderService.refreshProcessingCount(force: true);
 
-    return updated;
+    return resultModel;
   }
 
   /// 7. Add an order into an existing assignment

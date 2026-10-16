@@ -871,9 +871,11 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.02),
+                    color: AdminColors.isDarkTheme
+                        ? Colors.white.withValues(alpha: 0.02)
+                        : Colors.black.withValues(alpha: 0.02),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.white10),
+                    border: Border.all(color: AdminColors.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -912,12 +914,13 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                 ),
                 const SizedBox(height: 8),
                 if (viewModel.locations.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Center(
                       child: Text(
                         'No locations found. Please configure locations.',
-                        style: TextStyle(color: Colors.white60, fontSize: 12),
+                        style: TextStyle(
+                            color: AdminColors.textSecondary, fontSize: 12),
                       ),
                     ),
                   )
@@ -940,13 +943,15 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                               borderRadius: BorderRadius.circular(8)),
                           tileColor: isCurrent
                               ? AdminColors.primaryGreen.withValues(alpha: 0.15)
-                              : Colors.white.withValues(alpha: 0.03),
+                              : (AdminColors.isDarkTheme
+                                  ? Colors.white.withValues(alpha: 0.03)
+                                  : Colors.black.withValues(alpha: 0.03)),
                           leading: Icon(
                             Icons.storefront_outlined,
                             size: 18,
                             color: isCurrent
                                 ? AdminColors.primaryGreen
-                                : Colors.white70,
+                                : AdminColors.textSecondary,
                           ),
                           title: Text(
                             '${loc.name} Hub',
@@ -955,13 +960,14 @@ class AdminOrderDetailView extends StackedView<AdminOrderDetailViewModel> {
                                   isCurrent ? FontWeight.bold : FontWeight.w600,
                               color: isCurrent
                                   ? AdminColors.primaryGreen
-                                  : Colors.white,
+                                  : AdminColors.textPrimary,
                             ),
                           ),
                           subtitle: Text(
                             'Coverage Radius: ${loc.radiusDisplay}',
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.white54),
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: AdminColors.textSecondary),
                           ),
                           trailing: isCurrent
                               ? Container(

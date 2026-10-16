@@ -30,8 +30,10 @@ import '../core/services/enquiry_service.dart';
 import '../core/services/invoice_service.dart';
 import '../core/services/location_service.dart';
 import '../core/services/network_info_service.dart';
+import '../core/services/notification_admin_service.dart';
 import '../core/services/order_service.dart';
 import '../core/services/product_service.dart';
+import '../core/services/push_notification_service.dart';
 import '../core/services/rare_request_mock_service.dart';
 import '../core/services/rare_request_service.dart';
 import '../core/services/return_exchange_service.dart';
@@ -68,6 +70,7 @@ Future<void> setupLocator(
   locator.registerLazySingleton(() => ProductService());
   locator.registerLazySingleton(() => CartService());
   locator.registerLazySingleton(() => WishlistService());
+  locator.registerLazySingleton(() => PushNotificationService());
   locator.registerLazySingleton(() => AddressService());
   locator.registerLazySingleton(() => OrderService());
   locator.registerLazySingleton(() => RareRequestService());
@@ -85,4 +88,5 @@ Future<void> setupLocator(
   locator.registerLazySingleton(() => AdminCustomerService());
   locator.registerLazySingleton(() => BulkQuotationService());
   locator.registerLazySingleton(() => DeliveryService());
+  locator.registerLazySingleton(() => NotificationAdminService());
 }

@@ -197,4 +197,10 @@ class ApiClient {
       statusCode: 500,
     );
   }
+
+  /// Dynamically updates the base URL for in-flight and future requests
+  void updateBaseUrl(String newUrl) {
+    dio.options.baseUrl = newUrl;
+    debugPrint('⚡ [Admin ApiClient] Updated Dio Base URL to: $newUrl');
+  }
 }

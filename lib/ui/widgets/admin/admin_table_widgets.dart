@@ -4,11 +4,15 @@ import 'package:spare_shop_admin/ui/common/admin_styles.dart';
 class AdminDataTable extends StatelessWidget {
   final List<String> columns;
   final List<Widget> rows;
+  final List<int>? columnFlex;
+  final double minWidth;
 
   const AdminDataTable({
     super.key,
     required this.columns,
     required this.rows,
+    this.columnFlex,
+    this.minWidth = 980,
   });
 
   @override
@@ -29,13 +33,20 @@ class AdminDataTable extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: AdminSpacing.m, vertical: AdminSpacing.m),
                 child: Row(
-                  children: columns
-                      .map(
-                        (col) => Expanded(
-                          child: Text(col, style: AdminTextStyles.tableHeader),
-                        ),
-                      )
-                      .toList(),
+                  children: columns.asMap().entries.map((entry) {
+                    final flex = columnFlex != null &&
+                            entry.key < columnFlex!.length
+                        ? columnFlex![entry.key]
+                        : 1;
+                    return Expanded(
+                      flex: flex,
+                      child: Text(
+                        entry.value,
+                        style: AdminTextStyles.tableHeader,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
               Divider(height: 1, color: AdminColors.border),
@@ -53,12 +64,15 @@ class AdminDataTable extends StatelessWidget {
           ),
         );
 
-        if (constraints.maxWidth < 800) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              width: 800,
-              child: tableWidget,
+        if (constraints.maxWidth < minWidth) {
+          return Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: minWidth,
+                child: tableWidget,
+              ),
             ),
           );
         }
@@ -72,11 +86,13 @@ class AdminDataTable extends StatelessWidget {
 class AdminTableRow extends StatelessWidget {
   final List<Widget> cells;
   final VoidCallback? onTap;
+  final List<int>? columnFlex;
 
   const AdminTableRow({
     super.key,
     required this.cells,
     this.onTap,
+    this.columnFlex,
   });
 
   @override
@@ -89,7 +105,16 @@ class AdminTableRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(
                 horizontal: AdminSpacing.m, vertical: AdminSpacing.m),
             child: Row(
-              children: cells.map((cell) => Expanded(child: cell)).toList(),
+              children: cells.asMap().entries.map((entry) {
+                final flex =
+                    columnFlex != null && entry.key < columnFlex!.length
+                        ? columnFlex![entry.key]
+                        : 1;
+                return Expanded(
+                  flex: flex,
+                  child: entry.value,
+                );
+              }).toList(),
             ),
           ),
           Divider(height: 1, color: AdminColors.border),

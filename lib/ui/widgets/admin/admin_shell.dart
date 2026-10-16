@@ -26,6 +26,7 @@ enum AdminNavigationItem {
   suppliers,
   locations,
   deliveryCharges,
+  notifications,
   customers,
   billing,
   reports,
@@ -222,11 +223,10 @@ class AdminShell extends StatelessWidget with NavigationMixin {
               ),
               const SizedBox(width: 8),
               IconButton(
+                tooltip: 'Notifications',
                 icon: const Icon(Icons.notifications_outlined),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No new notifications')),
-                  );
+                  goToAdminNotifications();
                 },
               ),
               const SizedBox(width: 8),
@@ -586,6 +586,8 @@ class AdminShell extends StatelessWidget with NavigationMixin {
                       AdminNavigationItem.locations),
                   _sidebarItem(context, Icons.local_shipping_rounded,
                       'Delivery Charges', AdminNavigationItem.deliveryCharges),
+                  _sidebarItem(context, Icons.campaign_rounded,
+                      'Notifications', AdminNavigationItem.notifications),
                   _sidebarItem(context, Icons.people_alt_rounded, 'Customers',
                       AdminNavigationItem.customers),
                   _sidebarItem(context, Icons.payment_rounded, 'Billing / POS',
@@ -820,6 +822,9 @@ class AdminShell extends StatelessWidget with NavigationMixin {
         break;
       case AdminNavigationItem.deliveryCharges:
         goToAdminDeliveryCharges();
+        break;
+      case AdminNavigationItem.notifications:
+        goToAdminNotifications();
         break;
       case AdminNavigationItem.customers:
         goToAdminCustomers();
